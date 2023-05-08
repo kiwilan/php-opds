@@ -33,5 +33,15 @@ jobs:
       - name: Install dependencies
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
+      - name: Execute phpstan
+        run: vendor/bin/phpstan analyse --memory-limit=2G
+        shell: bash
+
       - name: Execute tests
         run: vendor/bin/pest
+
+      - name: on Linux send code coverage
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false
