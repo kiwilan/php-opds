@@ -1,12 +1,12 @@
 <?php
 
-namespace Kiwilan\Opds\Xml;
+namespace Kiwilan\Opds\Converters;
 
 use DateTime;
 use Kiwilan\Opds\Models\OpdsApp;
 use Kiwilan\Opds\Models\OpdsEntry;
 use Kiwilan\Opds\Models\OpdsEntryBook;
-use Kiwilan\Opds\OpdsEngine;
+use Kiwilan\Opds\Opds;
 use Spatie\ArrayToXml\ArrayToXml;
 use Transliterator;
 
@@ -57,7 +57,7 @@ class OpdsXmlConverter
             '__custom:link:2' => [
                 '_attributes' => [
                     'rel' => 'self',
-                    'href' => OpdsEngine::currentUrl(),
+                    'href' => Opds::currentUrl(),
                     'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
                     'title' => 'self',
                 ],

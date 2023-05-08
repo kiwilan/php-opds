@@ -2,9 +2,9 @@
 
 namespace Kiwilan\Opds\Modules;
 
-use Kiwilan\Opds\OpdsEngine;
-use Kiwilan\Opds\Responses\OpdsXmlResponse;
-use Kiwilan\Opds\Xml\OpdsXmlConverter;
+use Kiwilan\Opds\Converters\OpdsXmlConverter;
+use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsResponse;
 
 /**
  * OPDS 1.2 Module
@@ -14,15 +14,15 @@ use Kiwilan\Opds\Xml\OpdsXmlConverter;
 class OpdsVersionOneDotTwoModule
 {
     protected function __construct(
-        public OpdsEngine $opds,
+        public Opds $opds,
     ) {
     }
 
-    public static function response(OpdsEngine $opds): OpdsXmlResponse
+    public static function response(Opds $opds): OpdsResponse
     {
         $self = new OpdsVersionOneDotTwoModule($opds);
         $xml = OpdsXmlConverter::make($self->opds->app, $self->opds->entries, $self->opds->title);
 
-        return OpdsXmlResponse::make($xml);
+        return OpdsResponse::xml($xml);
     }
 }

@@ -10,8 +10,6 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
-Supports Linux, macOS and Windows.
-
 ## Requirements
 
 -   PHP >= 8.1
@@ -43,7 +41,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Credits
 
--   [Ewilan Rivière](https://github.com/kiwilan)
+-   [Ewilan Rivière](https://github.com/ewilan-riviere)
 -   [spatie/array-to-xml](https://github.com/spatie/array-to-xml)
 -   [spatie/package-skeleton-php](https://github.com/spatie/package-skeleton-php)
 

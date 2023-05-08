@@ -7,10 +7,8 @@ use Kiwilan\Opds\Models\OpdsEntry;
 use Kiwilan\Opds\Models\OpdsEntryBook;
 use Kiwilan\Opds\Modules\OpdsNotSupportedModule;
 use Kiwilan\Opds\Modules\OpdsVersionOneDotTwoModule;
-use Kiwilan\Opds\Responses\OpdsJsonResponse;
-use Kiwilan\Opds\Responses\OpdsXmlResponse;
 
-class OpdsEngine
+class Opds
 {
     public string $url;
 
@@ -40,9 +38,13 @@ class OpdsEngine
      *
      * @param  string|null  $url Can be null if you want to use the current URL.
      */
-    public static function response(OpdsApp $app = new OpdsApp(), array $entries = [], string $title = 'feed', ?string $url = null): OpdsJsonResponse|OpdsXmlResponse
-    {
-        $engine = new OpdsEngine();
+    public static function response(
+        OpdsApp $app = new OpdsApp(),
+        array $entries = [],
+        string $title = 'feed',
+        ?string $url = null
+    ): OpdsResponse {
+        $engine = new Opds();
 
         if ($url) {
             $engine->url = $url;
