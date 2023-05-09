@@ -11,7 +11,7 @@ use Kiwilan\Opds\OpdsResponse;
  *
  * @docs https://specs.opds.io/opds-1.2
  */
-class OpdsVersionOneDotTwoModule
+class Opds1Dot2Module
 {
     protected function __construct(
         protected Opds $opds,
@@ -20,7 +20,7 @@ class OpdsVersionOneDotTwoModule
 
     public static function response(Opds $opds): OpdsResponse|string
     {
-        $self = new OpdsVersionOneDotTwoModule($opds);
+        $self = new Opds1Dot2Module($opds);
         $xml = OpdsXmlConverter::make($self->opds);
 
         return OpdsResponse::xml($xml, $self->opds->asString());

@@ -61,6 +61,7 @@ You can use the `Opds::response()` method to create an OPDS response, default re
 ```php
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\OpdsVersionEnum;
 
 class OpdsController
 {
@@ -71,7 +72,7 @@ class OpdsController
       entries: [], // OpdsEntry[]|OpdsEntryBook[]
       title: 'My feed',
       url: 'https://example.com/opds', // Can be null to be set automatically
-      version: '1.2', // OPDS version
+      version: OpdsVersionEnum::v1_2, // OPDS version
       asString: false, // Output as string
       isSearch: false, // Is search feed
     );

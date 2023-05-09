@@ -4,8 +4,7 @@ namespace Kiwilan\Opds;
 
 use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
-use Kiwilan\Opds\Modules\OpdsNotSupportedModule;
-use Kiwilan\Opds\Modules\OpdsVersionOneDotTwoModule;
+use Kiwilan\Opds\Modules\Opds1Dot2Module;
 
 class Opds
 {
@@ -17,7 +16,7 @@ class Opds
     protected function __construct(
         protected ?string $url = null,
         protected string $title = 'feed',
-        protected string $version = '1.2',
+        protected OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
         protected OpdsConfig $config = new OpdsConfig(),
         protected array $urlParts = [],
         protected array $query = [],
@@ -32,14 +31,14 @@ class Opds
      *
      * @param  string|null  $url Can be null if you want to use the current URL.
      * @param  OpdsEntry[]|OpdsEntryBook[]  $entries
-     * @param  string  $version Default is `1.2`, query `?version=1.2` can override this.
+     * @param  OpdsVersionEnum  $version Default is `v1_2`, query `?version=1.2` can override this.
      */
     public static function response(
         OpdsConfig $config = new OpdsConfig(),
         array $entries = [],
         string $title = 'feed',
         ?string $url = null,
-        string $version = '1.2',
+        OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
         bool $asString = false,
         bool $isSearch = false,
     ): OpdsResponse|string {
@@ -66,7 +65,10 @@ class Opds
             $engine->query = $query;
 
             if (array_key_exists('version', $query)) {
-                $engine->version = $query['version'];
+                $queryVersion = OpdsVersionEnum::tryFrom($query['version']);
+                if ($queryVersion) {
+                    $engine->version = $queryVersion;
+                }
             }
         }
 
@@ -75,8 +77,7 @@ class Opds
         $engine->entries = $entries;
 
         return match ($engine->version) {
-            '1.2' => OpdsVersionOneDotTwoModule::response($engine),
-            default => OpdsNotSupportedModule::response($engine),
+            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::response($engine),
         };
     }
 
@@ -99,7 +100,7 @@ class Opds
         return $this->title;
     }
 
-    public function version(): string
+    public function version(): OpdsVersionEnum
     {
         return $this->version;
     }
