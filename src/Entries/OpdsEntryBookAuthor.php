@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiwilan\Opds\Models;
+namespace Kiwilan\Opds\Entries;
 
 class OpdsEntryBookAuthor
 {

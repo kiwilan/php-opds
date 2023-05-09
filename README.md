@@ -60,13 +60,14 @@ You can use the `Opds::response()` method to create an OPDS response, default re
 
 ```php
 use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsConfig;
 
 class OpdsController
 {
   public function index()
   {
     return Opds::response(
-      app: new OpdsApp(),
+      config: new OpdsConfig(),
       entries: [], // OpdsEntry[]|OpdsEntryBook[]
       title: 'My feed',
       url: 'https://example.com/opds', // Can be null to be set automatically
@@ -79,7 +80,9 @@ class OpdsController
 ```
 
 ```php
-new OpdsApp(
+use Kiwilan\Opds\OpdsConfig;
+
+new OpdsConfig(
   name: 'My OPDS Catalog',
   author: 'John Doe',
   authorUrl: 'https://example.com',
@@ -98,16 +101,17 @@ Example of a simple OPDS feed into controller (like Laravel).
 
 ```php
 use Kiwilan\Opds\Opds;
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
-use Kiwilan\Opds\Models\OpdsEntryBookAuthor;
+use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
 class OpdsController
 {
   public function index()
   {
     return Opds::response(
-      app: new OpdsApp(
+      config: new OpdsConfig(
         name: 'My OPDS Catalog',
         author: 'John Doe',
         authorUrl: 'https://example.com',
@@ -139,7 +143,7 @@ class OpdsController
   public function books()
   {
     return Opds::response(
-      app: new OpdsApp(
+      config: new OpdsConfig(
         name: 'My OPDS Catalog',
         author: 'John Doe',
         authorUrl: 'https://example.com',
@@ -180,9 +184,9 @@ class OpdsController
 > **Note**
 > This example use Laravel but you could use `kiwilan/php-opds` with any PHP framework.
 
-You could create a file like `OpdsConfig.php` to store all your OPDS configuration.
+You could create a file like `MyOpds.php` to store all your OPDS configuration.
 
--   `app()` is the OPDS app configuration
+-   `config()` is the OPDS config configuration
 -   `home()` is the OPDS home page
 -   `bookToEntry()` is a function to convert a book to an OPDS entry
 
@@ -196,16 +200,16 @@ use App\Models\Book;
 use App\Models\Serie;
 use Closure;
 use Illuminate\Support\Facades\Cache;
-use Kiwilan\Opds\Models\OpdsApp;
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
-use Kiwilan\Opds\Models\OpdsEntryBookAuthor;
+use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
-class OpdsConfig
+class MyOpds
 {
-    public static function app(): OpdsApp
+    public static function config(): OpdsConfig
     {
-        return new OpdsApp(
+        return new OpdsConfig(
             name: config('app.name'),
             author: 'Bookshelves',
             authorUrl: config('app.url'),
@@ -303,23 +307,23 @@ And then you can use it into any controller.
 
 namespace App\Http\Controllers\Opds;
 
-use App\Opds\OpdsConfig;
+use App\Opds\MyOpds;
 use App\Engines\SearchEngine;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use Illuminate\Http\Request;
-use Kiwilan\Opds\Models\OpdsApp;
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
-use Kiwilan\Opds\Models\OpdsEntryBookAuthor;
+use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
 class IndexController extends Controller
 {
     public function index()
     {
         return Opds::response(
-            app: OpdsConfig::app(),
-            entries: OpdsConfig::home(),
+            config: MyOpds::config(),
+            entries: MyOpds::home(),
         );
     }
 
@@ -332,11 +336,11 @@ class IndexController extends Controller
 
         foreach ($search->results_opds as $result) {
             /** @var Book $result */
-            $entries[] = OpdsConfig::bookToEntry($result);
+            $entries[] = MyOpds::bookToEntry($result);
         }
 
         return Opds::response(
-            app: OpdsConfig::app(),
+            config: MyOpds::config(),
             entries: $entries,
             title: "Search for {$query}",
             isSearch: true,
@@ -352,14 +356,14 @@ You could create book OPDS page.
 
 namespace App\Http\Controllers\Opds;
 
-use App\Opds\OpdsConfig;
+use App\Opds\MyOpds;
 use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
-use Kiwilan\Opds\Models\OpdsApp;
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
-use Kiwilan\Opds\Models\OpdsEntryBookAuthor;
+use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
 class BookController extends Controller
 {
@@ -372,9 +376,9 @@ class BookController extends Controller
         ;
 
         return Opds::response(
-            app: OpdsConfig::app(),
+            config: MyOpds::config(),
             entries: [
-                OpdsConfig::bookToEntry($book),
+                MyOpds::bookToEntry($book),
             ],
             title: "Book {$book->title}",
         );

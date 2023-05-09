@@ -21,12 +21,7 @@ class OpdsVersionOneDotTwoModule
     public static function response(Opds $opds): OpdsResponse|string
     {
         $self = new OpdsVersionOneDotTwoModule($opds);
-
-        if ($opds->isSearch()) {
-            $xml = OpdsXmlConverter::search($self->opds);
-        } else {
-            $xml = OpdsXmlConverter::make($self->opds);
-        }
+        $xml = OpdsXmlConverter::make($self->opds);
 
         return OpdsResponse::xml($xml, $self->opds->asString());
     }

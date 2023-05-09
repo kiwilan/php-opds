@@ -3,9 +3,8 @@
 namespace Kiwilan\Opds\Converters;
 
 use DateTime;
-use Kiwilan\Opds\Models\OpdsApp;
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Opds;
 use Spatie\ArrayToXml\ArrayToXml;
 use Transliterator;
@@ -14,22 +13,31 @@ class OpdsXmlConverter
 {
     protected function __construct(
         protected Opds $opds,
-        protected OpdsApp $app,
     ) {
     }
 
     public static function make(Opds $opds): string
     {
-        $self = new self($opds, $opds->app());
-        $title = $self->opds->title();
+        $self = new self($opds);
 
-        $id = self::slug($self->app->name());
+        if ($self->opds->isSearch()) {
+            return $self->search();
+        }
+
+        return $self->feed();
+    }
+
+    public function feed(): string
+    {
+        $title = $this->opds->title();
+
+        $id = self::slug($this->opds->config()->name());
         $id .= ':'.self::slug($title);
 
-        $feedTitle = "{$self->app->name()} OPDS";
+        $feedTitle = "{$this->opds->config()->name()} OPDS";
         $feedTitle .= ': '.ucfirst(strtolower($title));
 
-        $date = $self->app->updated() ?? new DateTime();
+        $date = $this->opds->config()->updated() ?? new DateTime();
         $date = $date->format('Y-m-d H:i:s');
 
         $specs = [
@@ -47,11 +55,11 @@ class OpdsXmlConverter
             'id' => $id,
             'title' => $feedTitle,
             'updated' => $date,
-            'icon' => $self->app->iconUrl(),
+            'icon' => $this->opds->config()->iconUrl(),
             '__custom:link:1' => [
                 '_attributes' => [
                     'rel' => 'start',
-                    'href' => $self->app->startUrl(),
+                    'href' => $this->opds->config()->startUrl(),
                     'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
                     'title' => 'Home',
                 ],
@@ -67,74 +75,65 @@ class OpdsXmlConverter
             '__custom:link:3' => [
                 '_attributes' => [
                     'rel' => 'search',
-                    'href' => $self->app->searchUrl(),
+                    'href' => $this->opds->config()->searchUrl(),
                     'type' => 'application/opensearchdescription+xml',
                     'title' => 'Search here',
                 ],
             ],
         ];
 
-        if ($self->app->author()) {
+        if ($this->opds->config()->author()) {
             $feed['author'] = [
-                'name' => $self->app->author(),
-                'uri' => $self->app->authorUrl(),
+                'name' => $this->opds->config()->author(),
+                'uri' => $this->opds->config()->authorUrl(),
             ];
         }
 
-        $entries = $self->opds->entries();
-        $paginate = $self->opds->app()->usePagination();
-        $perPage = $self->opds->app()->maxItemsPerPage();
+        $entries = $this->opds->entries();
+        $paginate = $this->opds->config()->usePagination();
+        $perPage = $this->opds->config()->maxItemsPerPage();
         $page = 1;
 
         if ($paginate && count($entries) > $perPage) {
-            // 'https://URL?query=%28gallica+all+%22+twain&startRecord=-15&maximumRecords=15'
             $current = Opds::currentUrl();
 
             if (str_contains($current, '?')) {
                 $current = explode('?', $current)[0];
             }
 
-            $queryStartRecord = $self->opds->query()['startRecord'] ?? 0;
+            $queryStartRecord = $this->opds->query()['startRecord'] ?? 0;
             $queryStartRecord = intval($queryStartRecord);
 
             $count = count($entries);
             $pageNumbers = intval(ceil($count / $perPage));
-            $start = $self->opds->query()['startRecord'] ?? $page - 1;
+            $start = $this->opds->query()['startRecord'] ?? $page - 1;
             $entries = array_slice($entries, $start, $perPage);
 
-            $first = $self->opds->query()['startRecord'] ?? 0;
+            $first = $this->opds->query()['startRecord'] ?? 0;
             $last = ($perPage * $pageNumbers) - $perPage;
 
             $startRecord = $start + $perPage;
 
-            $previousQueries = [
-                'q' => $self->opds->query()['q'] ?? null,
+            $previousUrl = $current.'?'.http_build_query([
+                'q' => $this->opds->query()['q'] ?? null,
                 'startRecord' => '-'.$startRecord,
                 'maximumRecords' => $perPage,
-            ];
-
-            $nextQueries = [
-                'q' => $self->opds->query()['q'] ?? null,
+            ]);
+            $nextUrl = $current.'?'.http_build_query([
+                'q' => $this->opds->query()['q'] ?? null,
                 'startRecord' => $startRecord,
                 'maximumRecords' => $perPage,
-            ];
-
-            $firstQueries = [
-                'q' => $self->opds->query()['q'] ?? null,
+            ]);
+            $firstUrl = $current.'?'.http_build_query([
+                'q' => $this->opds->query()['q'] ?? null,
                 'startRecord' => 0,
                 'maximumRecords' => $perPage,
-            ];
-
-            $lastQueries = [
-                'q' => $self->opds->query()['q'] ?? null,
+            ]);
+            $lastUrl = $current.'?'.http_build_query([
+                'q' => $this->opds->query()['q'] ?? null,
                 'startRecord' => $last,
                 'maximumRecords' => $perPage,
-            ];
-
-            $previousUrl = $current.'?'.http_build_query($previousQueries);
-            $nextUrl = $current.'?'.http_build_query($nextQueries);
-            $firstUrl = $current.'?'.http_build_query($firstQueries);
-            $lastUrl = $current.'?'.http_build_query($lastQueries);
+            ]);
 
             if ($queryStartRecord !== 0) {
                 $feed['__custom:link:4'] = [
@@ -179,16 +178,16 @@ class OpdsXmlConverter
                     ],
                 ];
             }
-            $feed['opensearch:totalResults'] = count($self->opds->entries());
+            $feed['opensearch:totalResults'] = count($this->opds->entries());
             $feed['opensearch:itemsPerPage'] = $perPage;
             $feed['opensearch:startIndex'] = $startRecord === 0 ? 1 : $start;
         }
 
         foreach ($entries as $entry) {
             if ($entry instanceof OpdsEntryBook) {
-                $feed['entry'][] = $self->entryBook($entry);
+                $feed['entry'][] = $this->entryBook($entry);
             } else {
-                $feed['entry'][] = $self->entry($entry);
+                $feed['entry'][] = $this->entry($entry);
             }
         }
 
@@ -203,19 +202,18 @@ class OpdsXmlConverter
         );
     }
 
-    public static function search(Opds $opds): string
+    public function search(): string
     {
-        $self = new self($opds, $opds->app());
         $date = new DateTime();
         $date = $date->format('Y-m-d H:i:s');
 
         $feed_links = [
             'xmlns' => 'http://a9.com/-/spec/opensearch/1.1/',
         ];
-        $app = self::slug($self->app->name());
+        $app = self::slug($this->opds->config()->name());
 
-        $query = $opds->query()['q'] ?? null;
-        $searchURL = $opds->app()->searchUrl().'?q={searchTerms}';
+        $query = $this->opds->query()['q'] ?? null;
+        $searchURL = $this->opds->config()->searchUrl().'?q={searchTerms}';
 
         $feed = [
             'ShortName' => [
@@ -236,7 +234,7 @@ class OpdsXmlConverter
                     'height' => '16',
                     'type' => 'image/x-icon',
                 ],
-                '_value' => $opds->app()->authorUrl().'/favicon.ico',
+                '_value' => $this->opds->config()->authorUrl().'/favicon.ico',
             ],
             // '__custom:Url:1' => [
             //     '_attributes' => [
@@ -256,7 +254,7 @@ class OpdsXmlConverter
             '__custom:Url:3' => [
                 '_attributes' => [
                     // 'template' => 'http://gallica.bnf.fr/assets/static/opensearchdescription.xml',
-                    'template' => $opds->app()->searchUrl(),
+                    'template' => $this->opds->config()->searchUrl(),
                     'type' => 'application/opensearchdescription+xml',
                     'rel' => 'self',
                 ],
@@ -292,8 +290,8 @@ class OpdsXmlConverter
 
         if ($query) {
             return Opds::response(
-                app: $self->app,
-                entries: $self->opds->entries(),
+                config: $this->opds->config(),
+                entries: $this->opds->entries(),
             );
         }
 
@@ -304,13 +302,13 @@ class OpdsXmlConverter
                 '_attributes' => $feed_links,
             ],
             replaceSpacesByUnderScoresInKeyNames: true,
-            xmlEncoding: 'UTF-8'
+            xmlEncoding: 'UTF-8',
         );
     }
 
     public function entry(OpdsEntry $entry): array
     {
-        $app = self::slug($this->app->name());
+        $app = self::slug($this->opds->config()->name());
 
         return [
             'title' => $entry->title(),
@@ -340,7 +338,7 @@ class OpdsXmlConverter
 
     public function entryBook(OpdsEntryBook $entry): array
     {
-        $app = self::slug($this->app->name());
+        $app = self::slug($this->opds->config()->name());
         $id = $app.':books:';
         $id .= $entry->serie() ? self::slug($entry->serie()).':' : null;
         $id .= self::slug($entry->title());

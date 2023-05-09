@@ -2,9 +2,8 @@
 
 namespace Kiwilan\Opds;
 
-use Kiwilan\Opds\Models\OpdsApp;
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Modules\OpdsNotSupportedModule;
 use Kiwilan\Opds\Modules\OpdsVersionOneDotTwoModule;
 
@@ -19,7 +18,7 @@ class Opds
         protected ?string $url = null,
         protected string $title = 'feed',
         protected string $version = '1.2',
-        protected OpdsApp $app = new OpdsApp(),
+        protected OpdsConfig $config = new OpdsConfig(),
         protected array $urlParts = [],
         protected array $query = [],
         protected array $entries = [],
@@ -36,7 +35,7 @@ class Opds
      * @param  string  $version Default is `1.2`, query `?version=1.2` can override this.
      */
     public static function response(
-        OpdsApp $app = new OpdsApp(),
+        OpdsConfig $config = new OpdsConfig(),
         array $entries = [],
         string $title = 'feed',
         ?string $url = null,
@@ -47,7 +46,7 @@ class Opds
         $engine = new self(
             url: $url,
             title: $title,
-            app: $app,
+            config: $config,
             entries: $entries,
             asString: $asString,
             isSearch: $isSearch,
@@ -72,7 +71,7 @@ class Opds
         }
 
         $engine->title = $title;
-        $engine->app = $app;
+        $engine->config = $config;
         $engine->entries = $entries;
 
         return match ($engine->version) {
@@ -105,9 +104,9 @@ class Opds
         return $this->version;
     }
 
-    public function app(): OpdsApp
+    public function config(): OpdsConfig
     {
-        return $this->app;
+        return $this->config;
     }
 
     public function urlParts(): array

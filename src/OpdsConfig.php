@@ -1,10 +1,10 @@
 <?php
 
-namespace Kiwilan\Opds\Models;
+namespace Kiwilan\Opds;
 
 use DateTime;
 
-class OpdsApp
+class OpdsConfig
 {
     public function __construct(
         protected string $name = 'opds',

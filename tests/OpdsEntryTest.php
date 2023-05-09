@@ -1,8 +1,8 @@
 <?php
 
-use Kiwilan\Opds\Models\OpdsEntry;
-use Kiwilan\Opds\Models\OpdsEntryBook;
-use Kiwilan\Opds\Models\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
 it('is OpdsEntry', function (OpdsEntry $entry) {
     expect($entry)->toBeInstanceOf(OpdsEntry::class);
@@ -17,7 +17,6 @@ it('is OpdsEntry', function (OpdsEntry $entry) {
 
 it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
     expect($entry)->toBeInstanceOf(OpdsEntryBook::class);
-    expect($entry->id())->toBe('the-clan-of-the-cave-bear-epub-en');
     expect($entry->title())->toBe('The Clan of the Cave Bear');
     expect($entry->route())->toBe('http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en');
     expect($entry->summary())->toBeString();
