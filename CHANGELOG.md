@@ -2,6 +2,10 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## 0.1.21 - 2023-05-09
+
+- search template fixing
+
 ## 0.1.20 - 2023-05-09
 
 - add `OpdsEntryBookAuthor`
