@@ -110,6 +110,9 @@ class OpdsXmlConverter
         ];
         $app = self::slug($self->app->name());
 
+        $query = $opds->query()['q'] ?? null;
+        $searchURL = $opds->app()->searchUrl().'?q={searchTerms}';
+
         $feed = [
             'ShortName' => [
                 '_value' => $app,
@@ -129,7 +132,7 @@ class OpdsXmlConverter
                     'height' => '16',
                     'type' => 'image/x-icon',
                 ],
-                // '_value' => config('app.url').'/favicon.ico',
+                '_value' => $opds->app()->authorUrl().'/favicon.ico',
             ],
             // '__custom:Url:1' => [
             //     '_attributes' => [
@@ -149,14 +152,14 @@ class OpdsXmlConverter
             '__custom:Url:3' => [
                 '_attributes' => [
                     // 'template' => 'http://gallica.bnf.fr/assets/static/opensearchdescription.xml',
-                    // 'template' => route('opds.search', ['version' => $version]),
+                    'template' => $opds->app()->searchUrl(),
                     'type' => 'application/opensearchdescription+xml',
                     'rel' => 'self',
                 ],
             ],
             '__custom:Url:4' => [
                 '_attributes' => [
-                    // 'template' => urldecode(route('opds.search', ['version' => $version, 'q' => '{searchTerms}'])),
+                    'template' => $searchURL,
                     'type' => 'application/atom+xml',
                 ],
             ],
@@ -182,6 +185,13 @@ class OpdsXmlConverter
                 '_value' => '*',
             ],
         ];
+
+        if ($query) {
+            return Opds::response(
+                app: $self->app,
+                entries: $self->opds->entries(),
+            );
+        }
 
         return ArrayToXml::convert(
             array: $feed,
