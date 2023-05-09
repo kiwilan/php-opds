@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiwilan\Opds;
+namespace Kiwilan\Opds\Tests\Utils;
 
 use App\Models\Author;
 use App\Models\Book;
