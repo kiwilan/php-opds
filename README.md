@@ -26,9 +26,45 @@ composer require kiwilan/php-opds
 
 ## Usage
 
+Example of a simple OPDS feed into controller (like Laravel).
+
 ```php
-$skeleton = new Kiwilan\Opds();
-echo $skeleton->echoPhrase('Hello, Kiwilan!');
+use Kiwilan\Opds\Opds;
+
+class OpdsController
+{
+  public function index()
+  {
+    return OpdsEngine::response(
+      app: new OpdsApp(
+        name: 'My OPDS Catalog',
+        author: 'John Doe',
+        authorUrl: 'https://example.com',
+        startUrl: 'https://example.com/opds',
+        searchUrl: 'https://example.com/opds/search',
+        updated: new DateTime(),
+      ),
+      entries: [
+        new OpdsEntry(
+          id: 'authors',
+          title: 'Authors',
+          route: 'http://localhost:8000/opds/authors',
+          summary: 'Authors, 1 available',
+          media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+          updated: new DateTime(),
+        ),
+        new OpdsEntry(
+          id: 'series',
+          title: 'Series',
+          route: 'http://localhost:8000/opds/series',
+          summary: 'Series, 1 available',
+          media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+          updated: new DateTime(),
+        ),
+      ],
+    );
+  }
+}
 ```
 
 ## Testing
