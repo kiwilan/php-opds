@@ -2,6 +2,10 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## 0.3.11 - 2023-05-09
+
+- `media` mime type fix
+
 ## 0.3.10 - 2023-05-09
 
 - `OpdsEntryBook` add `content` property with HTML
@@ -15,6 +19,7 @@ All notable changes to `php-opds` will be documented in this file.
 
 - `OpdsApp` is now `OpdsConfig`
 - - `Opds` property `app` is now `config`
+- 
 - 
 - 
 - 
