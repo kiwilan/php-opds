@@ -20,6 +20,7 @@ it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
     expect($entry->title())->toBe('The Clan of the Cave Bear');
     expect($entry->route())->toBe('http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en');
     expect($entry->summary())->toBeString();
+    expect($entry->content())->toBeString();
     expect($entry->media())->toBe('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
     expect($entry->updated())->toBeInstanceOf(DateTime::class);
     expect($entry->download())->toBe('http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en');

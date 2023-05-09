@@ -365,8 +365,17 @@ class OpdsXmlConverter
         $media = $entry->media();
         $mediaThumbnail = $entry->mediaThumbnail();
 
-        $mediaMimeType = mime_content_type($media);
-        $mediaThumbnailMimeType = mime_content_type($mediaThumbnail);
+        $mediaMimeType = 'image/png';
+        $mediaThumbnailMimeType = 'image/png';
+
+        if ($media) {
+            $ext = pathinfo($media, PATHINFO_EXTENSION);
+            $mediaMimeType = "image/{$ext}";
+        }
+        if ($mediaThumbnail) {
+            $ext = pathinfo($mediaThumbnail, PATHINFO_EXTENSION);
+            $mediaThumbnailMimeType = "image/{$ext}";
+        }
 
         return [
             'title' => $entry->title(),
