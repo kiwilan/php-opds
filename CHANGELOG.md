@@ -2,10 +2,16 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## 0.3.0 - 2023-05-09
+
+- add `OpdsVersionEnum` for `version`
+- `OpdsVersionOneDotTwoModule` is now `Opds1Dot2Module`
+
 ## 0.2.0 - 2023-05-09
 
 - `OpdsApp` is now `OpdsConfig`
 - - `Opds` property `app` is now `config`
+- 
 - 
 - `OpdsEntry`, `OpdsEntryBook`, `OpdsEntryBookAuthor` has now namespace `Kiwilan\Opds\Entries`
 - `OpdsXmlConverter` is has now one static method
