@@ -10,9 +10,12 @@ class OpdsApp
         protected string $name = 'opds',
         protected ?string $author = null,
         protected ?string $authorUrl = null,
+        protected ?string $iconUrl = null,
         protected ?string $startUrl = null,
         protected ?string $searchUrl = null,
         protected ?DateTime $updated = null,
+        protected bool $usePagination = true,
+        protected int $maxItemsPerPage = 15,
     ) {
     }
 
@@ -31,6 +34,11 @@ class OpdsApp
         return $this->authorUrl;
     }
 
+    public function iconUrl(): ?string
+    {
+        return $this->iconUrl;
+    }
+
     public function startUrl(): ?string
     {
         return $this->startUrl;
@@ -44,5 +52,15 @@ class OpdsApp
     public function updated(): ?DateTime
     {
         return $this->updated;
+    }
+
+    public function usePagination(): bool
+    {
+        return $this->usePagination;
+    }
+
+    public function maxItemsPerPage(): int
+    {
+        return $this->maxItemsPerPage;
     }
 }

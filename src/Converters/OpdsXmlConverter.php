@@ -45,6 +45,9 @@ class OpdsXmlConverter
 
         $feed = [
             'id' => $id,
+            'title' => $feedTitle,
+            'updated' => $date,
+            'icon' => $self->app->iconUrl(),
             '__custom:link:1' => [
                 '_attributes' => [
                     'rel' => 'start',
@@ -69,8 +72,6 @@ class OpdsXmlConverter
                     'title' => 'Search here',
                 ],
             ],
-            'title' => $feedTitle,
-            'updated' => $date,
         ];
 
         if ($self->app->author()) {
@@ -80,7 +81,110 @@ class OpdsXmlConverter
             ];
         }
 
-        foreach ($self->opds->entries() as $entry) {
+        $entries = $self->opds->entries();
+        $paginate = $self->opds->app()->usePagination();
+        $perPage = $self->opds->app()->maxItemsPerPage();
+        $page = 1;
+
+        if ($paginate && count($entries) > $perPage) {
+            // 'https://URL?query=%28gallica+all+%22+twain&startRecord=-15&maximumRecords=15'
+            $current = Opds::currentUrl();
+
+            if (str_contains($current, '?')) {
+                $current = explode('?', $current)[0];
+            }
+
+            $queryStartRecord = $self->opds->query()['startRecord'] ?? 0;
+            $queryStartRecord = intval($queryStartRecord);
+
+            $count = count($entries);
+            $pageNumbers = intval(ceil($count / $perPage));
+            $start = $self->opds->query()['startRecord'] ?? $page - 1;
+            $entries = array_slice($entries, $start, $perPage);
+
+            $first = $self->opds->query()['startRecord'] ?? 0;
+            $last = ($perPage * $pageNumbers) - $perPage;
+
+            $startRecord = $start + $perPage;
+
+            $previousQueries = [
+                'q' => $self->opds->query()['q'] ?? null,
+                'startRecord' => '-'.$startRecord,
+                'maximumRecords' => $perPage,
+            ];
+
+            $nextQueries = [
+                'q' => $self->opds->query()['q'] ?? null,
+                'startRecord' => $startRecord,
+                'maximumRecords' => $perPage,
+            ];
+
+            $firstQueries = [
+                'q' => $self->opds->query()['q'] ?? null,
+                'startRecord' => 0,
+                'maximumRecords' => $perPage,
+            ];
+
+            $lastQueries = [
+                'q' => $self->opds->query()['q'] ?? null,
+                'startRecord' => $last,
+                'maximumRecords' => $perPage,
+            ];
+
+            $previousUrl = $current.'?'.http_build_query($previousQueries);
+            $nextUrl = $current.'?'.http_build_query($nextQueries);
+            $firstUrl = $current.'?'.http_build_query($firstQueries);
+            $lastUrl = $current.'?'.http_build_query($lastQueries);
+
+            if ($queryStartRecord !== 0) {
+                $feed['__custom:link:4'] = [
+                    '_attributes' => [
+                        'rel' => 'previous',
+                        'href' => $previousUrl,
+                        'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                        'title' => 'Previous page',
+                    ],
+                ];
+            }
+
+            if ($queryStartRecord !== $last) {
+                $feed['__custom:link:5'] = [
+                    '_attributes' => [
+                        'rel' => 'next',
+                        'href' => $nextUrl,
+                        'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                        'title' => 'Next page',
+                    ],
+                ];
+            }
+
+            if ($queryStartRecord !== 0) {
+                $feed['__custom:link:6'] = [
+                    '_attributes' => [
+                        'rel' => 'first',
+                        'href' => $firstUrl,
+                        'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                        'title' => 'First page',
+                    ],
+                ];
+            }
+
+            if ($queryStartRecord !== $last) {
+                $feed['__custom:link:7'] = [
+                    '_attributes' => [
+                        'rel' => 'last',
+                        'href' => $lastUrl,
+                        'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                        'title' => 'Last page',
+                    ],
+                ];
+            }
+            $feed['opensearch:totalResults'] = count($self->opds->entries());
+            $feed['opensearch:itemsPerPage'] = $perPage;
+            $feed['opensearch:startIndex'] = $startRecord === 0 ? 1 : $start;
+        }
+
+        foreach ($entries as $entry) {
             if ($entry instanceof OpdsEntryBook) {
                 $feed['entry'][] = $self->entryBook($entry);
             } else {
