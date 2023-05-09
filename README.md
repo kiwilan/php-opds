@@ -78,6 +78,20 @@ class OpdsController
 }
 ```
 
+```php
+new OpdsApp(
+  name: 'My OPDS Catalog',
+  author: 'John Doe',
+  authorUrl: 'https://example.com',
+  iconUrl: 'https://example.com/icon.png',
+  startUrl: 'https://example.com/opds',
+  searchUrl: 'https://example.com/opds/search',
+  updated: new DateTime(),
+  usePagination: true,
+  maxItemsPerPage: 15,
+);
+```
+
 ### Basic usage
 
 Example of a simple OPDS feed into controller (like Laravel).
