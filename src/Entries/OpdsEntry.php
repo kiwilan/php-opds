@@ -14,10 +14,7 @@ class OpdsEntry
         protected ?string $media = null,
         protected DateTime|string|null $updated = null,
     ) {
-        if ($summary) {
-            $this->summary = strip_tags($summary);
-            $this->summary = strlen($this->summary) > 200 ? substr($this->summary, 0, 200).'...' : $this->summary;
-        }
+        $this->summary = OpdsEntry::handleContent($this->summary);
     }
 
     public function id(): string
@@ -60,5 +57,20 @@ class OpdsEntry
             'media' => $this->media(),
             'updated' => $this->updated(),
         ];
+    }
+
+    public static function handleContent(?string $content, bool $stripTags = true): string
+    {
+        if (! $content) {
+            return '';
+        }
+
+        $content = strlen($content) > 200 ? substr($content, 0, 200).'...' : $content;
+
+        if ($stripTags) {
+            $content = strip_tags($content);
+        }
+
+        return $content;
     }
 }

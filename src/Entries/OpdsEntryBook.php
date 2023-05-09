@@ -15,6 +15,7 @@ class OpdsEntryBook extends OpdsEntry
         protected string $title,
         protected string $route,
         protected ?string $summary = null,
+        protected ?string $content = null,
         protected ?string $media = null,
         protected DateTime|string|null $updated = null,
         protected ?string $download = null,
@@ -34,6 +35,13 @@ class OpdsEntryBook extends OpdsEntry
             media: $media,
             updated: $updated,
         );
+
+        $this->content = OpdsEntry::handleContent($this->content, false);
+    }
+
+    public function content(): ?string
+    {
+        return $this->content;
     }
 
     public function download(): ?string

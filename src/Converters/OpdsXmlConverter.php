@@ -362,15 +362,27 @@ class OpdsXmlConverter
             ];
         }
 
+        $media = $entry->media();
+        $mediaThumbnail = $entry->mediaThumbnail();
+
+        $mediaMimeType = mime_content_type($media);
+        $mediaThumbnailMimeType = mime_content_type($mediaThumbnail);
+
         return [
             'title' => $entry->title(),
             'updated' => $entry->updated()?->format('Y-m-d H:i:s'),
             'id' => $id,
+            'summary' => [
+                '_attributes' => [
+                    'type' => 'text',
+                ],
+                '_value' => $entry->summary(),
+            ],
             'content' => [
                 '_attributes' => [
                     'type' => 'text/html',
                 ],
-                '_value' => $entry->summary(),
+                '_value' => $entry->content(),
             ],
             '__custom:link:1' => [
                 '_attributes' => [
@@ -380,15 +392,15 @@ class OpdsXmlConverter
             ],
             '__custom:link:2' => [
                 '_attributes' => [
-                    'href' => $entry->media(),
-                    'type' => 'image/png',
+                    'href' => $media,
+                    'type' => $mediaMimeType,
                     'rel' => 'http://opds-spec.org/image',
                 ],
             ],
             '__custom:link:3' => [
                 '_attributes' => [
-                    'href' => $entry->mediaThumbnail(),
-                    'type' => 'image/png',
+                    'href' => $mediaThumbnail,
+                    'type' => $mediaThumbnailMimeType,
                     'rel' => 'http://opds-spec.org/image/thumbnail',
                 ],
             ],
