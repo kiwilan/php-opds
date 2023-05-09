@@ -59,13 +59,13 @@ class OpdsEntry
         ];
     }
 
-    public static function handleContent(?string $content, bool $stripTags = true): string
+    public static function handleContent(?string $content, int $length = 200, bool $stripTags = true): string
     {
         if (! $content) {
             return '';
         }
 
-        $content = strlen($content) > 200 ? substr($content, 0, 200).'...' : $content;
+        $content = strlen($content) > $length ? substr($content, 0, $length).'...' : $content;
 
         if ($stripTags) {
             $content = strip_tags($content);

@@ -36,7 +36,7 @@ class OpdsEntryBook extends OpdsEntry
             updated: $updated,
         );
 
-        $this->content = OpdsEntry::handleContent($this->content, false);
+        $this->content = OpdsEntry::handleContent($this->content, 500, false);
     }
 
     public function content(): ?string
