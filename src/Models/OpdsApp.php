@@ -7,12 +7,42 @@ use DateTime;
 class OpdsApp
 {
     public function __construct(
-        public string $name = 'opds',
-        public ?string $author = null,
-        public ?string $authorUrl = null,
-        public ?string $startUrl = null,
-        public ?string $searchUrl = null,
-        public ?DateTime $updated = null,
+        protected string $name = 'opds',
+        protected ?string $author = null,
+        protected ?string $authorUrl = null,
+        protected ?string $startUrl = null,
+        protected ?string $searchUrl = null,
+        protected ?DateTime $updated = null,
     ) {
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function author(): ?string
+    {
+        return $this->author;
+    }
+
+    public function authorUrl(): ?string
+    {
+        return $this->authorUrl;
+    }
+
+    public function startUrl(): ?string
+    {
+        return $this->startUrl;
+    }
+
+    public function searchUrl(): ?string
+    {
+        return $this->searchUrl;
+    }
+
+    public function updated(): ?DateTime
+    {
+        return $this->updated;
     }
 }

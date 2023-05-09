@@ -14,15 +14,20 @@ use Kiwilan\Opds\OpdsResponse;
 class OpdsVersionOneDotTwoModule
 {
     protected function __construct(
-        public Opds $opds,
+        protected Opds $opds,
     ) {
     }
 
-    public static function response(Opds $opds): OpdsResponse
+    public static function response(Opds $opds): OpdsResponse|string
     {
         $self = new OpdsVersionOneDotTwoModule($opds);
-        $xml = OpdsXmlConverter::make($self->opds->app, $self->opds->entries, $self->opds->title);
 
-        return OpdsResponse::xml($xml);
+        if ($opds->isSearch()) {
+            $xml = OpdsXmlConverter::search($self->opds);
+        } else {
+            $xml = OpdsXmlConverter::make($self->opds);
+        }
+
+        return OpdsResponse::xml($xml, $self->opds->asString());
     }
 }

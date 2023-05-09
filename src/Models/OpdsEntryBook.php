@@ -7,24 +7,24 @@ use DateTime;
 class OpdsEntryBook extends OpdsEntry
 {
     /**
+     * @param  string[]  $categories
      * @param  OpdsEntryBookAuthor[]  $authors
      */
     public function __construct(
-        public string $id,
-        public string $title,
-        public string $route,
-        public ?string $summary = null,
-        public ?string $media = null,
-        public ?DateTime $updated = null,
-        public ?string $routeSelf = null,
-        public ?string $routeDownload = null,
-        public ?string $mediaThumbnail = null,
-        public array $categories = [],
-        public array $authors = [],
-        public ?DateTime $published = null,
-        public ?int $volume = null,
-        public ?string $serie = null,
-        public ?string $language = null,
+        protected string $id,
+        protected string $title,
+        protected string $route,
+        protected ?string $summary = null,
+        protected ?string $media = null,
+        protected ?DateTime $updated = null,
+        protected ?string $download = null,
+        protected ?string $mediaThumbnail = null,
+        protected array $categories = [],
+        protected array $authors = [],
+        protected ?DateTime $published = null,
+        protected ?int $volume = null,
+        protected ?string $serie = null,
+        protected ?string $language = null,
     ) {
         parent::__construct(
             id: $id,
@@ -35,13 +35,91 @@ class OpdsEntryBook extends OpdsEntry
             updated: $updated,
         );
     }
+
+    public function download(): ?string
+    {
+        return $this->download;
+    }
+
+    public function mediaThumbnail(): ?string
+    {
+        return $this->mediaThumbnail;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function categories(): array
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @return OpdsEntryBookAuthor[]
+     */
+    public function authors(): array
+    {
+        return $this->authors;
+    }
+
+    public function published(): ?DateTime
+    {
+        return $this->published;
+    }
+
+    public function volume(): ?int
+    {
+        return $this->volume;
+    }
+
+    public function serie(): ?string
+    {
+        return $this->serie;
+    }
+
+    public function language(): ?string
+    {
+        return $this->language;
+    }
+
+    public function toArray(): array
+    {
+        return array_merge(parent::toArray(), [
+            'download' => $this->download(),
+            'mediaThumbnail' => $this->mediaThumbnail(),
+            'categories' => $this->categories(),
+            'authors' => array_map(fn (OpdsEntryBookAuthor $author) => $author->toArray(), $this->authors()),
+            'published' => $this->published(),
+            'volume' => $this->volume(),
+            'serie' => $this->serie(),
+            'language' => $this->language(),
+        ]);
+    }
 }
 
 class OpdsEntryBookAuthor
 {
     public function __construct(
-        public string $name,
-        public ?string $uri = null,
+        protected string $name,
+        protected ?string $uri = null,
     ) {
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function uri(): ?string
+    {
+        return $this->uri;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name(),
+            'uri' => $this->uri(),
+        ];
     }
 }

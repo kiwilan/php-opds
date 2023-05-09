@@ -13,24 +13,23 @@ use Transliterator;
 class OpdsXmlConverter
 {
     protected function __construct(
+        protected Opds $opds,
         protected OpdsApp $app,
     ) {
     }
 
-    /**
-     * @param  array<OpdsEntry|OpdsEntryBook>  $entries
-     */
-    public static function make(OpdsApp $app, array $entries, string $title = 'feed'): string
+    public static function make(Opds $opds): string
     {
-        $self = new self($app);
+        $self = new self($opds, $opds->app());
+        $title = $self->opds->title();
 
-        $id = self::slug($app->name);
+        $id = self::slug($self->app->name());
         $id .= ':'.self::slug($title);
 
-        $feedTitle = "{$app->name} OPDS";
+        $feedTitle = "{$self->app->name()} OPDS";
         $feedTitle .= ': '.ucfirst(strtolower($title));
 
-        $date = $app->updated ?? new DateTime();
+        $date = $self->app->updated() ?? new DateTime();
         $date = $date->format('Y-m-d H:i:s');
 
         $specs = [
@@ -49,7 +48,7 @@ class OpdsXmlConverter
             '__custom:link:1' => [
                 '_attributes' => [
                     'rel' => 'start',
-                    'href' => $app->startUrl,
+                    'href' => $self->app->startUrl(),
                     'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
                     'title' => 'Home',
                 ],
@@ -65,7 +64,7 @@ class OpdsXmlConverter
             '__custom:link:3' => [
                 '_attributes' => [
                     'rel' => 'search',
-                    'href' => $app->searchUrl,
+                    'href' => $self->app->searchUrl(),
                     'type' => 'application/opensearchdescription+xml',
                     'title' => 'Search here',
                 ],
@@ -74,14 +73,14 @@ class OpdsXmlConverter
             'updated' => $date,
         ];
 
-        if ($app->author) {
+        if ($self->app->author()) {
             $feed['author'] = [
-                'name' => $app->author,
-                'uri' => $app->authorUrl,
+                'name' => $self->app->author(),
+                'uri' => $self->app->authorUrl(),
             ];
         }
 
-        foreach ($entries as $entry) {
+        foreach ($self->opds->entries() as $entry) {
             if ($entry instanceof OpdsEntryBook) {
                 $feed['entry'][] = $self->entryBook($entry);
             } else {
@@ -100,119 +99,16 @@ class OpdsXmlConverter
         );
     }
 
-    public function entry(OpdsEntry $entry): array
+    public static function search(Opds $opds): string
     {
-        $app = self::slug($this->app->name);
-
-        return [
-            'title' => $entry->title,
-            'updated' => $entry->updated,
-            'id' => "{$app}:{$entry->id}",
-            'summary' => [
-                '_attributes' => [
-                    'type' => 'text',
-                ],
-                '_value' => $entry->summary,
-            ],
-            '__custom:link:1' => [
-                '_attributes' => [
-                    'href' => $entry->route,
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                ],
-            ],
-            '__custom:link:2' => [
-                '_attributes' => [
-                    'href' => $entry->media ?? null,
-                    'type' => 'image/png',
-                    'rel' => 'http://opds-spec.org/image/thumbnail',
-                ],
-            ],
-        ];
-    }
-
-    public function entryBook(OpdsEntryBook $entry): array
-    {
-        $app = self::slug($this->app->name);
-        $id = $app.':books:';
-        $id .= $entry->serie ? self::slug($entry->serie).':' : null;
-        $id .= self::slug($entry->title);
-
-        $authors = [];
-        $categories = [];
-
-        foreach ($entry->categories as $item) {
-            $categories[] = [
-                '_attributes' => [
-                    'term' => $item,
-                    'label' => $item,
-                ],
-            ];
-        }
-
-        foreach ($entry->authors as $item) {
-            $authors[] = [
-                'name' => $item->name,
-                'uri' => $item->uri,
-            ];
-        }
-
-        return [
-            'title' => $entry->title,
-            'updated' => $entry->updated,
-            'id' => $id,
-            'content' => [
-                '_attributes' => [
-                    'type' => 'text/html',
-                ],
-                '_value' => $entry->summary,
-            ],
-            '__custom:link:1' => [
-                '_attributes' => [
-                    'href' => $entry->routeSelf,
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                ],
-            ],
-            '__custom:link:2' => [
-                '_attributes' => [
-                    'href' => $entry->media,
-                    'type' => 'image/png',
-                    'rel' => 'http://opds-spec.org/image',
-                ],
-            ],
-            '__custom:link:3' => [
-                '_attributes' => [
-                    'href' => $entry->mediaThumbnail,
-                    'type' => 'image/png',
-                    'rel' => 'http://opds-spec.org/image/thumbnail',
-                ],
-            ],
-            '__custom:link:4' => [
-                '_attributes' => [
-                    'href' => $entry->routeDownload,
-                    'type' => 'application/epub+zip',
-                    'rel' => 'http://opds-spec.org/acquisition',
-                    'title' => 'EPUB',
-                ],
-            ],
-            'category' => $categories,
-            'author' => $authors,
-            'dcterms:issued' => $entry->published->format('Y-m-d'),
-            'published' => $entry->published,
-            'volume' => $entry->volume,
-            'dcterms:language' => $entry->language,
-        ];
-    }
-
-    public static function search(OpdsApp $app): string
-    {
-        $self = new self($app);
+        $self = new self($opds, $opds->app());
         $date = new DateTime();
         $date = $date->format('Y-m-d H:i:s');
 
         $feed_links = [
             'xmlns' => 'http://a9.com/-/spec/opensearch/1.1/',
         ];
-        $app = self::slug($self->app->name);
+        $app = self::slug($self->app->name());
 
         $feed = [
             'ShortName' => [
@@ -296,6 +192,109 @@ class OpdsXmlConverter
             replaceSpacesByUnderScoresInKeyNames: true,
             xmlEncoding: 'UTF-8'
         );
+    }
+
+    public function entry(OpdsEntry $entry): array
+    {
+        $app = self::slug($this->app->name());
+
+        return [
+            'title' => $entry->title(),
+            'updated' => $entry->updated()?->format('Y-m-d H:i:s'),
+            'id' => "{$app}:{$entry->id()}",
+            'summary' => [
+                '_attributes' => [
+                    'type' => 'text',
+                ],
+                '_value' => $entry->summary(),
+            ],
+            '__custom:link:1' => [
+                '_attributes' => [
+                    'href' => $entry->route(),
+                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                ],
+            ],
+            '__custom:link:2' => [
+                '_attributes' => [
+                    'href' => $entry->media() ?? null,
+                    'type' => 'image/png',
+                    'rel' => 'http://opds-spec.org/image/thumbnail',
+                ],
+            ],
+        ];
+    }
+
+    public function entryBook(OpdsEntryBook $entry): array
+    {
+        $app = self::slug($this->app->name());
+        $id = $app.':books:';
+        $id .= $entry->serie() ? self::slug($entry->serie()).':' : null;
+        $id .= self::slug($entry->title());
+
+        $authors = [];
+        $categories = [];
+
+        foreach ($entry->categories() as $item) {
+            $categories[] = [
+                '_attributes' => [
+                    'term' => $item,
+                    'label' => $item,
+                ],
+            ];
+        }
+
+        foreach ($entry->authors() as $item) {
+            $authors[] = [
+                'name' => $item->name(),
+                'uri' => $item->uri(),
+            ];
+        }
+
+        return [
+            'title' => $entry->title(),
+            'updated' => $entry->updated()?->format('Y-m-d H:i:s'),
+            'id' => $id,
+            'content' => [
+                '_attributes' => [
+                    'type' => 'text/html',
+                ],
+                '_value' => $entry->summary(),
+            ],
+            '__custom:link:1' => [
+                '_attributes' => [
+                    'href' => $entry->route(),
+                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                ],
+            ],
+            '__custom:link:2' => [
+                '_attributes' => [
+                    'href' => $entry->media(),
+                    'type' => 'image/png',
+                    'rel' => 'http://opds-spec.org/image',
+                ],
+            ],
+            '__custom:link:3' => [
+                '_attributes' => [
+                    'href' => $entry->mediaThumbnail(),
+                    'type' => 'image/png',
+                    'rel' => 'http://opds-spec.org/image/thumbnail',
+                ],
+            ],
+            '__custom:link:4' => [
+                '_attributes' => [
+                    'href' => $entry->download(),
+                    'type' => 'application/epub+zip',
+                    'rel' => 'http://opds-spec.org/acquisition',
+                    'title' => 'EPUB',
+                ],
+            ],
+            'category' => $categories,
+            'author' => $authors,
+            'dcterms:issued' => $entry->published()?->format('Y-m-d'),
+            'published' => $entry->published()?->format('Y-m-d H:i:s'),
+            'volume' => $entry->volume(),
+            'dcterms:language' => $entry->language(),
+        ];
     }
 
     /**

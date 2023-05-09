@@ -10,41 +10,48 @@ use Kiwilan\Opds\Modules\OpdsVersionOneDotTwoModule;
 
 class Opds
 {
-    public string $url;
-
-    public string $title = 'feed';
-
     /**
-     * @var array<string, mixed>
+     * @param  array<string, mixed>  $urlParts
+     * @param  array<string, mixed>  $query
+     * @param  OpdsEntry[]|OpdsEntryBook[]  $entries
      */
-    public array $urlParts = [];
-
-    /**
-     * @var array<string, mixed>
-     */
-    public array $query = [];
-
-    public string $version = '1.2';
-
-    public OpdsApp $app;
-
-    /**
-     * @var OpdsEntry[]|OpdsEntryBook[]
-     */
-    public array $entries = [];
+    protected function __construct(
+        protected ?string $url = null,
+        protected string $title = 'feed',
+        protected string $version = '1.2',
+        protected OpdsApp $app = new OpdsApp(),
+        protected array $urlParts = [],
+        protected array $query = [],
+        protected array $entries = [],
+        protected bool $asString = false,
+        protected bool $isSearch = false,
+    ) {
+    }
 
     /**
      * Create a new instance.
      *
      * @param  string|null  $url Can be null if you want to use the current URL.
+     * @param  OpdsEntry[]|OpdsEntryBook[]  $entries
+     * @param  string  $version Default is `1.2`, query `?version=1.2` can override this.
      */
     public static function response(
         OpdsApp $app = new OpdsApp(),
         array $entries = [],
         string $title = 'feed',
-        ?string $url = null
-    ): OpdsResponse {
-        $engine = new Opds();
+        ?string $url = null,
+        string $version = '1.2',
+        bool $asString = false,
+        bool $isSearch = false,
+    ): OpdsResponse|string {
+        $engine = new self(
+            url: $url,
+            title: $title,
+            app: $app,
+            entries: $entries,
+            asString: $asString,
+            isSearch: $isSearch,
+        );
 
         if ($url) {
             $engine->url = $url;
@@ -53,6 +60,7 @@ class Opds
         }
 
         $engine->urlParts = parse_url($engine->url);
+        $engine->version = $version;
 
         if (array_key_exists('query', $engine->urlParts)) {
             parse_str($engine->urlParts['query'], $query);
@@ -75,6 +83,58 @@ class Opds
 
     public static function currentUrl(): string
     {
-        return (empty($_SERVER['HTTPS']) ? 'http' : 'https')."://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+        return "{$http}://{$host}{$uri}";
+    }
+
+    public function url(): string
+    {
+        return $this->url;
+    }
+
+    public function title(): string
+    {
+        return $this->title;
+    }
+
+    public function version(): string
+    {
+        return $this->version;
+    }
+
+    public function app(): OpdsApp
+    {
+        return $this->app;
+    }
+
+    public function urlParts(): array
+    {
+        return $this->urlParts;
+    }
+
+    public function query(): array
+    {
+        return $this->query;
+    }
+
+    /**
+     * @return  OpdsEntry[]|OpdsEntryBook[]
+     */
+    public function entries(): array
+    {
+        return $this->entries;
+    }
+
+    public function asString(): bool
+    {
+        return $this->asString;
+    }
+
+    public function isSearch(): bool
+    {
+        return $this->isSearch;
     }
 }
