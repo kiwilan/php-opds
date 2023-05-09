@@ -153,7 +153,7 @@ class OpdsController
 
 ### Real world example
 
-> **Info**
+> **Information**
 > This example use Laravel but you could use `kiwilan/php-opds` with any PHP framework.
 
 You could create a file like `OpdsConfig.php` to store all your OPDS configuration.
