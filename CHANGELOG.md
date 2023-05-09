@@ -2,6 +2,11 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## 0.1.30 - 2023-05-09
+
+- add pagination feature, see `usePagination` and `maxItemsPerPage` in `OpdsApp`
+- add `OpdsApp` property: `iconUrl`
+
 ## 0.1.21 - 2023-05-09
 
 - search template fixing
