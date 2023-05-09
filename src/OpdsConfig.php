@@ -15,7 +15,7 @@ class OpdsConfig
         protected ?string $searchUrl = null,
         protected ?DateTime $updated = null,
         protected bool $usePagination = true,
-        protected int $maxItemsPerPage = 15,
+        protected int $maxItemsPerPage = 32,
     ) {
     }
 

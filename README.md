@@ -92,7 +92,7 @@ new OpdsConfig(
   searchUrl: 'https://example.com/opds/search',
   updated: new DateTime(),
   usePagination: true,
-  maxItemsPerPage: 15,
+  maxItemsPerPage: 32,
 );
 ```
 
