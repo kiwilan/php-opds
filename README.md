@@ -14,13 +14,13 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 
 ## Supported versions
 
-| Version | Latest | Draft |       Date        |
-| :-----: | :----: | :---: | :---------------: |
-|   0.9   |        |       |   May 25, 2010    |
-|   1.0   |        |       |  August 30, 2010  |
-|   1.1   |        |       |   June 27, 2011   |
-|   1.2   |   ✅   |       | November 11, 2018 |
-|   2.0   |        |  ✅   |                   |
+| Version | Supported | Latest | Draft |       Date        |
+| :-----: | :-------: | :----: | :---: | :---------------: |
+|   0.9   |    ❌     |        |       |   May 25, 2010    |
+|   1.0   |    ❌     |        |       |  August 30, 2010  |
+|   1.1   |    ❌     |        |       |   June 27, 2011   |
+|   1.2   |    ✅     |   ✅   |       | November 11, 2018 |
+|   2.0   |    ❌     |        |  ✅   |                   |
 
 ## Requirements
 
