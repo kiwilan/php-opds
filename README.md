@@ -18,6 +18,8 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 
 OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks between libraries, bookstores, publishers, and readers. Developed by Hadrien Gardeur and Leonard Richardson.
 
+This package has been created to be used with [bookshelves-project/bookshelves](https://github.com/bookshelves-project/bookshelves), an open source eBook web app.
+
 > The Open Publication Distribution System (OPDS) catalog format is a syndication format for electronic publications based on Atom and HTTP. OPDS catalogs enable the aggregation, distribution, discovery, and acquisition of electronic publications. OPDS catalogs use existing or emergent open standards and conventions, with a priority on simplicity.
 >
 > The Open Publication Distribution System specification is prepared by an informal grouping of partners, combining Internet Archive, O'Reilly Media, Feedbooks, OLPC, and others.
@@ -38,9 +40,9 @@ OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks b
 
 -   [opds.io](https://opds.io/): OPDS official website
 -   [thorium-reader](https://github.com/edrlab/thorium-reader): test OPDS feed with Thorium Reader
--   OPDS feeds examples:
-    -   [gallica.bnf.fr](https://gallica.bnf.fr/opds)
-    -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php)
+-   OPDS feeds examples
+    -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
+    -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
 
 ## Installation
 
