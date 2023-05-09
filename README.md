@@ -16,6 +16,24 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 
 -   PHP >= 8.1
 
+## About
+
+OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks between libraries, bookstores, publishers, and readers. Developed by Hadrien Gardeur and Leonard Richardson.
+
+> The Open Publication Distribution System (OPDS) catalog format is a syndication format for electronic publications based on Atom and HTTP. OPDS catalogs enable the aggregation, distribution, discovery, and acquisition of electronic publications. OPDS catalogs use existing or emergent open standards and conventions, with a priority on simplicity.
+>
+> The Open Publication Distribution System specification is prepared by an informal grouping of partners, combining Internet Archive, O'Reilly Media, Feedbooks, OLPC, and others.
+>
+> From [Wikipedia](https://en.wikipedia.org/wiki/Open_Publication_Distribution_System)
+
+### Resources
+
+-   [opds.io](https://opds.io/): OPDS official website
+
+## Features
+
+-   [x] OPDS 1.2
+
 ## Installation
 
 You can install the package via composer:
