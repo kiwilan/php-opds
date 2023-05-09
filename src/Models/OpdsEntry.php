@@ -12,7 +12,7 @@ class OpdsEntry
         protected string $route,
         protected ?string $summary = null,
         protected ?string $media = null,
-        protected ?DateTime $updated = null,
+        protected DateTime|string|null $updated = null,
     ) {
         if ($summary) {
             $this->summary = strip_tags($summary);
@@ -45,7 +45,7 @@ class OpdsEntry
         return $this->media;
     }
 
-    public function updated(): ?DateTime
+    public function updated(): DateTime|string|null
     {
         return $this->updated;
     }

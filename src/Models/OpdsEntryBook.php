@@ -16,12 +16,12 @@ class OpdsEntryBook extends OpdsEntry
         protected string $route,
         protected ?string $summary = null,
         protected ?string $media = null,
-        protected ?DateTime $updated = null,
+        protected DateTime|string|null $updated = null,
         protected ?string $download = null,
         protected ?string $mediaThumbnail = null,
         protected array $categories = [],
         protected array $authors = [],
-        protected ?DateTime $published = null,
+        protected DateTime|string|null $published = null,
         protected ?int $volume = null,
         protected ?string $serie = null,
         protected ?string $language = null,
@@ -62,7 +62,7 @@ class OpdsEntryBook extends OpdsEntry
         return $this->authors;
     }
 
-    public function published(): ?DateTime
+    public function published(): DateTime|string|null
     {
         return $this->published;
     }
