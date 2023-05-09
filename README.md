@@ -12,16 +12,6 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
-## Supported versions
-
-| Version | Supported | Latest | Draft |       Date        |
-| :-----: | :-------: | :----: | :---: | :---------------: |
-|   0.9   |    ❌     |        |       |   May 25, 2010    |
-|   1.0   |    ❌     |        |       |  August 30, 2010  |
-|   1.1   |    ❌     |        |       |   June 27, 2011   |
-|   1.2   |    ✅     |   ✅   |       | November 11, 2018 |
-|   2.0   |    ❌     |        |  ✅   |                   |
-
 ## Requirements
 
 -   PHP >= 8.1
@@ -36,17 +26,23 @@ OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks b
 >
 > From [Wikipedia](https://en.wikipedia.org/wiki/Open_Publication_Distribution_System)
 
+### Supported versions
+
+| Version | Supported | Latest | Draft |       Date        |
+| :-----: | :-------: | :----: | :---: | :---------------: |
+|   0.9   |    ❌     |        |       |   May 25, 2010    |
+|   1.0   |    ❌     |        |       |  August 30, 2010  |
+|   1.1   |    ❌     |        |       |   June 27, 2011   |
+|   1.2   |    ✅     |   ✅   |       | November 11, 2018 |
+|   2.0   |    ❌     |        |  ✅   |                   |
+
 ### Resources
 
 -   [opds.io](https://opds.io/): OPDS official website
 -   [thorium-reader](https://github.com/edrlab/thorium-reader): test OPDS feed with Thorium Reader
 -   OPDS feeds examples:
-    -   https://gallica.bnf.fr/opds
-    -   cops-demo.slucas.fr/feed.php
-
-## Features
-
--   [x] OPDS 1.2
+    -   [gallica.bnf.fr](https://gallica.bnf.fr/opds)
+    -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php)
 
 ## Installation
 
