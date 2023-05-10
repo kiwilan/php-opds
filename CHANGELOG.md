@@ -2,7 +2,19 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
-## 0.4.0 - draft
+## 1.0.0 - draft
+
+### BREAKING CHANGES
+
+-   `Opds::response()` is now `Opds::make()` and `response()` is now a direct method:
+
+```php
+$opds = Opds::make();
+
+return $opds->response();
+```
+
+### Added
 
 -   add ODPS 2.0 support
 
