@@ -14,6 +14,8 @@ $opds = Opds::make();
 return $opds->response();
 ```
 
+-   `entries` options is now `feeds`
+
 ### Added
 
 -   add ODPS 2.0 support
