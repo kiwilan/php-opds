@@ -39,3 +39,30 @@ function isXMLContentValid($xmlContent, $version = '1.0', $encoding = 'utf-8')
 
     return empty($errors);
 }
+
+function isValidXml(string $content): bool
+{
+    $content = trim($content);
+
+    if (empty($content)) {
+        return false;
+    }
+
+    if (false !== stripos($content, '<!DOCTYPE html>')) {
+        return false;
+    }
+
+    libxml_use_internal_errors(true);
+    simplexml_load_string($content);
+    $errors = libxml_get_errors();
+    libxml_clear_errors();
+
+    return empty($errors);
+}
+
+function isValidJson(string $content): bool
+{
+    json_decode($content);
+
+    return JSON_ERROR_NONE === json_last_error();
+}

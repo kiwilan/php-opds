@@ -4,25 +4,18 @@ namespace Kiwilan\Opds\Modules;
 
 use Kiwilan\Opds\Converters\OpdsXmlConverter;
 use Kiwilan\Opds\Opds;
-use Kiwilan\Opds\OpdsResponse;
 
 /**
  * OPDS 1.2 Module
  *
  * @docs https://specs.opds.io/opds-1.2
  */
-class Opds1Dot2Module
+class Opds1Dot2Module extends OpdsModule
 {
-    protected function __construct(
-        protected Opds $opds,
-    ) {
-    }
-
-    public static function response(Opds $opds): OpdsResponse|string
+    public static function make(Opds $opds): string
     {
-        $self = new Opds1Dot2Module($opds);
-        $xml = OpdsXmlConverter::make($self->opds);
+        $self = new self($opds);
 
-        return OpdsResponse::xml($xml, $self->opds->asString());
+        return OpdsXmlConverter::make($self->opds);
     }
 }

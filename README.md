@@ -10,6 +10,14 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
+| Version | Supported | Latest | Draft |       Date        |  Planned  |
+| :-----: | :-------: | :----: | :---: | :---------------: | :-------: |
+|   0.9   |    ❌     |        |       |   May 25, 2010    |    ❌     |
+|   1.0   |    ❌     |        |       |  August 30, 2010  |    ❌     |
+|   1.1   |    ❌     |        |       |   June 27, 2011   |    ❌     |
+|   1.2   |    ✅     |   ✅   |       | November 11, 2018 | Supported |
+|   2.0   |    ❌     |        |  ✅   |                   |    ✅     |
+
 ## Requirements
 
 -   PHP >= 8.1
@@ -26,21 +34,11 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 >
 > From [Wikipedia](https://en.wikipedia.org/wiki/Open_Publication_Distribution_System)
 
-### Supported versions
-
-| Version | Supported | Latest | Draft |       Date        |
-| :-----: | :-------: | :----: | :---: | :---------------: |
-|   0.9   |    ❌     |        |       |   May 25, 2010    |
-|   1.0   |    ❌     |        |       |  August 30, 2010  |
-|   1.1   |    ❌     |        |       |   June 27, 2011   |
-|   1.2   |    ✅     |   ✅   |       | November 11, 2018 |
-|   2.0   |    ❌     |        |  ✅   |                   |
-
 ### Resources
 
 -   [opds.io](https://opds.io/): OPDS official website
 -   [thorium-reader](https://github.com/edrlab/thorium-reader): test OPDS feed with Thorium Reader
--   OPDS feeds examples
+-   OPDS feeds examples (these projects don't use `kiwilan/php-opds`)
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
 
@@ -56,7 +54,13 @@ composer require kiwilan/php-opds
 
 ### Response
 
-You can use the `Opds::response()` method to create an OPDS response, default response is XML with OPDS version 1.2.
+You can use the `Opds::make()` method to create an OPDS response, default response is XML with OPDS version 1.2.
+
+> **Note**
+>
+> You can use the `OpdsVersionEnum` to set the OPDS version statically or use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
+>
+> -   Version `1.2` can be set with `?version=1.2`
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -67,9 +71,9 @@ class OpdsController
 {
   public function index()
   {
-    return Opds::response(
+    return Opds::make(
       config: new OpdsConfig(),
-      entries: [], // OpdsEntry[]|OpdsEntryBook[]
+      feeds: [], // OpdsEntry[]|OpdsEntryBook[]
       title: 'My feed',
       url: 'https://example.com/opds', // Can be null to be set automatically
       version: OpdsVersionEnum::v1_2, // OPDS version
@@ -90,6 +94,7 @@ new OpdsConfig(
   iconUrl: 'https://example.com/icon.png',
   startUrl: 'https://example.com/opds',
   searchUrl: 'https://example.com/opds/search',
+  searchQuery: 'q',
   updated: new DateTime(),
   usePagination: true,
   maxItemsPerPage: 32,
@@ -111,7 +116,7 @@ class OpdsController
 {
   public function index()
   {
-    return Opds::response(
+    return Opds::make(
       config: new OpdsConfig(
         name: 'My OPDS Catalog',
         author: 'John Doe',
@@ -120,7 +125,7 @@ class OpdsController
         searchUrl: 'https://example.com/opds/search',
         updated: new DateTime(),
       ),
-      entries: [
+      feeds: [
         new OpdsEntry(
           id: 'authors',
           title: 'Authors',
@@ -143,7 +148,7 @@ class OpdsController
 
   public function books()
   {
-    return Opds::response(
+    return Opds::make(
       config: new OpdsConfig(
         name: 'My OPDS Catalog',
         author: 'John Doe',
@@ -152,7 +157,7 @@ class OpdsController
         searchUrl: 'https://example.com/opds/search',
         updated: new DateTime(),
       ),
-      entries: [
+      feeds: [
         new OpdsEntryBook(
           id: 'the-clan-of-the-cave-bear-epub-en',
           title: 'The Clan of the Cave Bear',
@@ -184,6 +189,7 @@ class OpdsController
 ### Real world example
 
 > **Note**
+>
 > This example use Laravel but you could use `kiwilan/php-opds` with any PHP framework.
 
 You could create a file like `MyOpds.php` to store all your OPDS configuration.
@@ -323,9 +329,9 @@ class IndexController extends Controller
 {
     public function index()
     {
-        return Opds::response(
+        return Opds::make(
             config: MyOpds::config(),
-            entries: MyOpds::home(),
+            feeds: MyOpds::home(),
         );
     }
 
@@ -334,16 +340,16 @@ class IndexController extends Controller
         $query = $request->input('q');
         $search = SearchEngine::make(q: $query, relevant: false, opds: true, types: ['books']);
 
-        $entries = [];
+        $feeds = [];
 
         foreach ($search->results_opds as $result) {
             /** @var Book $result */
-            $entries[] = MyOpds::bookToEntry($result);
+            $feeds[] = MyOpds::bookToEntry($result);
         }
 
-        return Opds::response(
+        return Opds::make(
             config: MyOpds::config(),
-            entries: $entries,
+            feeds: $feeds,
             title: "Search for {$query}",
             isSearch: true,
         );
@@ -377,9 +383,9 @@ class BookController extends Controller
             ->firstOrFail()
         ;
 
-        return Opds::response(
+        return Opds::make(
             config: MyOpds::config(),
-            entries: [
+            feeds: [
                 MyOpds::bookToEntry($book),
             ],
             title: "Book {$book->title}",

@@ -11,7 +11,7 @@ class Opds
     /**
      * @param  array<string, mixed>  $urlParts
      * @param  array<string, mixed>  $query
-     * @param  OpdsEntry[]|OpdsEntryBook[]  $entries
+     * @param  OpdsEntry[]|OpdsEntryBook[]  $feeds
      */
     protected function __construct(
         protected ?string $url = null,
@@ -20,35 +20,33 @@ class Opds
         protected OpdsConfig $config = new OpdsConfig(),
         protected array $urlParts = [],
         protected array $query = [],
-        protected array $entries = [],
-        protected bool $asString = false,
+        protected array $feeds = [],
         protected bool $isSearch = false,
+        protected ?string $module = null,
     ) {
     }
 
     /**
      * Create a new instance.
      *
-     * @param  string|null  $url Can be null if you want to use the current URL.
-     * @param  OpdsEntry[]|OpdsEntryBook[]  $entries
+     * @param  OpdsConfig  $config Default is `new OpdsConfig()` with basic configuration.
+     * @param  OpdsEntry[]|OpdsEntryBook[]  $feeds Navigation Feeds or Acquisition Feeds.
+     * @param  string  $title Title of current OPDS, default is `feed`.
+     * @param  string|null  $url Can be null if you want to use the current URL (useful for testing).
      * @param  OpdsVersionEnum  $version Default is `v1_2`, query `?version=1.2` can override this.
      */
-    public static function response(
+    public static function make(
         OpdsConfig $config = new OpdsConfig(),
-        array $entries = [],
+        array $feeds = [],
         string $title = 'feed',
         ?string $url = null,
         OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
-        bool $asString = false,
-        bool $isSearch = false,
-    ): OpdsResponse|string {
+    ): self {
         $engine = new self(
             url: $url,
             title: $title,
             config: $config,
-            entries: $entries,
-            asString: $asString,
-            isSearch: $isSearch,
+            feeds: $feeds,
         );
 
         if ($url) {
@@ -65,7 +63,7 @@ class Opds
             $engine->query = $query;
 
             if (array_key_exists('version', $query)) {
-                $queryVersion = OpdsVersionEnum::tryFrom($query['version']);
+                $queryVersion = OpdsVersionEnum::tryFrom($query[$engine->config->versionQuery()]);
                 if ($queryVersion) {
                     $engine->version = $queryVersion;
                 }
@@ -74,11 +72,24 @@ class Opds
 
         $engine->title = $title;
         $engine->config = $config;
-        $engine->entries = $entries;
+        $engine->feeds = $feeds;
+        if ($engine->config->searchUrl() && str_starts_with($engine->url, $engine->config->searchUrl())) {
+            $engine->isSearch = true;
+        }
 
-        return match ($engine->version) {
-            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::response($engine),
+        $engine->module = match ($engine->version) {
+            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($engine),
         };
+
+        return $engine;
+    }
+
+    /**
+     * @param  bool  $asString Default is `false`, if `true` then return as string. Useful for testing, `false` will create XML or JSON response.
+     */
+    public function response(bool $asString = false)
+    {
+        return OpdsResponse::make($this->module, 200, $asString);
     }
 
     public static function currentUrl(): string
@@ -123,14 +134,9 @@ class Opds
     /**
      * @return  OpdsEntry[]|OpdsEntryBook[]
      */
-    public function entries(): array
+    public function feeds(): array
     {
-        return $this->entries;
-    }
-
-    public function asString(): bool
-    {
-        return $this->asString;
+        return $this->feeds;
     }
 
     public function isSearch(): bool
