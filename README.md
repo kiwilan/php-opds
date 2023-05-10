@@ -10,13 +10,13 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
-| Version | Supported | Latest | Draft |       Date        |  Planned  |
-| :-----: | :-------: | :----: | :---: | :---------------: | :-------: |
-|   0.9   |    ❌     |        |       |   May 25, 2010    |    ❌     |
-|   1.0   |    ❌     |        |       |  August 30, 2010  |    ❌     |
-|   1.1   |    ❌     |        |       |   June 27, 2011   |    ❌     |
-|   1.2   |    ✅     |   ✅   |       | November 11, 2018 | Supported |
-|   2.0   |    ❌     |        |  ✅   |                   |    ✅     |
+| Version | Supported | Latest | Draft |       Date        |  Planned  | Format |
+| :-----: | :-------: | :----: | :---: | :---------------: | :-------: | :----: |
+|   0.9   |    ❌     |        |       |   May 25, 2010    |    ❌     |  XML   |
+|   1.0   |    ❌     |        |       |  August 30, 2010  |    ❌     |  XML   |
+|   1.1   |    ❌     |        |       |   June 27, 2011   |    ❌     |  XML   |
+|   1.2   |    ✅     |   ✅   |       | November 11, 2018 | Supported |  XML   |
+|   2.0   |    ❌     |        |  ✅   |                   |    ✅     |  JSON  |
 
 ## Requirements
 
