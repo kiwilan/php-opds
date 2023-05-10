@@ -61,8 +61,11 @@ You can use the `Opds::make()` method to create an OPDS response, default respon
 > You can use the `OpdsVersionEnum` to set the OPDS version statically or use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
 >
 > -   Version `1.2` can be set with `?version=1.2`
+> -   Version `2.0` can be set with `?version=2.0`
 
 ```php
+<?php
+
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\OpdsVersionEnum;
@@ -85,6 +88,8 @@ class OpdsController
 ```
 
 ```php
+<?php
+
 use Kiwilan\Opds\OpdsConfig;
 
 new OpdsConfig(
@@ -106,6 +111,8 @@ new OpdsConfig(
 Example of a simple OPDS feed into controller (like Laravel).
 
 ```php
+<?php
+
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\Entries\OpdsEntry;
