@@ -24,7 +24,7 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 
 ## About
 
-OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks between libraries, bookstores, publishers, and readers. Developed by Hadrien Gardeur and Leonard Richardson.
+OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks between libraries, bookstores, publishers, and readers. Developed by [Hadrien Gardeur](https://github.com/HadrienGardeur) and [Leonard Richardson](https://github.com/leonardr).
 
 This package has been created to be used with [bookshelves-project/bookshelves](https://github.com/bookshelves-project/bookshelves), an open source eBook web app.
 
