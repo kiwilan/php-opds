@@ -1,4 +1,4 @@
-name: Tests
+name: Codecov
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  test:
+  codecov:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
