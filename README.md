@@ -10,6 +10,10 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
+<p align="center">
+  <img src="tests/media/banner.jpg" style="width: 80%;" alt="Banner with OPDS draw in background and PHP OPDS title" />
+</p>
+
 | Version | Supported | Latest | Draft |       Date        |  Planned  | Format |
 | :-----: | :-------: | :----: | :---: | :---------------: | :-------: | :----: |
 |   0.9   |    ❌     |        |       |   May 25, 2010    |    ❌     |  XML   |
