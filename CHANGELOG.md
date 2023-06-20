@@ -2,24 +2,6 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
-## 1.0.0 - draft
-
-### BREAKING CHANGES
-
--   `Opds::response()` is now `Opds::make()` and `response()` is now a direct method:
-
-```php
-$opds = Opds::make();
-
-return $opds->response();
-```
-
--   `entries` options is now `feeds`
-
-### Added
-
--   add ODPS 2.0 support
-
 ## 0.3.11 - 2023-05-09
 
 -   `media` mime type fix
@@ -36,11 +18,7 @@ return $opds->response();
 ## 0.2.0 - 2023-05-09
 
 -   `OpdsApp` is now `OpdsConfig`
--   -   `Opds` property `app` is now `config`
--
--
--
--
+    -   `Opds` property `app` is now `config`
 -   `OpdsEntry`, `OpdsEntryBook`, `OpdsEntryBookAuthor` has now namespace `Kiwilan\Opds\Entries`
 -   `OpdsXmlConverter` is has now one static method
 
