@@ -1,10 +1,11 @@
 # PHP OPDS
 
+![Banner with woman with eReader picture in background and PHP OPDS title](docs/banner.jpg)
+
 [![php][php-version-src]][php-version-href]
 [![version][version-src]][version-href]
 [![downloads][downloads-src]][downloads-href]
 [![license][license-src]][license-href]
-
 [![tests][tests-src]][tests-href]
 [![codecov][codecov-src]][codecov-href]
 
