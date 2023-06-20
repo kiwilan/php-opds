@@ -2,6 +2,11 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## 0.3.12 - 2023-05-09
+
+- Change default pagination from `15` to `32`
+- Add more characters for `content` property of `OpdsEntryBook`
+
 ## 0.3.11 - 2023-05-09
 
 -   `media` mime type fix
