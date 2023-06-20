@@ -11,10 +11,12 @@ class OpdsEntry
         protected string $title,
         protected string $route,
         protected ?string $summary = null,
+        protected ?string $content = null,
         protected ?string $media = null,
         protected DateTime|string|null $updated = null,
     ) {
         $this->summary = OpdsEntry::handleContent($this->summary);
+        $this->content = OpdsEntry::handleContent($this->content, 500, false);
     }
 
     public function id(): string
@@ -35,6 +37,11 @@ class OpdsEntry
     public function summary(): ?string
     {
         return $this->summary;
+    }
+
+    public function content(): ?string
+    {
+        return $this->content;
     }
 
     public function media(): ?string

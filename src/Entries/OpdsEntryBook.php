@@ -32,16 +32,11 @@ class OpdsEntryBook extends OpdsEntry
             title: $title,
             route: $route,
             summary: $summary,
+            content: $content,
             media: $media,
             updated: $updated,
         );
 
-        $this->content = OpdsEntry::handleContent($this->content, 500, false);
-    }
-
-    public function content(): ?string
-    {
-        return $this->content;
     }
 
     public function download(): ?string

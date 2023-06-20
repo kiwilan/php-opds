@@ -6,16 +6,11 @@ use DateTime;
 use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsConfig;
 use Spatie\ArrayToXml\ArrayToXml;
-use Transliterator;
 
-class OpdsXmlConverter
+class OpdsXmlConverter extends OpdsConverter
 {
-    protected function __construct(
-        protected Opds $opds,
-    ) {
-    }
-
     public static function make(Opds $opds): string
     {
         $self = new self($opds);
@@ -31,8 +26,8 @@ class OpdsXmlConverter
     {
         $title = $this->opds->title();
 
-        $id = self::slug($this->opds->config()->name());
-        $id .= ':'.self::slug($title);
+        $id = OpdsConfig::slug($this->opds->config()->name());
+        $id .= ':'.OpdsConfig::slug($title);
 
         $feedTitle = "{$this->opds->config()->name()} OPDS";
         $feedTitle .= ': '.ucfirst(strtolower($title));
@@ -89,12 +84,12 @@ class OpdsXmlConverter
             ];
         }
 
-        $entries = $this->opds->entries();
+        $feeds = $this->opds->feeds();
         $paginate = $this->opds->config()->usePagination();
         $perPage = $this->opds->config()->maxItemsPerPage();
         $page = 1;
 
-        if ($paginate && count($entries) > $perPage) {
+        if ($paginate && count($feeds) > $perPage) {
             $current = Opds::currentUrl();
 
             if (str_contains($current, '?')) {
@@ -104,10 +99,10 @@ class OpdsXmlConverter
             $queryStartRecord = $this->opds->query()['startRecord'] ?? 0;
             $queryStartRecord = intval($queryStartRecord);
 
-            $count = count($entries);
+            $count = count($feeds);
             $pageNumbers = intval(ceil($count / $perPage));
             $start = $this->opds->query()['startRecord'] ?? $page - 1;
-            $entries = array_slice($entries, $start, $perPage);
+            $feeds = array_slice($feeds, $start, $perPage);
 
             $first = $this->opds->query()['startRecord'] ?? 0;
             $last = ($perPage * $pageNumbers) - $perPage;
@@ -178,12 +173,12 @@ class OpdsXmlConverter
                     ],
                 ];
             }
-            $feed['opensearch:totalResults'] = count($this->opds->entries());
+            $feed['opensearch:totalResults'] = count($this->opds->feeds());
             $feed['opensearch:itemsPerPage'] = $perPage;
             $feed['opensearch:startIndex'] = $startRecord === 0 ? 1 : $start;
         }
 
-        foreach ($entries as $entry) {
+        foreach ($feeds as $entry) {
             if ($entry instanceof OpdsEntryBook) {
                 $feed['entry'][] = $this->entryBook($entry);
             } else {
@@ -206,14 +201,15 @@ class OpdsXmlConverter
     {
         $date = new DateTime();
         $date = $date->format('Y-m-d H:i:s');
+        $searchQuery = $this->opds->config()->searchQuery();
 
         $feed_links = [
             'xmlns' => 'http://a9.com/-/spec/opensearch/1.1/',
         ];
-        $app = self::slug($this->opds->config()->name());
+        $app = OpdsConfig::slug($this->opds->config()->name());
 
-        $query = $this->opds->query()['q'] ?? null;
-        $searchURL = $this->opds->config()->searchUrl().'?q={searchTerms}';
+        $query = $this->opds->query()[$searchQuery] ?? null;
+        $searchURL = $this->opds->config()->searchUrl().'?'.$searchQuery.'={searchTerms}';
 
         $feed = [
             'ShortName' => [
@@ -236,21 +232,6 @@ class OpdsXmlConverter
                 ],
                 '_value' => $this->opds->config()->authorUrl().'/favicon.ico',
             ],
-            // '__custom:Url:1' => [
-            //     '_attributes' => [
-            //         // 'template' => 'http://gallica.bnf.fr/services/engine/search/sru?operation=searchRetrieve&version=1.2&query=(gallica%20all%20%22{searchTerms}%22)',
-            //         'template' => route('opds.search', ['version' => $version, 'q' => '{searchTerms}']),
-            //         'type' => 'text/html',
-            //     ],
-            // ],
-            // '__custom:Url:2' => [
-            //     '_attributes' => [
-            //         // 'template' => 'http://gallica.bnf.fr/services/engine/search/openSearchSuggest?typedoc=&query={searchTerms}',
-            //         'template' => route('opds.search', ['version' => $version, 'q' => '{searchTerms}']),
-            //         'type' => 'application/x-suggestions+json',
-            //         'rel' => 'suggestions',
-            //     ],
-            // ],
             '__custom:Url:3' => [
                 '_attributes' => [
                     // 'template' => 'http://gallica.bnf.fr/assets/static/opensearchdescription.xml',
@@ -289,10 +270,12 @@ class OpdsXmlConverter
         ];
 
         if ($query) {
-            return Opds::response(
+            $opds = Opds::make(
                 config: $this->opds->config(),
-                entries: $this->opds->entries(),
+                feeds: $this->opds->feeds(),
             );
+
+            return $opds->response();
         }
 
         return ArrayToXml::convert(
@@ -308,7 +291,7 @@ class OpdsXmlConverter
 
     public function entry(OpdsEntry $entry): array
     {
-        $app = self::slug($this->opds->config()->name());
+        $app = OpdsConfig::slug($this->opds->config()->name());
 
         return [
             'title' => $entry->title(),
@@ -319,6 +302,12 @@ class OpdsXmlConverter
                     'type' => 'text',
                 ],
                 '_value' => $entry->summary(),
+            ],
+            'content' => [
+                '_attributes' => [
+                    'type' => 'text',
+                ],
+                '_value' => strip_tags($entry->content()),
             ],
             '__custom:link:1' => [
                 '_attributes' => [
@@ -338,10 +327,10 @@ class OpdsXmlConverter
 
     public function entryBook(OpdsEntryBook $entry): array
     {
-        $app = self::slug($this->opds->config()->name());
+        $app = OpdsConfig::slug($this->opds->config()->name());
         $id = $app.':books:';
-        $id .= $entry->serie() ? self::slug($entry->serie()).':' : null;
-        $id .= self::slug($entry->title());
+        $id .= $entry->serie() ? OpdsConfig::slug($entry->serie()).':' : null;
+        $id .= OpdsConfig::slug($entry->title());
 
         $authors = [];
         $categories = [];
@@ -428,41 +417,5 @@ class OpdsXmlConverter
             'volume' => $entry->volume(),
             'dcterms:language' => $entry->language(),
         ];
-    }
-
-    /**
-     * Laravel export
-     * Generate a URL friendly "slug" from a given string.
-     *
-     * @param  array<string, string>  $dictionary
-     */
-    public static function slug(?string $title, string $separator = '-', array $dictionary = ['@' => 'at']): ?string
-    {
-        if (! $title) {
-            return null;
-        }
-
-        $transliterator = Transliterator::createFromRules(':: Any-Latin; :: Latin-ASCII; :: NFD; :: [:Nonspacing Mark:] Remove; :: Lower(); :: NFC;', Transliterator::FORWARD);
-        $title = $transliterator->transliterate($title);
-
-        // Convert all dashes/underscores into separator
-        $flip = $separator === '-' ? '_' : '-';
-
-        $title = preg_replace('!['.preg_quote($flip).']+!u', $separator, $title);
-
-        // Replace dictionary words
-        foreach ($dictionary as $key => $value) {
-            $dictionary[$key] = $separator.$value.$separator;
-        }
-
-        $title = str_replace(array_keys($dictionary), array_values($dictionary), $title);
-
-        // Remove all characters that are not the separator, letters, numbers, or whitespace
-        $title = preg_replace('![^'.preg_quote($separator).'\pL\pN\s]+!u', '', strtolower($title));
-
-        // Replace all separator characters and whitespace by a single separator
-        $title = preg_replace('!['.preg_quote($separator).'\s]+!u', $separator, $title);
-
-        return trim($title, $separator);
     }
 }

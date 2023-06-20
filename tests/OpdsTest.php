@@ -8,33 +8,30 @@ use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\Tests\Utils\XmlReader;
 
 it('is string', function () {
-    $opds = Opds::response(
-        asString: true,
-    );
+    $opds = Opds::make();
+    $res = $opds->response(true);
 
-    expect($opds)->toBeString();
+    expect($res)->toBeString();
 });
 
 it('is valid xml', function () {
-    $opds = Opds::response(
-        asString: true,
-    );
+    $opds = Opds::make();
+    $res = $opds->response(true);
 
-    expect(isXMLContentValid($opds))->toBeTrue();
+    expect(isValidXml($res))->toBeTrue();
 });
 
 it('can be parsed', function () {
-    $opds = Opds::response(
-        asString: true,
-    );
+    $opds = Opds::make();
+    $res = $opds->response(true);
 
-    $xml = XmlReader::toArray($opds);
+    $xml = XmlReader::toArray($res);
     expect($xml)->toBeArray();
 });
 
-it('can be display entries', function () {
-    $opds = Opds::response(
-        entries: [
+it('can be display feeds', function () {
+    $opds = Opds::make(
+        feeds: [
             new OpdsEntry(
                 id: 'authors',
                 title: 'Authors',
@@ -44,22 +41,22 @@ it('can be display entries', function () {
                 updated: new DateTime(),
             ),
         ],
-        asString: true,
     );
+    $res = $opds->response(true);
 
-    $xml = XmlReader::toArray($opds);
+    $xml = XmlReader::toArray($res);
     // dump($xml);
     // expect($xml)->toBeArray();
 
-    expect($opds)->toBeString();
+    expect($res)->toBeString();
 });
 
-it('can be display entries books', function () {
-    $opds = Opds::response(
+it('can be display feeds books', function () {
+    $opds = Opds::make(
         config: new OpdsConfig(
             maxItemsPerPage: 1,
         ),
-        entries: [
+        feeds: [
             new OpdsEntryBook(
                 id: 'the-clan-of-the-cave-bear-epub-1-en',
                 title: 'The Clan of the Cave Bear',
@@ -105,18 +102,18 @@ it('can be display entries books', function () {
                 language: 'English',
             ),
         ],
-        asString: true,
     );
+    $res = $opds->response(true);
 
     // $xml = XmlReader::toArray($opds);
     // expect($xml)->toBeArray();
 
-    expect($opds)->toBeString();
+    expect($res)->toBeString();
 });
 
 it('can search', function () {
-    $opds = Opds::response(
-        entries: [
+    $opds = Opds::make(
+        feeds: [
             new OpdsEntryBook(
                 id: 'the-clan-of-the-cave-bear-epub-en',
                 title: 'The Clan of the Cave Bear',
@@ -139,12 +136,11 @@ it('can search', function () {
                 language: 'English',
             ),
         ],
-        asString: true,
-        isSearch: true,
     );
+    $res = $opds->response(true);
 
     // $xml = XmlReader::toArray($opds);
     // expect($xml)->toBeArray();
 
-    expect($opds)->toBeString();
+    expect($res)->toBeString();
 });

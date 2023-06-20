@@ -4,7 +4,7 @@ use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
-dataset('entries', [
+dataset('feeds', [
     new OpdsEntry(
         id: 'authors',
         title: 'Authors',
@@ -15,7 +15,7 @@ dataset('entries', [
     ),
 ]);
 
-dataset('entries-books', [
+dataset('feeds-books', [
     new OpdsEntryBook(
         id: 'the-clan-of-the-cave-bear-1-epub-en',
         title: 'The Clan of the Cave Bear',
