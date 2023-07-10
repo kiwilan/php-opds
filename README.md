@@ -1,6 +1,6 @@
 # PHP OPDS
 
-![Banner with woman with eReader picture in background and PHP OPDS title](docs/banner.jpg)
+![Banner with woman with eReader picture in background and PHP OPDS title](https://github.com/kiwilan/php-opds/docs/banner.jpg)
 
 [![php][php-version-src]][php-version-href]
 [![version][version-src]][version-href]
