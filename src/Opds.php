@@ -39,7 +39,7 @@ class Opds
         OpdsConfig $config = new OpdsConfig(),
         array $feeds = [],
         string $title = 'feed',
-        ?string $url = null,
+        string $url = null,
         OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
     ): self {
         $engine = new self(
