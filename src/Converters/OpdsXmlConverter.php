@@ -15,6 +15,10 @@ class OpdsXmlConverter extends OpdsConverter
     {
         $self = new self($opds);
 
+        // Note: this doesn't account for the case where the initial searchURL is different from
+        // the actual searchURL used in queries, because Opds will not recognize it as isSearch()
+        // Example: COPS uses ?page=8 for the initial OpenSearchDescription, and ?query= or ?page=9&query= for actual queries
+        // Work-around is possible e.g. by changing COPS to check for /search in PATH_INFO
         if ($self->opds->isSearch()) {
             return $self->search();
         }
@@ -33,7 +37,7 @@ class OpdsXmlConverter extends OpdsConverter
         $feedTitle .= ': '.ucfirst(strtolower($title));
 
         $date = $this->opds->config()->updated() ?? new DateTime();
-        $date = $date->format('Y-m-d H:i:s');
+        $date = $date->format(DATE_ATOM);
 
         $specs = [
             'xmlns:app' => 'http://www.w3.org/2007/app',
@@ -200,7 +204,7 @@ class OpdsXmlConverter extends OpdsConverter
     public function search(): string
     {
         $date = new DateTime();
-        $date = $date->format('Y-m-d H:i:s');
+        $date = $date->format(DATE_ATOM);
         $searchQuery = $this->opds->config()->searchQuery();
 
         $feed_links = [
@@ -209,7 +213,12 @@ class OpdsXmlConverter extends OpdsConverter
         $app = OpdsConfig::slug($this->opds->config()->name());
 
         $query = $this->opds->query()[$searchQuery] ?? null;
-        $searchURL = $this->opds->config()->searchUrl().'?'.$searchQuery.'={searchTerms}';
+        $searchURL = $this->opds->config()->searchUrl();
+        if (str_contains($searchURL, '?')) {
+            $searchURL .= '&'.$searchQuery.'={searchTerms}';
+        } else {
+            $searchURL .= '?'.$searchQuery.'={searchTerms}';
+        }
 
         $feed = [
             'ShortName' => [
@@ -295,7 +304,7 @@ class OpdsXmlConverter extends OpdsConverter
 
         return [
             'title' => $entry->title(),
-            'updated' => $entry->updated()?->format('Y-m-d H:i:s'),
+            'updated' => $entry->updated()?->format(DATE_ATOM),
             'id' => "{$app}:{$entry->id()}",
             'summary' => [
                 '_attributes' => [
@@ -359,16 +368,22 @@ class OpdsXmlConverter extends OpdsConverter
 
         if ($media) {
             $ext = pathinfo($media, PATHINFO_EXTENSION);
-            $mediaMimeType = "image/{$ext}";
+            // The image Resources MUST be in GIF, JPEG, or PNG format.
+            if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
+                $mediaMimeType = "image/{$ext}";
+            }
         }
         if ($mediaThumbnail) {
             $ext = pathinfo($mediaThumbnail, PATHINFO_EXTENSION);
-            $mediaThumbnailMimeType = "image/{$ext}";
+            // The image Resources MUST be in GIF, JPEG, or PNG format.
+            if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
+                $mediaThumbnailMimeType = "image/{$ext}";
+            }
         }
 
         return [
             'title' => $entry->title(),
-            'updated' => $entry->updated()?->format('Y-m-d H:i:s'),
+            'updated' => $entry->updated()?->format(DATE_ATOM),
             'id' => $id,
             'summary' => [
                 '_attributes' => [
@@ -413,8 +428,9 @@ class OpdsXmlConverter extends OpdsConverter
             'category' => $categories,
             'author' => $authors,
             'dcterms:issued' => $entry->published()?->format('Y-m-d'),
-            'published' => $entry->published()?->format('Y-m-d H:i:s'),
-            'volume' => $entry->volume(),
+            'published' => $entry->published()?->format(DATE_ATOM),
+            // Element "volume" not allowed here; expected the element end-tag, element "author", "category", "contributor", "link", "rights" or "source" or an element from another namespace
+            //'volume' => $entry->volume(),
             'dcterms:language' => $entry->language(),
         ];
     }
