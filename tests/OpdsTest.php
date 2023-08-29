@@ -8,10 +8,11 @@ use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\Tests\Utils\XmlReader;
 
 it('is string', function () {
-    $opds = Opds::make();
-    $res = $opds->mockResponse();
+    $opds = Opds::make()
+        ->mockResponse()
+        ->getResponse();
 
-    expect($res)->toBeString();
+    expect($opds->getContent())->toBeString();
 });
 
 it('is valid xml', function () {
@@ -135,6 +136,7 @@ it('can search', function () {
                 language: 'English',
             ),
         ])
+        ->mockResponse()
         ->getResponse();
 
     // $xml = XmlReader::toArray($opds);
