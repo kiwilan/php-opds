@@ -105,27 +105,23 @@ class Opds
 
     /**
      * Mock XML or JSON response (depends on `version`).
-     *
-     * @param  bool  $asString Default is `false`, if `true` then return as string. Useful for testing.
      */
-    public function mockResponse(bool $asString = false): self
+    public function mockResponse(): self
     {
         $this->run();
-        $this->response = OpdsResponse::make($this->engine, 200, $asString);
+        $this->response = OpdsResponse::make($this->engine, 200);
 
         return $this;
     }
 
     /**
      * Get XML or JSON response (depends on `version`).
-     *
-     * @param  bool  $asString Default is `false`, if `true` then return as string. Useful for testing.
      */
-    public function response(bool $asString = false): string
+    public function response(): string
     {
-        $this->mockResponse($asString);
+        $this->mockResponse();
 
-        return $this->response->getResponse();
+        return $this->response->response();
     }
 
     /**
@@ -243,5 +239,13 @@ class Opds
         }
 
         return $this->engine;
+    }
+
+    /**
+     * Get OPDS response.
+     */
+    public function getResponse(): ?OpdsResponse
+    {
+        return $this->response;
     }
 }
