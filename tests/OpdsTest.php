@@ -30,8 +30,8 @@ it('can be parsed', function () {
 });
 
 it('can be display feeds', function () {
-    $opds = Opds::make(
-        feeds: [
+    $opds = Opds::make()
+        ->feeds([
             new OpdsNavigationEntry(
                 id: 'authors',
                 title: 'Authors',
@@ -40,8 +40,7 @@ it('can be display feeds', function () {
                 media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
                 updated: new DateTime(),
             ),
-        ],
-    );
+        ]);
     $res = $opds->response(true);
 
     $xml = XmlReader::toArray($res);
@@ -52,11 +51,8 @@ it('can be display feeds', function () {
 });
 
 it('can be display feeds books', function () {
-    $opds = Opds::make(
-        config: new OpdsConfig(
-            maxItemsPerPage: 1,
-        ),
-        feeds: [
+    $opds = Opds::make(new OpdsConfig(maxItemsPerPage: 1))
+        ->feeds([
             new OpdsEntryBook(
                 id: 'the-clan-of-the-cave-bear-epub-1-en',
                 title: 'The Clan of the Cave Bear',
@@ -101,8 +97,7 @@ it('can be display feeds books', function () {
                 serie: 'Earth\'s Children',
                 language: 'English',
             ),
-        ],
-    );
+        ]);
     $res = $opds->response(true);
 
     // $xml = XmlReader::toArray($opds);
@@ -112,8 +107,8 @@ it('can be display feeds books', function () {
 });
 
 it('can search', function () {
-    $opds = Opds::make(
-        feeds: [
+    $opds = Opds::make()
+        ->feeds([
             new OpdsEntryBook(
                 id: 'the-clan-of-the-cave-bear-epub-en',
                 title: 'The Clan of the Cave Bear',
@@ -135,8 +130,7 @@ it('can search', function () {
                 serie: 'Earth\'s Children',
                 language: 'English',
             ),
-        ],
-    );
+        ]);
     $res = $opds->response(true);
 
     // $xml = XmlReader::toArray($opds);
