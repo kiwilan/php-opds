@@ -33,7 +33,7 @@ class OpdsConfig
         public ?string $searchQuery = 'q',
         public ?string $versionQuery = 'version',
         public ?DateTime $updated = null,
-        public ?bool $usePagination = true,
+        public ?bool $usePagination = false,
         public ?int $maxItemsPerPage = 32,
     ) {
     }

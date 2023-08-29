@@ -4,7 +4,7 @@ namespace Kiwilan\Opds\Entries;
 
 use DateTime;
 
-class OpdsEntryBook extends OpdsEntry
+class OpdsEntryBook extends OpdsNavigationEntry
 {
     /**
      * @param  string[]  $categories

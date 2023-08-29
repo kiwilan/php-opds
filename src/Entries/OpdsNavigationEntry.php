@@ -4,7 +4,7 @@ namespace Kiwilan\Opds\Entries;
 
 use DateTime;
 
-class OpdsEntry
+class OpdsNavigationEntry
 {
     public function __construct(
         protected string $id,
@@ -15,8 +15,8 @@ class OpdsEntry
         protected ?string $media = null,
         protected DateTime|string|null $updated = null,
     ) {
-        $this->summary = OpdsEntry::handleContent($this->summary);
-        $this->content = OpdsEntry::handleContent($this->content, 500, false);
+        $this->summary = OpdsNavigationEntry::handleContent($this->summary);
+        $this->content = OpdsNavigationEntry::handleContent($this->content, 500, false);
     }
 
     public function id(): string

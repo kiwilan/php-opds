@@ -1,11 +1,11 @@
 <?php
 
-use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 
 dataset('feeds', [
-    new OpdsEntry(
+    new OpdsNavigationEntry(
         id: 'authors',
         title: 'Authors',
         route: 'http://localhost:8000/opds/authors',

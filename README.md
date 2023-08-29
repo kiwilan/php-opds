@@ -78,7 +78,7 @@ class OpdsController
   {
     return Opds::make(
       config: new OpdsConfig(),
-      feeds: [], // OpdsEntry[]|OpdsEntryBook[]
+      feeds: [], // OpdsNavigationEntry[]|OpdsEntryBook[]
       title: 'My feed',
       url: 'https://example.com/opds', // Can be null to be set automatically
       version: OpdsVersionEnum::v1_2, // OPDS version
@@ -120,7 +120,7 @@ Example of a simple OPDS feed into controller (like Laravel).
 
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
@@ -138,7 +138,7 @@ class OpdsController
         updated: new DateTime(),
       ),
       feeds: [
-        new OpdsEntry(
+        new OpdsNavigationEntry(
           id: 'authors',
           title: 'Authors',
           route: 'http://localhost:8000/opds/authors',
@@ -146,7 +146,7 @@ class OpdsController
           media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
           updated: new DateTime(),
         ),
-        new OpdsEntry(
+        new OpdsNavigationEntry(
           id: 'series',
           title: 'Series',
           route: 'http://localhost:8000/opds/series',
