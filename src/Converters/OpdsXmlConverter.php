@@ -52,6 +52,14 @@ class OpdsXmlConverter extends OpdsConverter
             $this->xml['__custom:link:3'] = $this->addXmlLink(href: $this->opds->getConfig()->searchUrl, title: 'Search here', rel: 'search');
         }
 
+        if ($this->opds->getConfig()->version1Dot2Url) {
+            $this->xml['__custom:link:4'] = $this->addXmlLink(href: $this->opds->getConfig()->version1Dot2Url, title: 'OPDS 1.2', rel: 'alternate', type: 'application/atom+xml');
+        }
+
+        if ($this->opds->getConfig()->version2Dot0Url) {
+            $this->xml['__custom:link:5'] = $this->addXmlLink(href: $this->opds->getConfig()->version2Dot0Url, title: 'OPDS 2.0', rel: 'alternate', type: 'application/opds+json');
+        }
+
         if ($this->opds->getConfig()->author) {
             $this->xml['author'] = ['name' => $this->opds->getConfig()->author, 'uri' => $this->opds->getConfig()->authorUrl];
         }

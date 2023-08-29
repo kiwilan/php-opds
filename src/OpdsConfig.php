@@ -17,6 +17,8 @@ class OpdsConfig
      * @param  ?string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
      * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
      * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
+     * @param  ?string  $version1Dot2Url OPDS 1.2 URL, for example: `https://example.com/opds/v1.2`.
+     * @param  ?string  $version2Dot0Url OPDS 2.0 URL, for example: `https://example.com/opds/v2.0`.
      * @param  ?string  $searchQuery Search query, for example: `q`, default is `q`.
      * @param  ?string  $versionQuery Version query, for example: `version`, default is `version`.
      * @param  ?OpdsVersionEnum  $version OPDS version, default is `v1Dot2`.
@@ -31,6 +33,8 @@ class OpdsConfig
         public ?string $iconUrl = null,
         public ?string $startUrl = null,
         public ?string $searchUrl = null,
+        public ?string $version1Dot2Url = null,
+        public ?string $version2Dot0Url = null,
         public ?string $searchQuery = 'q',
         public ?string $versionQuery = 'version',
         public ?OpdsVersionEnum $version = null,
