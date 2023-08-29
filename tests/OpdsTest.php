@@ -2,16 +2,17 @@
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\Tests\Utils\XmlReader;
 
 it('is string', function () {
-    $opds = Opds::make();
-    $res = $opds->mockResponse();
+    $opds = Opds::make()
+        ->mockResponse()
+        ->getResponse();
 
-    expect($res)->toBeString();
+    expect($opds->getContent())->toBeString();
 });
 
 it('is valid xml', function () {
@@ -34,7 +35,7 @@ it('can be parsed', function () {
 it('can be display feeds', function () {
     $opds = Opds::make()
         ->feeds([
-            new OpdsNavigationEntry(
+            new OpdsEntryNavigation(
                 id: 'authors',
                 title: 'Authors',
                 route: 'http://localhost:8000/opds/authors',
@@ -135,6 +136,7 @@ it('can search', function () {
                 language: 'English',
             ),
         ])
+        ->mockResponse()
         ->getResponse();
 
     // $xml = XmlReader::toArray($opds);

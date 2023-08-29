@@ -10,12 +10,12 @@ class OpdsEntryBookAuthor
     ) {
     }
 
-    public function name(): string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function uri(): ?string
+    public function getUri(): ?string
     {
         return $this->uri;
     }
@@ -23,8 +23,8 @@ class OpdsEntryBookAuthor
     public function toArray(): array
     {
         return [
-            'name' => $this->name(),
-            'uri' => $this->uri(),
+            'name' => $this->getName(),
+            'uri' => $this->getUri(),
         ];
     }
 }

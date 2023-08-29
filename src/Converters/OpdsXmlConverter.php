@@ -4,7 +4,7 @@ namespace Kiwilan\Opds\Converters;
 
 use Kiwilan\Opds\Converters\Utils\OpdsNamespaces;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Spatie\ArrayToXml\ArrayToXml;
@@ -42,7 +42,7 @@ class OpdsXmlConverter extends OpdsConverter
             $this->xml['icon'] = $this->opds->getConfig()->iconUrl;
         }
 
-        $this->xml['__custom:link:1'] = $this->addXmlLink(href: OpdsConverter::getCurrentUrl(), title: 'self');
+        $this->xml['__custom:link:1'] = $this->addXmlLink(href: OpdsConverter::getCurrentUrl(), title: 'self', rel: 'self');
 
         if ($this->opds->getConfig()->startUrl) {
             $this->xml['__custom:link:2'] = $this->addXmlLink(href: $this->opds->getConfig()->startUrl, title: 'Home', rel: 'start');
@@ -122,113 +122,85 @@ class OpdsXmlConverter extends OpdsConverter
         return $this;
     }
 
-    public function entry(OpdsNavigationEntry $entry): array
+    public function entry(OpdsEntryNavigation $entry): array
     {
         $app = OpdsConfig::slug($this->opds->getConfig()->name);
         $feed = [
-            'title' => $entry->title(),
-            'id' => "{$app}:{$entry->id()}",
-            '__custom:link:1' => [
-                '_attributes' => [
-                    'href' => $entry->route(),
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                ],
-            ],
+            'title' => $entry->getTitle(),
+            'id' => "{$app}:{$entry->getId()}",
+            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute())),
         ];
 
-        if ($entry->updated()) {
-            $feed['updated'] = $entry->updated()->format(DATE_ATOM);
+        if ($entry->getUpdated()) {
+            $feed['updated'] = $entry->getUpdated()->format(DATE_ATOM);
         }
 
-        if ($entry->summary()) {
-            $feed['summary'] = [
-                '_attributes' => [
-                    'type' => 'text',
-                ],
-                '_value' => strip_tags($entry->summary()),
-            ];
+        if ($entry->getSummary()) {
+            $feed['summary'] = $this->addXmlNode(
+                value: strip_tags($entry->getSummary()),
+                attributes: ['type' => 'text']
+            );
         }
 
-        if ($entry->content()) {
-            $feed['content'] = [
-                '_attributes' => [
-                    'type' => 'text/html',
-                ],
-                '_value' => $entry->content(),
-            ];
+        if ($entry->getContent()) {
+            $feed['content'] = $this->addXmlNode(
+                value: $entry->getContent(),
+                attributes: ['type' => 'text/html']
+            );
         }
 
-        if ($entry->media()) {
+        if ($entry->getMedia()) {
             $type = 'unknown';
-            $ext = pathinfo($entry->media(), PATHINFO_EXTENSION);
+            $ext = pathinfo($entry->getMedia(), PATHINFO_EXTENSION);
 
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $type = "image/{$ext}";
             }
 
-            $feed['__custom:link:2'] = [
-                '_attributes' => [
-                    'href' => $entry->media(),
-                    'type' => $type,
-                    'rel' => 'http://opds-spec.org/image/thumbnail',
-                ],
-            ];
+            $feed['__custom:link:2'] = $this->addXmlLink(href: $entry->getMedia(), rel: 'http://opds-spec.org/image/thumbnail', type: $type);
         }
 
         return $feed;
     }
 
-    public function addEntry(OpdsNavigationEntry|OpdsEntryBook $entry): array
-    {
-        if ($entry instanceof OpdsEntryBook) {
-            return $this->addBookEntry($entry);
-        }
-
-        return $this->addNavigationEntry($entry);
-    }
-
-    public function addNavigationEntry(OpdsNavigationEntry $entry): array
+    public function addNavigationEntry(OpdsEntryNavigation $entry): array
     {
         $app = OpdsConfig::slug($this->opds->getConfig()->name);
         $entryXml = [
-            'title' => $entry->title(),
-            'id' => "{$app}:{$entry->id()}",
-            '__custom:link:1' => $this->addXmlLink(href: $entry->route(), title: $entry->title(), rel: 'start'),
+            'title' => $entry->getTitle(),
+            'id' => "{$app}:{$entry->getId()}",
+            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute()), title: $entry->getTitle(), rel: 'start'),
         ];
 
-        if ($entry->updated()) {
-            $entryXml['updated'] = $entry->updated()->format(DATE_ATOM);
+        if ($entry->getUpdated()) {
+            $entryXml['updated'] = $entry->getUpdated()->format(DATE_ATOM);
         }
 
-        if ($entry->summary()) {
-            $entryXml['summary'] = [
-                '_attributes' => [
-                    'type' => 'text',
-                ],
-                '_value' => strip_tags($entry->summary()),
-            ];
+        if ($entry->getSummary()) {
+            $entryXml['summary'] = $this->addXmlNode(
+                value: strip_tags($entry->getSummary()),
+                attributes: ['type' => 'text']
+            );
         }
 
-        if ($entry->content()) {
-            $entryXml['content'] = [
-                '_attributes' => [
-                    'type' => 'text/html',
-                ],
-                '_value' => $entry->content(),
-            ];
+        if ($entry->getContent()) {
+            $entryXml['content'] = $this->addXmlNode(
+                value: $entry->getContent(),
+                attributes: ['type' => 'text/html']
+            );
         }
 
-        if ($entry->media()) {
+        if ($entry->getMedia()) {
             $type = 'unknown';
-            $ext = pathinfo($entry->media(), PATHINFO_EXTENSION);
+            $ext = pathinfo($entry->getMedia(), PATHINFO_EXTENSION);
 
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $type = "image/{$ext}";
             }
 
             $entryXml['__custom:link:2'] = $this->addXmlLink(
-                href: $entry->media(),
-                title: $entry->title(),
+                href: $entry->getMedia(),
+                title: $entry->getTitle(),
                 rel: 'http://opds-spec.org/image/thumbnail',
                 type: $type
             );
@@ -239,6 +211,61 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function addBookEntry(OpdsEntryBook $entry): array
     {
-        return [];
+        $app = OpdsConfig::slug($this->opds->getConfig()->name);
+        $id = $app.':books:';
+        $id .= $entry->getSerie() ? OpdsConfig::slug($entry->getSerie()).':' : null;
+        $id .= OpdsConfig::slug($entry->getTitle());
+
+        $authors = [];
+        $categories = [];
+
+        foreach ($entry->getCategories() as $item) {
+            $categories[] = $this->addXmlNode(attributes: ['term' => $item, 'label' => $item]);
+        }
+
+        foreach ($entry->getAuthors() as $item) {
+            $authors[] = ['name' => $item->getName(), 'uri' => $item->getUri()];
+        }
+
+        $media = $entry->getMedia();
+        $mediaThumbnail = $entry->getMediaThumbnail();
+
+        $mediaMimeType = 'image/png';
+        $mediaThumbnailMimeType = 'image/png';
+
+        if ($media) {
+            $ext = pathinfo($media, PATHINFO_EXTENSION);
+            // The image Resources MUST be in GIF, JPEG, or PNG format.
+            if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
+                $mediaMimeType = "image/{$ext}";
+            }
+        }
+
+        if ($mediaThumbnail) {
+            $ext = pathinfo($mediaThumbnail, PATHINFO_EXTENSION);
+            // The image Resources MUST be in GIF, JPEG, or PNG format.
+            if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
+                $mediaThumbnailMimeType = "image/{$ext}";
+            }
+        }
+
+        return [
+            'title' => $entry->getTitle(),
+            'updated' => $entry->getUpdated()?->format(DATE_ATOM),
+            'id' => $id,
+            'summary' => $this->addXmlNode(value: $entry->getSummary(), attributes: ['type' => 'text']),
+            'content' => $this->addXmlNode(value: $entry->getContent(), attributes: ['type' => 'text/html']),
+            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute())),
+            '__custom:link:2' => $this->addXmlLink(href: $media, rel: 'http://opds-spec.org/image', type: $mediaMimeType),
+            '__custom:link:3' => $this->addXmlLink(href: $mediaThumbnail, rel: 'http://opds-spec.org/image/thumbnail', type: $mediaThumbnailMimeType),
+            '__custom:link:4' => $this->addXmlLink(href: $entry->getDownload(), title: 'EPUB', rel: 'http://opds-spec.org/acquisition', type: 'application/epub+zip'),
+            'category' => $categories,
+            'author' => $authors,
+            'dcterms:issued' => $entry->getPublished()?->format('Y-m-d'),
+            'published' => $entry->getPublished()?->format(DATE_ATOM),
+            // Element "volume" not allowed here; expected the element end-tag, element "author", "category", "contributor", "link", "rights" or "source" or an element from another namespace
+            //'volume' => $entry->volume(),
+            'dcterms:language' => $entry->getLanguage(),
+        ];
     }
 }

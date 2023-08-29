@@ -4,7 +4,7 @@ namespace Kiwilan\Opds\Entries;
 
 use DateTime;
 
-class OpdsNavigationEntry
+class OpdsEntryNavigation
 {
     public function __construct(
         protected string $id,
@@ -15,41 +15,41 @@ class OpdsNavigationEntry
         protected ?string $media = null,
         protected DateTime|string|null $updated = null,
     ) {
-        $this->summary = OpdsNavigationEntry::handleContent($this->summary);
-        $this->content = OpdsNavigationEntry::handleContent($this->content, 500, false);
+        $this->summary = OpdsEntryNavigation::handleContent($this->summary);
+        $this->content = OpdsEntryNavigation::handleContent($this->content, 500, false);
     }
 
-    public function id(): string
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function title(): string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function route(): string
+    public function getRoute(): string
     {
         return $this->route;
     }
 
-    public function summary(): ?string
+    public function getSummary(): ?string
     {
         return $this->summary;
     }
 
-    public function content(): ?string
+    public function getContent(): ?string
     {
         return $this->content;
     }
 
-    public function media(): ?string
+    public function getMedia(): ?string
     {
         return $this->media;
     }
 
-    public function updated(): DateTime|string|null
+    public function getUpdated(): DateTime|string|null
     {
         return $this->updated;
     }
@@ -57,12 +57,12 @@ class OpdsNavigationEntry
     public function toArray(): array
     {
         return [
-            'id' => $this->id(),
-            'title' => $this->title(),
-            'route' => $this->route(),
-            'summary' => $this->summary(),
-            'media' => $this->media(),
-            'updated' => $this->updated(),
+            'id' => $this->getId(),
+            'title' => $this->getTitle(),
+            'route' => $this->getRoute(),
+            'summary' => $this->getSummary(),
+            'media' => $this->getMedia(),
+            'updated' => $this->getUpdated(),
         ];
     }
 

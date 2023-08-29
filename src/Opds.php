@@ -4,7 +4,7 @@ namespace Kiwilan\Opds;
 
 use Kiwilan\Opds\Converters\OpdsConverter;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Modules\Opds1Dot2Module;
 use Kiwilan\Opds\Modules\Opds2Dot0Module;
 
@@ -13,13 +13,14 @@ class Opds
     /**
      * @param  array<string, mixed>  $urlParts
      * @param  array<string, mixed>  $query
-     * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds
+     * @param  OpdsEntryNavigation[]|OpdsEntryBook[]  $feeds
      */
     protected function __construct(
         protected OpdsConfig $config = new OpdsConfig(),
         protected ?string $url = null,
         protected string $title = 'feed',
         protected OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
+        protected ?OpdsVersionEnum $queryVersion = null,
         protected array $urlParts = [],
         protected array $query = [],
         protected array $feeds = [],
@@ -31,16 +32,6 @@ class Opds
 
     /**
      * Create a new instance.
-     *
-     * @param  OpdsConfig  $config Default is `new OpdsConfig()` with basic configuration.
-     * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds Navigation Feeds or Acquisition Feeds.
-     * @param  string  $title Title of current OPDS, default is `feed`.
-     * @param  string|null  $url Can be null if you want to use the current URL (useful for testing).
-     * @param  OpdsVersionEnum  $version Default is `v1_2`, query `?version=1.2` can override this.
-     */
-
-    /**
-     * Create a new instance.
      */
     public static function make(OpdsConfig $config = new OpdsConfig()): self
     {
@@ -49,6 +40,14 @@ class Opds
         $self->url = OpdsConverter::getCurrentUrl();
         $self->parseUrl();
         $self->version($self->version);
+
+        if ($config->version) {
+            $self->version($config->version);
+        }
+
+        if ($self->queryVersion) {
+            $self->version($self->queryVersion);
+        }
 
         return $self;
     }
@@ -75,7 +74,11 @@ class Opds
     }
 
     /**
-     * Default is `v1_2`, query `?version=1.2` can override this.
+     * Change OPDS version, default is `v1Dot2`.
+     *
+     * Overridable with:
+     * - static version into `OpdsConfig::class` with `version` property.
+     * - query param like `?version=1.2` or `?version=2.0`.
      */
     public function version(OpdsVersionEnum $version): self
     {
@@ -87,10 +90,14 @@ class Opds
     /**
      * Navigation Feeds or Acquisition Feeds.
      *
-     * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds
+     * @param  OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook  $feeds
      */
-    public function feeds(array $feeds): self
+    public function feeds(mixed $feeds): self
     {
+        if (! is_array($feeds)) {
+            $feeds = [$feeds];
+        }
+
         $this->feeds = $feeds;
 
         return $this;
@@ -152,10 +159,14 @@ class Opds
             $version = $query[$this->config->versionQuery] ?? null;
 
             if ($version) {
-                $queryVersion = OpdsVersionEnum::tryFrom($query[$this->config->versionQuery]);
+                $enumVersion = match ($version) {
+                    '1.2' => OpdsVersionEnum::v1Dot2,
+                    '2.0' => OpdsVersionEnum::v2Dot0,
+                    default => null,
+                };
 
-                if ($queryVersion) {
-                    $this->version = $queryVersion;
+                if ($enumVersion) {
+                    $this->queryVersion = $enumVersion;
                 }
             }
         }
@@ -214,7 +225,7 @@ class Opds
     /**
      * Get feeds.
      *
-     * @return  OpdsNavigationEntry[]|OpdsEntryBook[]
+     * @return  OpdsEntryNavigation[]|OpdsEntryBook[]
      */
     public function getFeeds(): array
     {

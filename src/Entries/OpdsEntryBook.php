@@ -4,7 +4,7 @@ namespace Kiwilan\Opds\Entries;
 
 use DateTime;
 
-class OpdsEntryBook extends OpdsNavigationEntry
+class OpdsEntryBook extends OpdsEntryNavigation
 {
     /**
      * @param  string[]  $categories
@@ -36,15 +36,14 @@ class OpdsEntryBook extends OpdsNavigationEntry
             media: $media,
             updated: $updated,
         );
-
     }
 
-    public function download(): ?string
+    public function getDownload(): ?string
     {
         return $this->download;
     }
 
-    public function mediaThumbnail(): ?string
+    public function getMediaThumbnail(): ?string
     {
         return $this->mediaThumbnail;
     }
@@ -52,7 +51,7 @@ class OpdsEntryBook extends OpdsNavigationEntry
     /**
      * @return string[]
      */
-    public function categories(): array
+    public function getCategories(): array
     {
         return $this->categories;
     }
@@ -60,27 +59,27 @@ class OpdsEntryBook extends OpdsNavigationEntry
     /**
      * @return OpdsEntryBookAuthor[]
      */
-    public function authors(): array
+    public function getAuthors(): array
     {
         return $this->authors;
     }
 
-    public function published(): DateTime|string|null
+    public function getPublished(): DateTime|string|null
     {
         return $this->published;
     }
 
-    public function volume(): ?int
+    public function getVolume(): ?int
     {
         return $this->volume;
     }
 
-    public function serie(): ?string
+    public function getSerie(): ?string
     {
         return $this->serie;
     }
 
-    public function language(): ?string
+    public function getLanguage(): ?string
     {
         return $this->language;
     }
@@ -88,14 +87,14 @@ class OpdsEntryBook extends OpdsNavigationEntry
     public function toArray(): array
     {
         return array_merge(parent::toArray(), [
-            'download' => $this->download(),
-            'mediaThumbnail' => $this->mediaThumbnail(),
-            'categories' => $this->categories(),
-            'authors' => array_map(fn (OpdsEntryBookAuthor $author) => $author->toArray(), $this->authors()),
-            'published' => $this->published(),
-            'volume' => $this->volume(),
-            'serie' => $this->serie(),
-            'language' => $this->language(),
+            'download' => $this->getDownload(),
+            'mediaThumbnail' => $this->getMediaThumbnail(),
+            'categories' => $this->getCategories(),
+            'authors' => array_map(fn (OpdsEntryBookAuthor $author) => $author->toArray(), $this->getAuthors()),
+            'published' => $this->getPublished(),
+            'volume' => $this->getVolume(),
+            'serie' => $this->getSerie(),
+            'language' => $this->getLanguage(),
         ]);
     }
 }
