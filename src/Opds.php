@@ -2,9 +2,11 @@
 
 namespace Kiwilan\Opds;
 
+use Kiwilan\Opds\Converters\OpdsConverter;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Modules\Opds1Dot2Module;
+use Kiwilan\Opds\Modules\Opds2Dot0Module;
 
 class Opds
 {
@@ -14,15 +16,16 @@ class Opds
      * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds
      */
     protected function __construct(
+        protected OpdsConfig $config = new OpdsConfig(),
         protected ?string $url = null,
         protected string $title = 'feed',
         protected OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
-        protected OpdsConfig $config = new OpdsConfig(),
         protected array $urlParts = [],
         protected array $query = [],
         protected array $feeds = [],
         protected bool $isSearch = false,
-        protected ?string $module = null,
+        protected ?OpdsConverter $engine = null,
+        protected ?OpdsResponse $response = null,
     ) {
     }
 
@@ -35,121 +38,210 @@ class Opds
      * @param  string|null  $url Can be null if you want to use the current URL (useful for testing).
      * @param  OpdsVersionEnum  $version Default is `v1_2`, query `?version=1.2` can override this.
      */
-    public static function make(
-        OpdsConfig $config = new OpdsConfig(),
-        array $feeds = [],
-        string $title = 'feed',
-        string $url = null,
-        OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
-    ): self {
-        $engine = new self(
-            url: $url,
-            title: $title,
-            config: $config,
-            feeds: $feeds,
-        );
 
-        if ($url) {
-            $engine->url = $url;
-        } else {
-            $engine->url = self::currentUrl();
-        }
+    /**
+     * Create a new instance.
+     */
+    public static function make(OpdsConfig $config = new OpdsConfig()): self
+    {
+        $self = new self($config);
 
-        $engine->urlParts = parse_url($engine->url);
-        $engine->version = $version;
+        $self->url = OpdsConverter::getCurrentUrl();
+        $self->parseUrl();
+        $self->version($self->version);
 
-        if (array_key_exists('query', $engine->urlParts)) {
-            parse_str($engine->urlParts['query'], $query);
-            $engine->query = $query;
-
-            if (array_key_exists('version', $query)) {
-                $queryVersion = OpdsVersionEnum::tryFrom($query[$engine->config->versionQuery]);
-
-                if ($queryVersion) {
-                    $engine->version = $queryVersion;
-                }
-            }
-        }
-
-        $engine->title = $title;
-        $engine->config = $config;
-        $engine->feeds = $feeds;
-
-        $engine->module = match ($engine->version) {
-            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($engine),
-        };
-
-        return $engine;
+        return $self;
     }
 
-    public function search(): self
+    /**
+     * Title of current OPDS, default is `OPDS`.
+     */
+    public function title(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Default URL is built from `$_SERVER['HTTP_HOST']` and `$_SERVER['REQUEST_URI']`, but in some cases you may want to override this.
+     */
+    public function url(string $url): self
+    {
+        $this->url = $url;
+        $this->parseUrl();
+
+        return $this;
+    }
+
+    /**
+     * Default is `v1_2`, query `?version=1.2` can override this.
+     */
+    public function version(OpdsVersionEnum $version): self
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Navigation Feeds or Acquisition Feeds.
+     *
+     * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds
+     */
+    public function feeds(array $feeds): self
+    {
+        $this->feeds = $feeds;
+
+        return $this;
+    }
+
+    public function isSearch(): self
     {
         $this->isSearch = true;
 
-        $this->module = match ($this->version) {
+        return $this;
+    }
+
+    /**
+     * Mock XML or JSON response (depends on `version`).
+     *
+     * @param  bool  $asString Default is `false`, if `true` then return as string. Useful for testing.
+     */
+    public function mockResponse(bool $asString = false): self
+    {
+        $this->run();
+        $this->response = OpdsResponse::make($this->engine, 200, $asString);
+
+        return $this;
+    }
+
+    /**
+     * Get XML or JSON response (depends on `version`).
+     *
+     * @param  bool  $asString Default is `false`, if `true` then return as string. Useful for testing.
+     */
+    public function response(bool $asString = false): string
+    {
+        $this->mockResponse($asString);
+
+        return $this->response->getResponse();
+    }
+
+    /**
+     * Only for testing, run OPDS engine.
+     */
+    private function run(): self
+    {
+        $this->engine = match ($this->version) {
             OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
+            OpdsVersionEnum::v2Dot0 => Opds2Dot0Module::make($this),
         };
 
         return $this;
     }
 
     /**
-     * @param  bool  $asString Default is `false`, if `true` then return as string. Useful for testing, `false` will create XML or JSON response.
+     * Parse URL.
      */
-    public function response(bool $asString = false)
+    private function parseUrl(): self
     {
-        return OpdsResponse::make($this->module, 200, $asString);
+        $this->urlParts = parse_url($this->url);
+        $query = $this->urlParts['query'] ?? null;
+
+        if ($query) {
+            parse_str($this->urlParts['query'], $query);
+            $this->query = $query;
+
+            $version = $query[$this->config->versionQuery] ?? null;
+
+            if ($version) {
+                $queryVersion = OpdsVersionEnum::tryFrom($query[$this->config->versionQuery]);
+
+                if ($queryVersion) {
+                    $this->version = $queryVersion;
+                }
+            }
+        }
+
+        return $this;
     }
 
-    public static function currentUrl(): string
-    {
-        $http = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
-
-        return "{$http}://{$host}{$uri}";
-    }
-
-    public function url(): string
+    /**
+     * Get current URL.
+     */
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    public function title(): string
+    /**
+     * Get title.
+     */
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function version(): OpdsVersionEnum
+    /**
+     * Get OPDS version.
+     */
+    public function getVersion(): OpdsVersionEnum
     {
         return $this->version;
     }
 
-    public function config(): OpdsConfig
+    /**
+     * Get OPDS configuration.
+     */
+    public function getConfig(): OpdsConfig
     {
         return $this->config;
     }
 
-    public function urlParts(): array
+    /**
+     * Get URL parts.
+     */
+    public function getUrlParts(): array
     {
         return $this->urlParts;
     }
 
-    public function query(): array
+    /**
+     * Get query.
+     */
+    public function getQuery(): array
     {
         return $this->query;
     }
 
     /**
+     * Get feeds.
+     *
      * @return  OpdsNavigationEntry[]|OpdsEntryBook[]
      */
-    public function feeds(): array
+    public function getFeeds(): array
     {
         return $this->feeds;
     }
 
-    public function isSearch(): bool
+    /**
+     * Know if current page is search page.
+     */
+    public function isSearchPage(): bool
     {
         return $this->isSearch;
+    }
+
+    /**
+     * Get OPDS engine.
+     */
+    public function getEngine(): ?OpdsConverter
+    {
+        if (! $this->engine) {
+            $this->run();
+        }
+
+        return $this->engine;
     }
 }
