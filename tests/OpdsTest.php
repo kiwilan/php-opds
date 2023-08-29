@@ -9,23 +9,25 @@ use Kiwilan\Opds\Tests\Utils\XmlReader;
 
 it('is string', function () {
     $opds = Opds::make();
-    $res = $opds->response(true);
+    $res = $opds->mockResponse();
 
     expect($res)->toBeString();
 });
 
 it('is valid xml', function () {
-    $opds = Opds::make();
-    $res = $opds->response(true);
+    $opds = Opds::make()
+        ->mockResponse()
+        ->getResponse();
 
-    expect(isValidXml($res))->toBeTrue();
+    expect(isValidXml($opds->getContent()))->toBeTrue();
 });
 
 it('can be parsed', function () {
-    $opds = Opds::make();
-    $res = $opds->response(true);
+    $opds = Opds::make()
+        ->mockResponse()
+        ->getResponse();
 
-    $xml = XmlReader::toArray($res);
+    $xml = XmlReader::toArray($opds->getContent());
     expect($xml)->toBeArray();
 });
 
@@ -40,14 +42,15 @@ it('can be display feeds', function () {
                 media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
                 updated: new DateTime(),
             ),
-        ]);
-    $res = $opds->response(true);
+        ])
+        ->mockResponse()
+        ->getResponse();
 
-    $xml = XmlReader::toArray($res);
+    $xml = XmlReader::toArray($opds->getContent());
     // dump($xml);
     // expect($xml)->toBeArray();
 
-    expect($res)->toBeString();
+    expect($opds->getContent())->toBeString();
 });
 
 it('can be display feeds books', function () {
@@ -97,13 +100,14 @@ it('can be display feeds books', function () {
                 serie: 'Earth\'s Children',
                 language: 'English',
             ),
-        ]);
-    $res = $opds->response(true);
+        ])
+        ->mockResponse()
+        ->getResponse();
 
     // $xml = XmlReader::toArray($opds);
     // expect($xml)->toBeArray();
 
-    expect($res)->toBeString();
+    expect($opds->getContent())->toBeString();
 });
 
 it('can search', function () {
@@ -130,11 +134,11 @@ it('can search', function () {
                 serie: 'Earth\'s Children',
                 language: 'English',
             ),
-        ]);
-    $res = $opds->response(true);
+        ])
+        ->getResponse();
 
     // $xml = XmlReader::toArray($opds);
     // expect($xml)->toBeArray();
 
-    expect($res)->toBeString();
+    expect($opds->getContent())->toBeString();
 });

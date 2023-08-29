@@ -7,29 +7,70 @@ use Kiwilan\Opds\Converters\OpdsConverter;
 class OpdsResponse
 {
     protected function __construct(
-        protected string $content,
         protected int $status = 200,
-        protected bool $isString = false,
         protected bool $isJson = false,
         protected bool $isXml = false,
+        protected ?string $content = null,
     ) {
     }
 
-    public static function make(OpdsConverter $converter, int $status = 200, bool $isString = false): self
+    /**
+     * Create a new Response.
+     */
+    public static function make(OpdsConverter $converter, int $status = 200): self
     {
-        $self = new self($converter->getResponse(), $status, $isString);
+        $self = new self($status);
 
-        $self->isXml = $self->isValidXml($self->content);
-        $self->isJson = $self->isValidJson($self->content);
+        $self->isXml = $self->isValidXml($converter->getResponse());
+        $self->isJson = $self->isValidJson($converter->getResponse());
 
-        // if ($self->isString) {
-        //     return $self->isJson ? json_decode($self->content) : $self->content;
-        // }
+        if ($self->isJson) {
+            $self->content = json_encode($converter->getResponse());
+        } elseif ($self->isXml) {
+            $self->content = $converter->getResponse();
+        } else {
+            throw new \Exception('Invalid content');
+        }
 
         return $self;
     }
 
-    public function getResponse()
+    /**
+     * Get status code.
+     */
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    /**
+     * To know if the content is JSON.
+     */
+    public function isJson(): bool
+    {
+        return $this->isJson;
+    }
+
+    /**
+     * To know if the content is XML.
+     */
+    public function isXml(): bool
+    {
+        return $this->isXml;
+    }
+
+    /**
+     * Get content.
+     */
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    /**
+     * Send content to browser with correct header.
+     */
+    public function response(): never
     {
         if ($this->isXml) {
             $this->xml();
@@ -38,19 +79,19 @@ class OpdsResponse
         $this->json();
     }
 
-    private function json()
+    private function json(): never
     {
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: application/json; charset=UTF-8');
 
         http_response_code($this->status);
 
-        echo json_encode($this->content);
+        echo $this->content;
 
         exit;
     }
 
-    private function xml()
+    private function xml(): never
     {
         header('Access-Control-Allow-Origin: *');
         header('Content-Type: text/xml; charset=UTF-8');
