@@ -63,7 +63,7 @@ class Opds
             $engine->query = $query;
 
             if (array_key_exists('version', $query)) {
-                $queryVersion = OpdsVersionEnum::tryFrom($query[$engine->config->versionQuery()]);
+                $queryVersion = OpdsVersionEnum::tryFrom($query[$engine->config->versionQuery]);
                 if ($queryVersion) {
                     $engine->version = $queryVersion;
                 }
@@ -73,7 +73,7 @@ class Opds
         $engine->title = $title;
         $engine->config = $config;
         $engine->feeds = $feeds;
-        if ($engine->config->searchUrl() && str_starts_with($engine->url, $engine->config->searchUrl())) {
+        if ($engine->config->searchUrl && str_starts_with($engine->url, $engine->config->searchUrl)) {
             $engine->isSearch = true;
         }
 

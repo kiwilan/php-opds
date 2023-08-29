@@ -30,13 +30,13 @@ class OpdsXmlConverter extends OpdsConverter
     {
         $title = $this->opds->title();
 
-        $id = OpdsConfig::slug($this->opds->config()->name());
+        $id = OpdsConfig::slug($this->opds->config()->name);
         $id .= ':'.OpdsConfig::slug($title);
 
-        $feedTitle = "{$this->opds->config()->name()} OPDS";
+        $feedTitle = "{$this->opds->config()->name} OPDS";
         $feedTitle .= ': '.ucfirst(strtolower($title));
 
-        $date = $this->opds->config()->updated() ?? new DateTime();
+        $date = $this->opds->config()->updated ?? new DateTime();
         $date = $date->format(DATE_ATOM);
 
         $specs = [
@@ -54,11 +54,11 @@ class OpdsXmlConverter extends OpdsConverter
             'id' => $id,
             'title' => $feedTitle,
             'updated' => $date,
-            'icon' => $this->opds->config()->iconUrl(),
+            'icon' => $this->opds->config()->iconUrl,
             '__custom:link:1' => [
                 '_attributes' => [
                     'rel' => 'start',
-                    'href' => $this->opds->config()->startUrl(),
+                    'href' => $this->opds->config()->startUrl,
                     'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
                     'title' => 'Home',
                 ],
@@ -74,23 +74,23 @@ class OpdsXmlConverter extends OpdsConverter
             '__custom:link:3' => [
                 '_attributes' => [
                     'rel' => 'search',
-                    'href' => $this->opds->config()->searchUrl(),
+                    'href' => $this->opds->config()->searchUrl,
                     'type' => 'application/opensearchdescription+xml',
                     'title' => 'Search here',
                 ],
             ],
         ];
 
-        if ($this->opds->config()->author()) {
+        if ($this->opds->config()->author) {
             $feed['author'] = [
-                'name' => $this->opds->config()->author(),
-                'uri' => $this->opds->config()->authorUrl(),
+                'name' => $this->opds->config()->author,
+                'uri' => $this->opds->config()->authorUrl,
             ];
         }
 
         $feeds = $this->opds->feeds();
-        $paginate = $this->opds->config()->usePagination();
-        $perPage = $this->opds->config()->maxItemsPerPage();
+        $paginate = $this->opds->config()->usePagination;
+        $perPage = $this->opds->config()->maxItemsPerPage;
         $page = 1;
 
         if ($paginate && count($feeds) > $perPage) {
@@ -205,20 +205,15 @@ class OpdsXmlConverter extends OpdsConverter
     {
         $date = new DateTime();
         $date = $date->format(DATE_ATOM);
-        $searchQuery = $this->opds->config()->searchQuery();
+        $searchQuery = $this->opds->config()->searchQuery;
 
         $feed_links = [
             'xmlns' => 'http://a9.com/-/spec/opensearch/1.1/',
         ];
-        $app = OpdsConfig::slug($this->opds->config()->name());
+        $app = OpdsConfig::slug($this->opds->config()->name);
 
         $query = $this->opds->query()[$searchQuery] ?? null;
-        $searchURL = $this->opds->config()->searchUrl();
-        if (str_contains($searchURL, '?')) {
-            $searchURL .= '&'.$searchQuery.'={searchTerms}';
-        } else {
-            $searchURL .= '?'.$searchQuery.'={searchTerms}';
-        }
+        $searchURL = $this->opds->config()->searchUrl.'?'.$searchQuery.'={searchTerms}';
 
         $feed = [
             'ShortName' => [
@@ -239,12 +234,12 @@ class OpdsXmlConverter extends OpdsConverter
                     'height' => '16',
                     'type' => 'image/x-icon',
                 ],
-                '_value' => $this->opds->config()->authorUrl().'/favicon.ico',
+                '_value' => $this->opds->config()->authorUrl.'/favicon.ico',
             ],
             '__custom:Url:3' => [
                 '_attributes' => [
                     // 'template' => 'http://gallica.bnf.fr/assets/static/opensearchdescription.xml',
-                    'template' => $this->opds->config()->searchUrl(),
+                    'template' => $this->opds->config()->searchUrl,
                     'type' => 'application/opensearchdescription+xml',
                     'rel' => 'self',
                 ],
@@ -300,7 +295,7 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function entry(OpdsEntry $entry): array
     {
-        $app = OpdsConfig::slug($this->opds->config()->name());
+        $app = OpdsConfig::slug($this->opds->config()->name);
 
         return [
             'title' => $entry->title(),
@@ -336,7 +331,7 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function entryBook(OpdsEntryBook $entry): array
     {
-        $app = OpdsConfig::slug($this->opds->config()->name());
+        $app = OpdsConfig::slug($this->opds->config()->name);
         $id = $app.':books:';
         $id .= $entry->serie() ? OpdsConfig::slug($entry->serie()).':' : null;
         $id .= OpdsConfig::slug($entry->title());
