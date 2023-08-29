@@ -3,8 +3,8 @@
 namespace Kiwilan\Opds\Converters;
 
 use DateTime;
-use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Spatie\ArrayToXml\ArrayToXml;
@@ -15,10 +15,6 @@ class OpdsXmlConverter extends OpdsConverter
     {
         $self = new self($opds);
 
-        // Note: this doesn't account for the case where the initial searchURL is different from
-        // the actual searchURL used in queries, because Opds will not recognize it as isSearch()
-        // Example: COPS uses ?page=8 for the initial OpenSearchDescription, and ?query= or ?page=9&query= for actual queries
-        // Work-around is possible e.g. by changing COPS to check for /search in PATH_INFO
         if ($self->opds->isSearch()) {
             return $self->search();
         }
@@ -293,40 +289,60 @@ class OpdsXmlConverter extends OpdsConverter
         );
     }
 
-    public function entry(OpdsEntry $entry): array
+    public function entry(OpdsNavigationEntry $entry): array
     {
         $app = OpdsConfig::slug($this->opds->config()->name);
-
-        return [
+        $feed = [
             'title' => $entry->title(),
-            'updated' => $entry->updated()?->format(DATE_ATOM),
             'id' => "{$app}:{$entry->id()}",
-            'summary' => [
-                '_attributes' => [
-                    'type' => 'text',
-                ],
-                '_value' => $entry->summary(),
-            ],
-            'content' => [
-                '_attributes' => [
-                    'type' => 'text',
-                ],
-                '_value' => strip_tags($entry->content()),
-            ],
             '__custom:link:1' => [
                 '_attributes' => [
                     'href' => $entry->route(),
                     'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
                 ],
             ],
-            '__custom:link:2' => [
+        ];
+
+        if ($entry->updated()) {
+            $feed['updated'] = $entry->updated()->format(DATE_ATOM);
+        }
+
+        if ($entry->summary()) {
+            $feed['summary'] = [
                 '_attributes' => [
-                    'href' => $entry->media() ?? null,
-                    'type' => 'image/png',
+                    'type' => 'text',
+                ],
+                '_value' => strip_tags($entry->summary()),
+            ];
+        }
+
+        if ($entry->content()) {
+            $feed['content'] = [
+                '_attributes' => [
+                    'type' => 'text/html',
+                ],
+                '_value' => $entry->content(),
+            ];
+        }
+
+        if ($entry->media()) {
+            $type = 'unknown';
+            $ext = pathinfo($entry->media(), PATHINFO_EXTENSION);
+
+            if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
+                $type = "image/{$ext}";
+            }
+
+            $feed['__custom:link:2'] = [
+                '_attributes' => [
+                    'href' => $entry->media(),
+                    'type' => $type,
                     'rel' => 'http://opds-spec.org/image/thumbnail',
                 ],
-            ],
-        ];
+            ];
+        }
+
+        return $feed;
     }
 
     public function entryBook(OpdsEntryBook $entry): array
@@ -368,6 +384,7 @@ class OpdsXmlConverter extends OpdsConverter
                 $mediaMimeType = "image/{$ext}";
             }
         }
+
         if ($mediaThumbnail) {
             $ext = pathinfo($mediaThumbnail, PATHINFO_EXTENSION);
             // The image Resources MUST be in GIF, JPEG, or PNG format.

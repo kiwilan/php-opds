@@ -23,7 +23,7 @@ use App\Models\Serie;
 use Closure;
 use Illuminate\Support\Facades\Cache;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
@@ -42,7 +42,7 @@ class MyOpds
     }
 
     /**
-     * @return array<OpdsEntry>
+     * @return array<OpdsNavigationEntry>
      */
     public static function home(): array
     {
@@ -50,7 +50,7 @@ class MyOpds
         $series = self::cache('opds.series', fn () => Serie::all());
 
         return [
-            new OpdsEntry(
+            new OpdsNavigationEntry(
                 id: 'authors',
                 title: 'Authors',
                 route: route('opds.authors.index'),
@@ -58,7 +58,7 @@ class MyOpds
                 media: asset('vendor/images/opds/authors.png'),
                 updated: Author::orderBy('updated_at', 'desc')->first()->updated_at,
             ),
-            new OpdsEntry(
+            new OpdsNavigationEntry(
                 id: 'series',
                 title: 'Series',
                 route: route('opds.series.index'),
@@ -135,7 +135,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
@@ -186,7 +186,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Author;
 use App\Models\Book;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\Entries\OpdsEntry;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 

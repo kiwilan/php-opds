@@ -1,8 +1,8 @@
 <?php
 
-use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\Tests\Utils\XmlReader;
@@ -32,7 +32,7 @@ it('can be parsed', function () {
 it('can be display feeds', function () {
     $opds = Opds::make(
         feeds: [
-            new OpdsEntry(
+            new OpdsNavigationEntry(
                 id: 'authors',
                 title: 'Authors',
                 route: 'http://localhost:8000/opds/authors',

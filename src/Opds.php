@@ -2,8 +2,8 @@
 
 namespace Kiwilan\Opds;
 
-use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Modules\Opds1Dot2Module;
 
 class Opds
@@ -11,7 +11,7 @@ class Opds
     /**
      * @param  array<string, mixed>  $urlParts
      * @param  array<string, mixed>  $query
-     * @param  OpdsEntry[]|OpdsEntryBook[]  $feeds
+     * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds
      */
     protected function __construct(
         protected ?string $url = null,
@@ -30,7 +30,7 @@ class Opds
      * Create a new instance.
      *
      * @param  OpdsConfig  $config Default is `new OpdsConfig()` with basic configuration.
-     * @param  OpdsEntry[]|OpdsEntryBook[]  $feeds Navigation Feeds or Acquisition Feeds.
+     * @param  OpdsNavigationEntry[]|OpdsEntryBook[]  $feeds Navigation Feeds or Acquisition Feeds.
      * @param  string  $title Title of current OPDS, default is `feed`.
      * @param  string|null  $url Can be null if you want to use the current URL (useful for testing).
      * @param  OpdsVersionEnum  $version Default is `v1_2`, query `?version=1.2` can override this.
@@ -64,6 +64,7 @@ class Opds
 
             if (array_key_exists('version', $query)) {
                 $queryVersion = OpdsVersionEnum::tryFrom($query[$engine->config->versionQuery]);
+
                 if ($queryVersion) {
                     $engine->version = $queryVersion;
                 }
@@ -73,15 +74,23 @@ class Opds
         $engine->title = $title;
         $engine->config = $config;
         $engine->feeds = $feeds;
-        if ($engine->config->searchUrl && str_starts_with($engine->url, $engine->config->searchUrl)) {
-            $engine->isSearch = true;
-        }
 
         $engine->module = match ($engine->version) {
             OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($engine),
         };
 
         return $engine;
+    }
+
+    public function search(): self
+    {
+        $this->isSearch = true;
+
+        $this->module = match ($this->version) {
+            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
+        };
+
+        return $this;
     }
 
     /**
@@ -132,7 +141,7 @@ class Opds
     }
 
     /**
-     * @return  OpdsEntry[]|OpdsEntryBook[]
+     * @return  OpdsNavigationEntry[]|OpdsEntryBook[]
      */
     public function feeds(): array
     {

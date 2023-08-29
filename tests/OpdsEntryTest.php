@@ -1,11 +1,11 @@
 <?php
 
-use Kiwilan\Opds\Entries\OpdsEntry;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 
-it('is OpdsEntry', function (OpdsEntry $entry) {
-    expect($entry)->toBeInstanceOf(OpdsEntry::class);
+it('is OpdsNavigationEntry', function (OpdsNavigationEntry $entry) {
+    expect($entry)->toBeInstanceOf(OpdsNavigationEntry::class);
     expect($entry->id())->toBe('authors');
     expect($entry->title())->toBe('Authors');
     expect($entry->route())->toBe('http://localhost:8000/opds/authors');
