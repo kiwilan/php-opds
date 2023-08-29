@@ -11,8 +11,6 @@ use Transliterator;
 class OpdsConfig
 {
     /**
-     * OPDS configuration.
-     *
      * @param  ?string  $name OPDS application name, for example: `Gallica`.
      * @param  ?string  $author Application author, for example: `Hadrien Gardeur`.
      * @param  ?string  $authorUrl Application author URL, for example: `https://example.com`.
