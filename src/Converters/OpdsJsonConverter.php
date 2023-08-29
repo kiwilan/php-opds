@@ -3,7 +3,7 @@
 namespace Kiwilan\Opds\Converters;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 
 /**
@@ -26,7 +26,7 @@ class OpdsJsonConverter extends OpdsConverter
     {
         $this->xml = [
             'metadata' => [
-                'title' => 'Example for navigation',
+                'title' => $this->opds->getTitle(),
             ],
 
             'links' => [
@@ -35,43 +35,34 @@ class OpdsJsonConverter extends OpdsConverter
             ],
         ];
 
-        $this->xml['navigation'] = [
-            [
-                'href' => '/new',
-                'title' => 'New Publications',
-                'type' => 'application/opds+json',
-                'rel' => 'current',
-            ],
-            [
-                'href' => '/popular',
-                'title' => 'Popular Publications',
-                'type' => 'application/opds+json',
-                'rel' => 'http://opds-spec.org/sort/popular',
-            ],
-        ];
+        // $this->xml['navigation'] = [
+        //     [
+        //         'href' => '/new',
+        //         'title' => 'New Publications',
+        //         'type' => 'application/opds+json',
+        //         'rel' => 'current',
+        //     ],
+        //     [
+        //         'href' => '/popular',
+        //         'title' => 'Popular Publications',
+        //         'type' => 'application/opds+json',
+        //         'rel' => 'http://opds-spec.org/sort/popular',
+        //     ],
+        // ];
 
-        $this->xml['publications'] = [];
+        foreach ($this->opds->getFeeds() as $feed) {
+            if ($feed instanceof OpdsEntryBook) {
+                $this->xml['publications'][] = $this->addEntry($feed);
+
+                continue;
+            }
+
+            $this->xml['navigation'][] = $this->addEntry($feed);
+        }
+
         $this->response = json_encode($this->xml);
 
         return $this;
-    }
-
-    public function paginate(): array
-    {
-        return [
-            'metadata' => [
-                'title' => 'Paginated feed',
-                'numberOfItems' => 5678,
-                'itemsPerPage' => 50,
-                'currentPage' => 2,
-            ],
-            'links' => [
-                ['rel' => 'self', 'href' => '/?page=2', 'type' => 'application/opds+json'],
-                ['rel' => ['first', 'previous'], 'href' => '/?page=1', 'type' => 'application/opds+json'],
-                ['rel' => 'next', 'href' => '/?page=3', 'type' => 'application/opds+json'],
-                ['rel' => 'last', 'href' => '/?page=114', 'type' => 'application/opds+json'],
-            ],
-        ];
     }
 
     public function search(): self
@@ -79,7 +70,17 @@ class OpdsJsonConverter extends OpdsConverter
         return $this;
     }
 
-    public function addEntry(OpdsNavigationEntry|OpdsEntryBook $entry): array
+    public function addNavigationEntry(OpdsEntryNavigation $entry): array
+    {
+        return [
+            'href' => $this->route($entry->getRoute()),
+            'title' => $entry->getTitle(),
+            'type' => 'application/opds+json',
+            'rel' => 'current',
+        ];
+    }
+
+    public function addBookEntry(OpdsEntryBook $entry): array
     {
         return [
             'metadata' => [

@@ -7,7 +7,7 @@ namespace Tests\Utils;
 // use App\Models\Serie;
 // use Closure;
 // use Illuminate\Support\Facades\Cache;
-// use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+// use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 // use Kiwilan\Opds\Entries\OpdsEntryBook;
 // use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 // use Kiwilan\Opds\OpdsConfig;
@@ -27,7 +27,7 @@ namespace Tests\Utils;
 // }
 
 // /**
-//  * @return array<OpdsNavigationEntry>
+//  * @return array<OpdsEntryNavigation>
 //  */
 // public static function home(): array
 // {
@@ -35,7 +35,7 @@ namespace Tests\Utils;
 //     $series = self::cache('opds.series', fn () => Serie::all());
 
 //     return [
-//         new OpdsNavigationEntry(
+//         new OpdsEntryNavigation(
 //             id: 'authors',
 //             title: 'Authors',
 //             route: route('opds.authors.index'),
@@ -43,7 +43,7 @@ namespace Tests\Utils;
 //             media: asset('vendor/images/opds/authors.png'),
 //             updated: Author::orderBy('updated_at', 'desc')->first()->updated_at,
 //         ),
-//         new OpdsNavigationEntry(
+//         new OpdsEntryNavigation(
 //             id: 'series',
 //             title: 'Series',
 //             route: route('opds.series.index'),

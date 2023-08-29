@@ -2,10 +2,10 @@
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 
 dataset('feeds', [
-    new OpdsNavigationEntry(
+    new OpdsEntryNavigation(
         id: 'authors',
         title: 'Authors',
         route: 'http://localhost:8000/opds/authors',

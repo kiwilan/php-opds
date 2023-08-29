@@ -24,9 +24,7 @@ class OpdsResponse
         $self->isXml = $self->isValidXml($converter->getResponse());
         $self->isJson = $self->isValidJson($converter->getResponse());
 
-        if ($self->isJson) {
-            $self->content = json_encode($converter->getResponse());
-        } elseif ($self->isXml) {
+        if ($self->isJson || $self->isXml) {
             $self->content = $converter->getResponse();
         } else {
             throw new \Exception('Invalid content');

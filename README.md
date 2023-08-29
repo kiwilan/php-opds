@@ -11,14 +11,10 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
-> **Warning**
->
-> This package is not ready for production.
-
-| Version | Supported | Latest | Draft |       Date        |  Planned  | Format |
-| :-----: | :-------: | :----: | :---: | :---------------: | :-------: | :----: |
-|   1.2   |    ✅     |   ✅   |       | November 11, 2018 | Supported |  XML   |
-|   2.0   |    ❌     |        |  ✅   |                   |    ✅     |  JSON  |
+| Version | Supported |       Date        | Format |
+| :-----: | :-------: | :---------------: | :----: |
+|   1.2   |    ✅     | November 11, 2018 |  XML   |
+|   2.0   |    ✅     |       Draft       |  JSON  |
 
 ## Requirements
 
@@ -76,15 +72,17 @@ class OpdsController
 {
   public function index()
   {
-    return Opds::make(
-      config: new OpdsConfig(),
-      feeds: [], // OpdsNavigationEntry[]|OpdsEntryBook[]
-      title: 'My feed',
-      url: 'https://example.com/opds', // Can be null to be set automatically
-      version: OpdsVersionEnum::v1_2, // OPDS version
-      asString: false, // Output as string
-      isSearch: false, // Is search feed
-    );
+    return Opds::make(new OpdsConfig())
+      ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
+      ->title('My feed')
+      ->url('https://example.com/opds') // Can be null to be set automatically
+      ->version(OpdsVersionEnum::v1_2) // OPDS version (can be set with query parameter or `OpdsConfig::class`)
+      ->isSearch() // Is search feed
+    ;
+
+    $debug = $opds->mockResponse(); // `Opds::class` instance with response
+
+    return $opds->response() // XML or JSON response
   }
 }
 ```
@@ -103,10 +101,11 @@ new OpdsConfig(
   iconUrl: 'https://example.com/icon.png',
   startUrl: 'https://example.com/opds',
   searchUrl: 'https://example.com/opds/search',
-  searchQuery: 'q',
-  versionQuery: 'version',
+  searchQuery: 'q', // query parameter for search
+  versionQuery: 'version', // query parameter for version
+  version: OpdsVersionEnum::v1_2, // To override default version
   updated: new DateTime(),
-  usePagination: true,
+  usePagination: false, // To enable pagination, default is false
   maxItemsPerPage: 32,
 );
 ```
@@ -120,7 +119,7 @@ Example of a simple OPDS feed into controller (like Laravel).
 
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
@@ -128,17 +127,9 @@ class OpdsController
 {
   public function index()
   {
-    $opds = Opds::make(
-      config: new OpdsConfig(
-        name: 'My OPDS Catalog',
-        author: 'John Doe',
-        authorUrl: 'https://example.com',
-        startUrl: 'https://example.com/opds',
-        searchUrl: 'https://example.com/opds/search',
-        updated: new DateTime(),
-      ),
-      feeds: [
-        new OpdsNavigationEntry(
+    $opds = Opds::make($this->config())
+      ->feeds([
+        new OpdsEntryNavigation(
           id: 'authors',
           title: 'Authors',
           route: 'http://localhost:8000/opds/authors',
@@ -146,7 +137,7 @@ class OpdsController
           media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
           updated: new DateTime(),
         ),
-        new OpdsNavigationEntry(
+        new OpdsEntryNavigation(
           id: 'series',
           title: 'Series',
           route: 'http://localhost:8000/opds/series',
@@ -154,7 +145,7 @@ class OpdsController
           media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
           updated: new DateTime(),
         ),
-      ],
+      ])
     );
 
     return $opds->response();
@@ -162,16 +153,8 @@ class OpdsController
 
   public function books()
   {
-    $opds = Opds::make(
-      config: new OpdsConfig(
-        name: 'My OPDS Catalog',
-        author: 'John Doe',
-        authorUrl: 'https://example.com',
-        startUrl: 'https://example.com/opds',
-        searchUrl: 'https://example.com/opds/search',
-        updated: new DateTime(),
-      ),
-      feeds: [
+    $opds = Opds::make($this->config())
+      ->feeds([
         new OpdsEntryBook(
           id: 'the-clan-of-the-cave-bear-epub-en',
           title: 'The Clan of the Cave Bear',
@@ -194,10 +177,21 @@ class OpdsController
           serie: 'Earth\'s Children',
           language: 'English',
         ),
-      ],
-    );
+      ]);
 
     return $opds->response();
+  }
+
+  private function config(): OpdsConfig
+  {
+    return new OpdsConfig(
+      name: 'My OPDS Catalog',
+      author: 'John Doe',
+      authorUrl: 'https://example.com',
+      startUrl: 'https://example.com/opds',
+      searchUrl: 'https://example.com/opds/search',
+      updated: new DateTime(),
+    );
   }
 }
 ```

@@ -19,6 +19,7 @@ class OpdsConfig
      * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
      * @param  ?string  $searchQuery Search query, for example: `q`, default is `q`.
      * @param  ?string  $versionQuery Version query, for example: `version`, default is `version`.
+     * @param  ?OpdsVersionEnum  $version OPDS version, default is `v1Dot2`.
      * @param  ?DateTime  $updated Updated date, for example: `new DateTime()`.
      * @param  ?bool  $usePagination Use pagination, default is `true`.
      * @param  ?int  $maxItemsPerPage Maximum items per page, default is `32`.
@@ -32,6 +33,7 @@ class OpdsConfig
         public ?string $searchUrl = null,
         public ?string $searchQuery = 'q',
         public ?string $versionQuery = 'version',
+        public ?OpdsVersionEnum $version = null,
         public ?DateTime $updated = null,
         public ?bool $usePagination = false,
         public ?int $maxItemsPerPage = 32,

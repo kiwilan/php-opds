@@ -3,7 +3,7 @@
 namespace Kiwilan\Opds\Converters;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
-use Kiwilan\Opds\Entries\OpdsNavigationEntry;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 
 abstract class OpdsConverter
@@ -31,9 +31,26 @@ abstract class OpdsConverter
     abstract public function search(): self;
 
     /**
+     * Add entry to feed.
+     */
+    protected function addEntry(OpdsEntryNavigation|OpdsEntryBook $entry): array
+    {
+        if ($entry instanceof OpdsEntryBook) {
+            return $this->addBookEntry($entry);
+        }
+
+        return $this->addNavigationEntry($entry);
+    }
+
+    /**
+     * Add navigation entry to feed.
+     */
+    abstract public function addNavigationEntry(OpdsEntryNavigation $entry): array;
+
+    /**
      * Add book entry to feed.
      */
-    abstract public function addEntry(OpdsNavigationEntry|OpdsEntryBook $entry): array;
+    abstract public function addBookEntry(OpdsEntryBook $entry): array;
 
     /**
      * Get OPDS instance.
@@ -88,8 +105,8 @@ abstract class OpdsConverter
 
     protected function addXmlLink(
         string $href,
-        string $title,
-        string $rel = 'self',
+        string $title = null,
+        string $rel = null,
         string $type = 'application/atom+xml;profile=opds-catalog;kind=acquisition',
     ): array {
         return [
@@ -98,6 +115,35 @@ abstract class OpdsConverter
                 'href' => $href,
                 'type' => $type,
                 'title' => $title,
+            ],
+        ];
+    }
+
+    protected function route(string $route): string
+    {
+        $query = $this->opds->getQuery();
+
+        if (! $query) {
+            return $route;
+        }
+
+        return $route.'?'.http_build_query($query);
+    }
+
+    protected function handleJsonPagination(): array
+    {
+        return [
+            'metadata' => [
+                'title' => 'Paginated feed',
+                'numberOfItems' => 5678,
+                'itemsPerPage' => 50,
+                'currentPage' => 2,
+            ],
+            'links' => [
+                ['rel' => 'self', 'href' => '/?page=2', 'type' => 'application/opds+json'],
+                ['rel' => ['first', 'previous'], 'href' => '/?page=1', 'type' => 'application/opds+json'],
+                ['rel' => 'next', 'href' => '/?page=3', 'type' => 'application/opds+json'],
+                ['rel' => 'last', 'href' => '/?page=114', 'type' => 'application/opds+json'],
             ],
         ];
     }
@@ -158,47 +204,19 @@ abstract class OpdsConverter
         ]);
 
         if ($queryStartRecord !== 0) {
-            $xml['__custom:link:4'] = [
-                '_attributes' => [
-                    'rel' => 'previous',
-                    'href' => $previousUrl,
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                    'title' => 'Previous page',
-                ],
-            ];
+            $xml['__custom:link:4'] = $this->addXmlLink(href: $previousUrl, rel: 'previous', title: 'Previous page');
         }
 
         if ($queryStartRecord !== $last) {
-            $xml['__custom:link:5'] = [
-                '_attributes' => [
-                    'rel' => 'next',
-                    'href' => $nextUrl,
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                    'title' => 'Next page',
-                ],
-            ];
+            $xml['__custom:link:5'] = $this->addXmlLink(href: $nextUrl, rel: 'next', title: 'Next page');
         }
 
         if ($queryStartRecord !== 0) {
-            $xml['__custom:link:6'] = [
-                '_attributes' => [
-                    'rel' => 'first',
-                    'href' => $firstUrl,
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                    'title' => 'First page',
-                ],
-            ];
+            $xml['__custom:link:6'] = $this->addXmlLink(href: $firstUrl, rel: 'first', title: 'First page');
         }
 
         if ($queryStartRecord !== $last) {
-            $xml['__custom:link:7'] = [
-                '_attributes' => [
-                    'rel' => 'last',
-                    'href' => $lastUrl,
-                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
-                    'title' => 'Last page',
-                ],
-            ];
+            $xml['__custom:link:7'] = $this->addXmlLink(href: $lastUrl, rel: 'last', title: 'Last page');
         }
 
         $xml['opensearch:totalResults'] = count($this->opds->getFeeds());
