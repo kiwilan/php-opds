@@ -2,6 +2,7 @@
 
 namespace Kiwilan\Opds\Modules;
 
+use Kiwilan\Opds\Converters\OpdsConverter;
 use Kiwilan\Opds\Opds;
 
 abstract class OpdsModule
@@ -11,7 +12,7 @@ abstract class OpdsModule
     ) {
     }
 
-    abstract public static function make(Opds $opds): string;
+    abstract public static function make(Opds $opds): OpdsConverter;
 
     public function opds(): Opds
     {

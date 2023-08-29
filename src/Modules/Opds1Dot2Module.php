@@ -2,6 +2,7 @@
 
 namespace Kiwilan\Opds\Modules;
 
+use Kiwilan\Opds\Converters\OpdsConverter;
 use Kiwilan\Opds\Converters\OpdsXmlConverter;
 use Kiwilan\Opds\Opds;
 
@@ -12,7 +13,7 @@ use Kiwilan\Opds\Opds;
  */
 class Opds1Dot2Module extends OpdsModule
 {
-    public static function make(Opds $opds): string
+    public static function make(Opds $opds): OpdsConverter
     {
         $self = new self($opds);
 

@@ -2,6 +2,8 @@
 
 namespace Kiwilan\Opds;
 
+use Kiwilan\Opds\Converters\OpdsConverter;
+
 class OpdsResponse
 {
     protected function __construct(
@@ -13,25 +15,27 @@ class OpdsResponse
     ) {
     }
 
-    public static function make(string $content, int $status = 200, bool $isString = false)
+    public static function make(OpdsConverter $converter, int $status = 200, bool $isString = false): self
     {
-        $self = new self($content, $status, $isString);
+        $self = new self($converter->getResponse(), $status, $isString);
 
         $self->isXml = $self->isValidXml($self->content);
         $self->isJson = $self->isValidJson($self->content);
 
-        if ($self->isString) {
-            return $self->isJson ? json_decode($self->content) : $self->content;
+        // if ($self->isString) {
+        //     return $self->isJson ? json_decode($self->content) : $self->content;
+        // }
+
+        return $self;
+    }
+
+    public function getResponse()
+    {
+        if ($this->isXml) {
+            $this->xml();
         }
 
-        if ($self->isXml) {
-            $self->xml();
-        }
-
-        if ($self->isJson) {
-            $self->json();
-        }
-
+        $this->json();
     }
 
     private function json()

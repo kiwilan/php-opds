@@ -11,3 +11,4 @@ vendor
 .php-cs-fixer.cache
 
 .DS_Store
+CHANGELOG-temp.md

@@ -3,6 +3,7 @@
 namespace Kiwilan\Opds\Converters;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsNavigationEntry;
 use Kiwilan\Opds\Opds;
 
 /**
@@ -10,20 +11,20 @@ use Kiwilan\Opds\Opds;
  */
 class OpdsJsonConverter extends OpdsConverter
 {
-    public static function make(Opds $opds): string
+    public static function make(Opds $opds): self
     {
         $self = new self($opds);
 
-        if ($self->opds->isSearch()) {
+        if ($self->opds->isSearchPage()) {
             return $self->search();
         }
 
         return $self->feed();
     }
 
-    public function feed(): string
+    public function feed(): self
     {
-        $feed = [
+        $this->xml = [
             'metadata' => [
                 'title' => 'Example for navigation',
             ],
@@ -32,10 +33,9 @@ class OpdsJsonConverter extends OpdsConverter
                 ['rel' => 'self', 'href' => 'http://example.com/opds', 'type' => 'application/opds+json'],
                 ['rel' => 'search', 'href' => 'http://example.com/opds?search{?query}', 'type' => 'application/opds+json', 'templated' => true],
             ],
-
         ];
 
-        $feed['navigation'] = [
+        $this->xml['navigation'] = [
             [
                 'href' => '/new',
                 'title' => 'New Publications',
@@ -50,9 +50,10 @@ class OpdsJsonConverter extends OpdsConverter
             ],
         ];
 
-        $feed['publications'] = [];
+        $this->xml['publications'] = [];
+        $this->response = json_encode($this->xml);
 
-        return json_encode($feed);
+        return $this;
     }
 
     public function paginate(): array
@@ -73,12 +74,12 @@ class OpdsJsonConverter extends OpdsConverter
         ];
     }
 
-    public function search(): string
+    public function search(): self
     {
-        return '';
+        return $this;
     }
 
-    public function entryBook(OpdsEntryBook $entry): array
+    public function addEntry(OpdsNavigationEntry|OpdsEntryBook $entry): array
     {
         return [
             'metadata' => [
