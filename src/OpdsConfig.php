@@ -13,86 +13,31 @@ class OpdsConfig
     /**
      * OPDS configuration.
      *
-     * @param  string  $name OPDS application name.
-     * @param  null|string  $author Application author, for example: `My App`.
-     * @param  null|string  $authorUrl Application author URL, for example: `https://example.com`.
-     * @param  null|string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
-     * @param  null|string  $startUrl Start URL, for example: `https://example.com/opds`.
-     * @param  null|string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
-     * @param  null|string  $searchQuery Search query, for example: `q`, default is `q`.
-     * @param  null|string  $versionQuery Version query, for example: `version`, default is `version`.
-     * @param  null|DateTime  $updated Updated date, for example: `new DateTime()`.
-     * @param  bool  $usePagination Use pagination, default is `true`.
-     * @param  int  $maxItemsPerPage Maximum items per page, default is `32`.
+     * @param  ?string  $name OPDS application name, for example: `Gallica`.
+     * @param  ?string  $author Application author, for example: `Hadrien Gardeur`.
+     * @param  ?string  $authorUrl Application author URL, for example: `https://example.com`.
+     * @param  ?string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
+     * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
+     * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
+     * @param  ?string  $searchQuery Search query, for example: `q`, default is `q`.
+     * @param  ?string  $versionQuery Version query, for example: `version`, default is `version`.
+     * @param  ?DateTime  $updated Updated date, for example: `new DateTime()`.
+     * @param  ?bool  $usePagination Use pagination, default is `true`.
+     * @param  ?int  $maxItemsPerPage Maximum items per page, default is `32`.
      */
     public function __construct(
-        protected string $name = 'opds',
-        protected ?string $author = null,
-        protected ?string $authorUrl = null,
-        protected ?string $iconUrl = null,
-        protected ?string $startUrl = null,
-        protected ?string $searchUrl = null,
-        protected ?string $searchQuery = 'q',
-        protected ?string $versionQuery = 'version',
-        protected ?DateTime $updated = null,
-        protected bool $usePagination = true,
-        protected int $maxItemsPerPage = 32,
+        public ?string $name = 'opds',
+        public ?string $author = null,
+        public ?string $authorUrl = null,
+        public ?string $iconUrl = null,
+        public ?string $startUrl = null,
+        public ?string $searchUrl = null,
+        public ?string $searchQuery = 'q',
+        public ?string $versionQuery = 'version',
+        public ?DateTime $updated = null,
+        public ?bool $usePagination = true,
+        public ?int $maxItemsPerPage = 32,
     ) {
-    }
-
-    public function name(): string
-    {
-        return $this->name;
-    }
-
-    public function author(): ?string
-    {
-        return $this->author;
-    }
-
-    public function authorUrl(): ?string
-    {
-        return $this->authorUrl;
-    }
-
-    public function iconUrl(): ?string
-    {
-        return $this->iconUrl;
-    }
-
-    public function startUrl(): ?string
-    {
-        return $this->startUrl;
-    }
-
-    public function searchUrl(): ?string
-    {
-        return $this->searchUrl;
-    }
-
-    public function searchQuery(): ?string
-    {
-        return $this->searchQuery;
-    }
-
-    public function versionQuery(): ?string
-    {
-        return $this->versionQuery;
-    }
-
-    public function updated(): ?DateTime
-    {
-        return $this->updated;
-    }
-
-    public function usePagination(): bool
-    {
-        return $this->usePagination;
-    }
-
-    public function maxItemsPerPage(): int
-    {
-        return $this->maxItemsPerPage;
     }
 
     /**
