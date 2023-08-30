@@ -188,6 +188,8 @@ abstract class OpdsEngine
             return $route;
         }
 
+        $query = [$query];
+
         return $route.'?'.http_build_query($query);
     }
 
