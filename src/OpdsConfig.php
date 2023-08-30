@@ -100,6 +100,90 @@ class OpdsConfig
         return $this->forceJson;
     }
 
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function setAuthor(?string $author): self
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    public function setAuthorUrl(?string $authorUrl): self
+    {
+        $this->authorUrl = $authorUrl;
+
+        return $this;
+    }
+
+    public function setIconUrl(?string $iconUrl): self
+    {
+        $this->iconUrl = $iconUrl;
+
+        return $this;
+    }
+
+    public function setStartUrl(?string $startUrl): self
+    {
+        $this->startUrl = $startUrl;
+
+        return $this;
+    }
+
+    public function setSearchUrl(?string $searchUrl): self
+    {
+        $this->searchUrl = $searchUrl;
+
+        return $this;
+    }
+
+    public function setSearchQuery(string $searchQuery): self
+    {
+        $this->searchQuery = $searchQuery;
+
+        return $this;
+    }
+
+    public function setVersionQuery(string $versionQuery): self
+    {
+        $this->versionQuery = $versionQuery;
+
+        return $this;
+    }
+
+    public function setUpdated(DateTime $updated): self
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    public function usePagination(bool $usePagination): self
+    {
+        $this->usePagination = $usePagination;
+
+        return $this;
+    }
+
+    public function setMaxItemsPerPage(int $maxItemsPerPage): self
+    {
+        $this->maxItemsPerPage = $maxItemsPerPage;
+
+        return $this;
+    }
+
+    public function forceJson(bool $forceJson): self
+    {
+        $this->forceJson = $forceJson;
+
+        return $this;
+    }
+
     /**
      * Laravel export
      * Generate a URL friendly "slug" from a given string.
