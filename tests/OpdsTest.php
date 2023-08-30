@@ -5,30 +5,31 @@ use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\Tests\Utils\XmlReader;
+use Kiwilan\Opds\OpdsVersionEnum;
+use Kiwilan\XmlReader\XmlReader;
 
 it('is string', function () {
     $opds = Opds::make()
-        ->mock()
-        ->getResponse();
+        ->mock();
 
-    expect($opds->getContent())->toBeString();
+    $response = $opds->getResponse();
+    expect($response->getContent())->toBeString();
 });
 
 it('is valid xml', function () {
     $opds = Opds::make()
-        ->mock()
-        ->getResponse();
+        ->mock();
 
-    expect(isValidXml($opds->getContent()))->toBeTrue();
+    $response = $opds->getResponse();
+    expect(isValidXml($response->getContent()))->toBeTrue();
 });
 
 it('can be parsed', function () {
     $opds = Opds::make()
-        ->mock()
-        ->getResponse();
+        ->mock();
 
-    $xml = XmlReader::toArray($opds->getContent());
+    $response = $opds->getResponse();
+    $xml = XmlReader::make($response->getContent())->toArray();
     expect($xml)->toBeArray();
 });
 
@@ -44,14 +45,13 @@ it('can be display feeds', function () {
                 updated: new DateTime(),
             ),
         ])
-        ->mock()
-        ->getResponse();
+        ->mock();
 
-    $xml = XmlReader::toArray($opds->getContent());
-    // dump($xml);
-    // expect($xml)->toBeArray();
+    $response = $opds->getResponse();
+    $xml = XmlReader::make($response->getContent())->toArray();
 
-    expect($opds->getContent())->toBeString();
+    expect($xml)->toBeArray();
+    expect($response->getContent())->toBeString();
 });
 
 it('can be display feeds books', function () {
@@ -102,13 +102,10 @@ it('can be display feeds books', function () {
                 language: 'English',
             ),
         ])
-        ->mock()
-        ->getResponse();
+        ->mock();
 
-    // $xml = XmlReader::toArray($opds);
-    // expect($xml)->toBeArray();
-
-    expect($opds->getContent())->toBeString();
+    $response = $opds->getResponse();
+    expect($response->getContent())->toBeString();
 });
 
 it('can search', function () {
@@ -136,11 +133,24 @@ it('can search', function () {
                 language: 'English',
             ),
         ])
-        ->mock()
-        ->getResponse();
+        ->mock();
 
-    // $xml = XmlReader::toArray($opds);
-    // expect($xml)->toBeArray();
+    $response = $opds->getResponse();
+    expect($response->getContent())->toBeString();
+});
 
-    expect($opds->getContent())->toBeString();
+it('can force OPDS 2.0', function () {
+    $opds = Opds::make(getConfig(true))
+        ->url('http://localhost:8000/opds')
+        ->mock();
+
+    expect($opds->getVersion())->toBe(OpdsVersionEnum::v2Dot0);
+});
+
+it('can use query for OPDS 2.0', function () {
+    $opds = Opds::make(getConfig())
+        ->url('http://localhost:8000/opds?v=2.0')
+        ->mock();
+
+    expect($opds->getVersion())->toBe(OpdsVersionEnum::v2Dot0);
 });

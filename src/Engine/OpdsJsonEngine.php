@@ -70,6 +70,8 @@ class OpdsJsonEngine extends OpdsEngine
 
     public function search(): self
     {
+        $this->feed();
+
         return $this;
     }
 
@@ -114,6 +116,12 @@ class OpdsJsonEngine extends OpdsEngine
             ];
         }
 
+        $summary = json_encode($entry->getSummary(), JSON_UNESCAPED_UNICODE);
+
+        if ($summary) {
+            $summary = (string) json_decode($summary, true, 512, JSON_THROW_ON_ERROR);
+        }
+
         return [
             'metadata' => [
                 '@type' => 'http://schema.org/EBook',
@@ -124,7 +132,7 @@ class OpdsJsonEngine extends OpdsEngine
                 'language' => $entry->getLanguage(),
                 'publisher' => $entry->getPublisher(),
                 'modified' => $entry->getUpdated(),
-                'description' => json_encode($entry->getSummary(), JSON_UNESCAPED_UNICODE),
+                'description' => $summary,
                 'belongsTo' => $belongsTo,
             ],
             'links' => [

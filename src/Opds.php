@@ -26,6 +26,7 @@ class Opds
         protected array $feeds = [],
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
+        protected string $output = 'xml', // xml or json
         protected ?OpdsResponse $response = null,
     ) {
     }
@@ -100,8 +101,20 @@ class Opds
      */
     public function mock(): self
     {
+        if ($this->queryVersion) {
+            $this->version = $this->queryVersion;
+        }
+
         if ($this->config->isForceJson()) {
             $this->version = OpdsVersionEnum::v2Dot0;
+        }
+
+        if ($this->version === OpdsVersionEnum::v1Dot2) {
+            $this->output = 'xml';
+        }
+
+        if ($this->version === OpdsVersionEnum::v2Dot0) {
+            $this->output = 'json';
         }
 
         $this->engine = match ($this->version) {

@@ -33,5 +33,8 @@ it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
     expect($entry->getVolume())->toBe(1);
     expect($entry->getSerie())->toBe('Earth\'s Children');
     expect($entry->getLanguage())->toBe('English');
+    expect($entry->getIsbn())->toBe('1234567890');
+    expect($entry->getTranslator())->toBe('Translator');
+    expect($entry->getPublisher())->toBe('Publisher');
     expect($entry->toArray())->toBeArray();
 })->with('feeds-books');

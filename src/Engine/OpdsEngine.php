@@ -130,7 +130,7 @@ abstract class OpdsEngine
     }
 
     protected function addJsonLink(
-        string $href,
+        string $href = null,
         string $title = null,
         string $rel = null,
         string $type = 'application/opds+json',
@@ -160,7 +160,7 @@ abstract class OpdsEngine
     }
 
     protected function addXmlLink(
-        string $href,
+        string $href = null,
         string $title = null,
         string $rel = null,
         string $type = 'application/atom+xml;profile=opds-catalog;kind=acquisition',
@@ -175,9 +175,14 @@ abstract class OpdsEngine
         ];
     }
 
-    protected function route(string $route): string
+    protected function route(?string $route): ?string
     {
+        if (! $route) {
+            return null;
+        }
+
         $query = $this->opds->getQuery();
+        $query = $query[$this->opds->getConfig()->getVersionQuery()] ?? null;
 
         if (! $query) {
             return $route;
