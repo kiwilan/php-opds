@@ -79,9 +79,9 @@ class OpdsController
       ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
     ;
 
-    $debug = $opds->mock(); // `Opds::class` instance with response
+    $debug = $opds->get(); // `Opds::class` instance with response
 
-    return $opds->get(); // XML or JSON response
+    return $opds->response(); // XML or JSON response
   }
 }
 ```
@@ -147,7 +147,7 @@ class OpdsController
       ])
     );
 
-    return $opds->get();
+    return $opds->response();
   }
 
   public function books()
@@ -178,7 +178,7 @@ class OpdsController
         ),
       ]);
 
-    return $opds->get();
+    return $opds->response();
   }
 
   private function config(): OpdsConfig

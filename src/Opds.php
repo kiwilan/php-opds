@@ -97,9 +97,9 @@ class Opds
     }
 
     /**
-     * Mock XML or JSON response (depends on `version`).
+     * Get OPDS with full response.
      */
-    public function mock(): self
+    public function get(): self
     {
         if ($this->queryVersion) {
             $this->version = $this->queryVersion;
@@ -126,12 +126,11 @@ class Opds
         return $this;
     }
 
-    /**
-     * Get XML or JSON response (depends on `version`).
-     */
-    public function get(): never
+    public function response(): self
     {
-        $this->mock();
+        if (! $this->response) {
+            $this->get();
+        }
 
         $this->response->response();
     }
@@ -246,7 +245,7 @@ class Opds
     public function getEngine(): ?OpdsEngine
     {
         if (! $this->engine) {
-            $this->mock();
+            $this->get();
         }
 
         return $this->engine;
@@ -258,7 +257,7 @@ class Opds
     public function getResponse(): ?OpdsResponse
     {
         if (! $this->response) {
-            $this->mock();
+            $this->get();
         }
 
         return $this->response;

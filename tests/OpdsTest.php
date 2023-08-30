@@ -10,7 +10,7 @@ use Kiwilan\XmlReader\XmlReader;
 
 it('is string', function () {
     $opds = Opds::make()
-        ->mock();
+        ->get();
 
     $response = $opds->getResponse();
     expect($response->getContent())->toBeString();
@@ -18,7 +18,7 @@ it('is string', function () {
 
 it('is valid xml', function () {
     $opds = Opds::make()
-        ->mock();
+        ->get();
 
     $response = $opds->getResponse();
     expect(isValidXml($response->getContent()))->toBeTrue();
@@ -26,7 +26,7 @@ it('is valid xml', function () {
 
 it('can be parsed', function () {
     $opds = Opds::make()
-        ->mock();
+        ->get();
 
     $response = $opds->getResponse();
     $xml = XmlReader::make($response->getContent())->toArray();
@@ -45,7 +45,7 @@ it('can be display feeds', function () {
                 updated: new DateTime(),
             ),
         ])
-        ->mock();
+        ->get();
 
     $response = $opds->getResponse();
     $xml = XmlReader::make($response->getContent())->toArray();
@@ -102,7 +102,7 @@ it('can be display feeds books', function () {
                 language: 'English',
             ),
         ])
-        ->mock();
+        ->get();
 
     $response = $opds->getResponse();
     expect($response->getContent())->toBeString();
@@ -133,7 +133,7 @@ it('can search', function () {
                 language: 'English',
             ),
         ])
-        ->mock();
+        ->get();
 
     $response = $opds->getResponse();
     expect($response->getContent())->toBeString();
@@ -142,7 +142,7 @@ it('can search', function () {
 it('can force OPDS 2.0', function () {
     $opds = Opds::make(getConfig(true))
         ->url('http://localhost:8000/opds')
-        ->mock();
+        ->get();
 
     expect($opds->getVersion())->toBe(OpdsVersionEnum::v2Dot0);
 });
@@ -150,7 +150,7 @@ it('can force OPDS 2.0', function () {
 it('can use query for OPDS 2.0', function () {
     $opds = Opds::make(getConfig())
         ->url('http://localhost:8000/opds?v=2.0')
-        ->mock();
+        ->get();
 
     expect($opds->getVersion())->toBe(OpdsVersionEnum::v2Dot0);
 });
