@@ -17,17 +17,17 @@ class OpdsResponse
     /**
      * Create a new Response.
      */
-    public static function make(OpdsEngine $converter, int $status = 200): self
+    public static function make(OpdsEngine $engine, int $status = 200): self
     {
         $self = new self($status);
 
-        $self->isXml = $self->isValidXml($converter->getResponse());
-        $self->isJson = $self->isValidJson($converter->getResponse());
+        $self->isXml = $self->isValidXml($engine->getResponse());
+        $self->isJson = $self->isValidJson($engine->getResponse());
 
         if ($self->isJson || $self->isXml) {
-            $self->content = $converter->getResponse();
+            $self->content = $engine->getResponse();
         } else {
-            throw new \Exception('Invalid content');
+            throw new \Exception('OPDS Response: invalid content');
         }
 
         return $self;

@@ -100,6 +100,10 @@ class Opds
      */
     public function mock(): self
     {
+        if ($this->config->isForceJson()) {
+            $this->version = OpdsVersionEnum::v2Dot0;
+        }
+
         $this->engine = match ($this->version) {
             OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
             OpdsVersionEnum::v2Dot0 => Opds2Dot0Module::make($this),
@@ -147,7 +151,7 @@ class Opds
         };
 
         if ($version !== null && $enumVersion === null) {
-            throw new \Exception("Query param {$this->config->getVersionQuery()} {$version} is not supported.");
+            throw new \Exception("OPDS version {$version} is not supported.");
         }
 
         if ($enumVersion) {

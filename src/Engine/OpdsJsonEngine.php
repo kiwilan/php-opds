@@ -5,6 +5,7 @@ namespace Kiwilan\Opds\Engine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsVersionEnum;
 
 /**
  * @docs https://drafts.opds.io/opds-2.0
@@ -26,29 +27,31 @@ class OpdsJsonEngine extends OpdsEngine
     {
         $this->xml = [
             'metadata' => [
-                'title' => $this->opds->getTitle(),
+                'title' => $this->getFeedTitle(),
             ],
-
             'links' => [
-                ['rel' => 'self', 'href' => 'http://example.com/opds', 'type' => 'application/opds+json'],
-                ['rel' => 'search', 'href' => 'http://example.com/opds?search{?query}', 'type' => 'application/opds+json', 'templated' => true],
+                $this->addJsonLink(rel: 'self', href: OpdsEngine::getCurrentUrl()),
+                $this->addJsonLink(rel: 'start', href: $this->route($this->opds->getConfig()->getStartUrl())),
+                $this->addJsonLink(rel: 'search', href: $this->route($this->opds->getConfig()->getSearchUrl()), attributes: ['templated' => true]),
             ],
         ];
 
-        // $this->xml['navigation'] = [
-        //     [
-        //         'href' => '/new',
-        //         'title' => 'New Publications',
-        //         'type' => 'application/opds+json',
-        //         'rel' => 'current',
-        //     ],
-        //     [
-        //         'href' => '/popular',
-        //         'title' => 'Popular Publications',
-        //         'type' => 'application/opds+json',
-        //         'rel' => 'http://opds-spec.org/sort/popular',
-        //     ],
-        // ];
+        if ($this->opds->getConfig()->getStartUrl()) {
+            if (! $this->opds->getConfig()->isForceJson()) {
+                $this->xml['links'][] = $this->addJsonLink(
+                    rel: 'alternate',
+                    href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
+                    title: 'OPDS 1.2',
+                    type: 'application/atom+xml',
+                );
+            }
+            $this->xml['links'][] = $this->addJsonLink(
+                rel: 'alternate',
+                href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
+                title: 'OPDS 2.0',
+                type: 'application/opds+json',
+            );
+        }
 
         foreach ($this->opds->getFeeds() as $feed) {
             if ($feed instanceof OpdsEntryBook) {
@@ -82,43 +85,56 @@ class OpdsJsonEngine extends OpdsEngine
 
     public function addBookEntry(OpdsEntryBook $entry): array
     {
+        $mainAuthor = $entry->getAuthors()[0] ?? null;
+
+        if ($mainAuthor) {
+            $mainAuthor = [
+                'name' => $mainAuthor->getName(),
+                // 'identifier' => $mainAuthor->getIdentifier(), // 'http://isni.org/isni/0000000121400562'
+                // 'sortAs' => $mainAuthor->getSortAs(), // 'Verne, Jules'
+                'links' => [
+                    ['href' => $this->route($mainAuthor->getUri()), 'type' => 'application/opds+json'],
+                ],
+            ];
+        }
+
+        $serie = $entry->getSerie();
+        $belongsTo = null;
+
+        if ($serie) {
+            $belongsTo = [
+                'series' => [
+                    'name' => $serie,
+                    'position' => $entry->getVolume(),
+                    // 'links' => [
+                    //     ['href' => '/series/167', 'type' => 'application/opds+json'],
+                    // ],
+                ],
+                // 'collection' => 'SciFi Classics',
+            ];
+        }
+
         return [
             'metadata' => [
                 '@type' => 'http://schema.org/EBook',
-                'identifier' => 'urn:isbn:9780000000002',
-                'title' => 'A Journey into the Center of the Earth',
-                'author' => [
-                    'name' => 'Jules Verne',
-                    'identifier' => 'http://isni.org/isni/0000000121400562',
-                    'sortAs' => 'Verne, Jules',
-                    'links' => [
-                        ['href' => '/author/0000000121400562', 'type' => 'application/opds+json'],
-                    ],
-                ],
-                'translator' => 'Frederick Amadeus Malleson',
-                'language' => 'en',
-                'publisher' => 'SciFi Publishing Inc.',
-                'modified' => '2016-02-22T11:31:38Z',
-                'description' => 'The story involves German professor Otto Lidenbrock who believes there are volcanic tubes going toward the centre of the Earth. He, his nephew Axel, and their guide Hans descend into the Icelandic volcano Snæfellsjökull, encountering many adventures, including prehistoric animals and natural hazards, before eventually coming to the surface again in southern Italy, at the Stromboli volcano.',
-                'belongsTo' => [
-                    'series' => [
-                        'name' => 'The Extraordinary Voyages',
-                        'position' => 3,
-                        'links' => [
-                            ['href' => '/series/167', 'type' => 'application/opds+json'],
-                        ],
-                    ],
-                    'collection' => 'SciFi Classics',
-                ],
+                'identifier' => "urn:isbn:{$entry->getIsbn()}",
+                'title' => $entry->getTitle(),
+                'author' => $mainAuthor,
+                'translator' => $entry->getTranslator(),
+                'language' => $entry->getLanguage(),
+                'publisher' => $entry->getPublisher(),
+                'modified' => $entry->getUpdated(),
+                'description' => json_encode($entry->getSummary(), JSON_UNESCAPED_UNICODE),
+                'belongsTo' => $belongsTo,
             ],
             'links' => [
-                ['rel' => 'self', 'href' => 'http://example.org/publication.json', 'type' => 'application/opds-publication+json'],
-                ['rel' => 'http://opds-spec.org/acquisition', 'href' => 'http://example.org/file.epub', 'type' => 'application/epub+zip'],
+                $this->addJsonLink(rel: 'self', href: $this->route($entry->getRoute())),
+                $this->addJsonLink(rel: 'http://opds-spec.org/acquisition', href: $entry->getDownload(), type: 'application/epub+zip'),
             ],
             'images' => [
-                ['href' => 'http://example.org/cover.jpg', 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
-                ['href' => 'http://example.org/cover-small.jpg', 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],
-                ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
+                ['href' => $entry->getMedia(), 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
+                ['href' => $entry->getMediaThumbnail(), 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],
+                // ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
             ],
         ];
     }

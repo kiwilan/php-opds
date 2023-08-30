@@ -7,6 +7,7 @@ use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\OpdsVersionEnum;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class OpdsXmlEngine extends OpdsEngine
@@ -24,12 +25,8 @@ class OpdsXmlEngine extends OpdsEngine
 
     public function feed(): self
     {
-        $id = OpdsConfig::slug($this->opds->getConfig()->getName());
-        $id .= ':'.OpdsConfig::slug($this->opds->getTitle());
-
-        $title = "{$this->opds->getConfig()->getName()} OPDS";
-        $title .= ': '.ucfirst(strtolower($this->opds->getTitle()));
-
+        $id = $this->getFeedId();
+        $title = $this->getFeedTitle();
         $updated = $this->opds->getConfig()->getUpdated();
 
         $this->xml = [
@@ -45,24 +42,22 @@ class OpdsXmlEngine extends OpdsEngine
         $this->xml['__custom:link:1'] = $this->addXmlLink(href: OpdsEngine::getCurrentUrl(), title: 'self', rel: 'self');
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $this->xml['__custom:link:2'] = $this->addXmlLink(href: $this->opds->getConfig()->getStartUrl(), title: 'Home', rel: 'start');
+            $this->xml['__custom:link:2'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getStartUrl()), title: 'Home', rel: 'start');
         }
 
         if ($this->opds->getConfig()->getSearchUrl()) {
-            $this->xml['__custom:link:3'] = $this->addXmlLink(href: $this->opds->getConfig()->getSearchUrl(), title: 'Search here', rel: 'search');
+            $this->xml['__custom:link:3'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getSearchUrl()), title: 'Search here', rel: 'search');
         }
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $startUrl = $this->opds->getConfig()->getStartUrl();
-            $query = $this->opds->getConfig()->getVersionQuery();
             $this->xml['__custom:link:4'] = $this->addXmlLink(
-                href: "{$startUrl}?{$query}=1.2",
+                href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
                 title: 'OPDS 1.2',
                 rel: 'alternate',
                 type: 'application/atom+xml'
             );
             $this->xml['__custom:link:5'] = $this->addXmlLink(
-                href: "{$startUrl}?{$query}=2.0",
+                href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
                 title: 'OPDS 2.0',
                 rel: 'alternate',
                 type: 'application/opds+json'

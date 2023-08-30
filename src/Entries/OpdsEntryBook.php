@@ -26,6 +26,9 @@ class OpdsEntryBook extends OpdsEntryNavigation
         protected ?int $volume = null,
         protected ?string $serie = null,
         protected ?string $language = null,
+        protected ?string $isbn = null,
+        protected ?string $translator = null,
+        protected ?string $publisher = null,
     ) {
         parent::__construct(
             id: $id,
@@ -84,6 +87,21 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this->language;
     }
 
+    public function getIsbn(): ?string
+    {
+        return $this->isbn;
+    }
+
+    public function getTranslator(): ?string
+    {
+        return $this->translator;
+    }
+
+    public function getPublisher(): ?string
+    {
+        return $this->publisher;
+    }
+
     public function toArray(): array
     {
         return array_merge(parent::toArray(), [
@@ -95,6 +113,9 @@ class OpdsEntryBook extends OpdsEntryNavigation
             'volume' => $this->getVolume(),
             'serie' => $this->getSerie(),
             'language' => $this->getLanguage(),
+            'isbn' => $this->getIsbn(),
+            'translator' => $this->getTranslator(),
+            'publisher' => $this->getPublisher(),
         ]);
     }
 }
