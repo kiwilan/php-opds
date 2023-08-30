@@ -4,7 +4,7 @@ namespace Kiwilan\Opds\Entries;
 
 use DateTime;
 
-class OpdsEntryNavigation
+class OpdsEntryNavigation extends OpdsEntry
 {
     public function __construct(
         protected string $id,

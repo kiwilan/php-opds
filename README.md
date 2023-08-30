@@ -11,10 +11,10 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
-| Version | Supported |       Date        | Format |
-| :-----: | :-------: | :---------------: | :----: |
-|   1.2   |    ✅     | November 11, 2018 |  XML   |
-|   2.0   |    ✅     |       Draft       |  JSON  |
+| Version | Supported |       Date        | Format |  Query param   |
+| :-----: | :-------: | :---------------: | :----: | :------------: |
+|   1.2   |    ✅     | November 11, 2018 |  XML   | `?version=1.2` |
+|   2.0   |    ✅     |       Draft       |  JSON  | `?version=2.0` |
 
 ## Requirements
 
@@ -50,39 +50,38 @@ composer require kiwilan/php-opds
 
 ## Usage
 
+### Version
+
+You can use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
+
+-   Version `1.2` can be set with `?version=1.2`
+-   Version `2.0` can be set with `?version=2.0`
+
 ### Response
 
-You can use the `Opds::make()` method to create an OPDS response, default response is XML with OPDS version 1.2.
-
-> **Note**
->
-> You can use the `OpdsVersionEnum` to set the OPDS version statically or use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
->
-> -   Version `1.2` can be set with `?version=1.2`
-> -   Version `2.0` can be set with `?version=2.0`
+You can use the `Opds::make()` method to create an OPDS instance, default response is XML with OPDS version 1.2.
 
 ```php
 <?php
 
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\OpdsVersionEnum;
 
 class OpdsController
 {
+  /**
+   * OPDS version can be set with query parameter: `?version=1.2` or `?version=2.0`
+   */
   public function index()
   {
     return Opds::make(new OpdsConfig())
-      ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
       ->title('My feed')
-      ->url('https://example.com/opds') // Can be null to be set automatically
-      ->version(OpdsVersionEnum::v1_2) // OPDS version (can be set with query parameter or `OpdsConfig::class`)
-      ->isSearch() // Is search feed
+      ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
     ;
 
-    $debug = $opds->mockResponse(); // `Opds::class` instance with response
+    $debug = $opds->mock(); // `Opds::class` instance with response
 
-    return $opds->response() // XML or JSON response
+    return $opds->get(); // XML or JSON response
   }
 }
 ```
@@ -103,10 +102,10 @@ new OpdsConfig(
   searchUrl: 'https://example.com/opds/search',
   searchQuery: 'q', // query parameter for search
   versionQuery: 'version', // query parameter for version
-  version: OpdsVersionEnum::v1_2, // To override default version
   updated: new DateTime(),
   usePagination: false, // To enable pagination, default is false
   maxItemsPerPage: 32,
+  forceJson: false, // To force JSON response as OPDS 2.0, default is false
 );
 ```
 
@@ -148,7 +147,7 @@ class OpdsController
       ])
     );
 
-    return $opds->response();
+    return $opds->get();
   }
 
   public function books()
@@ -179,7 +178,7 @@ class OpdsController
         ),
       ]);
 
-    return $opds->response();
+    return $opds->get();
   }
 
   private function config(): OpdsConfig
@@ -199,6 +198,10 @@ class OpdsController
 ### Advanced usage
 
 -   [With Laravel application](docs/real-world-application.md)
+
+## More
+
+-   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
 
 ## Testing
 

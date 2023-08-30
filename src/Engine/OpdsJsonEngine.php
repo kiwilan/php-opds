@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiwilan\Opds\Converters;
+namespace Kiwilan\Opds\Engine;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
@@ -9,7 +9,7 @@ use Kiwilan\Opds\Opds;
 /**
  * @docs https://drafts.opds.io/opds-2.0
  */
-class OpdsJsonConverter extends OpdsConverter
+class OpdsJsonEngine extends OpdsEngine
 {
     public static function make(Opds $opds): self
     {

@@ -2,7 +2,7 @@
 
 namespace Kiwilan\Opds;
 
-use Kiwilan\Opds\Converters\OpdsConverter;
+use Kiwilan\Opds\Engine\OpdsEngine;
 
 class OpdsResponse
 {
@@ -17,7 +17,7 @@ class OpdsResponse
     /**
      * Create a new Response.
      */
-    public static function make(OpdsConverter $converter, int $status = 200): self
+    public static function make(OpdsEngine $converter, int $status = 200): self
     {
         $self = new self($status);
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Kiwilan\Opds\Converters;
+namespace Kiwilan\Opds\Engine;
 
-use Kiwilan\Opds\Converters\Utils\OpdsNamespaces;
+use Kiwilan\Opds\Engine\Utils\OpdsNamespaces;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Spatie\ArrayToXml\ArrayToXml;
 
-class OpdsXmlConverter extends OpdsConverter
+class OpdsXmlEngine extends OpdsEngine
 {
     public static function make(Opds $opds): self
     {
@@ -24,13 +24,13 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function feed(): self
     {
-        $id = OpdsConfig::slug($this->opds->getConfig()->name);
+        $id = OpdsConfig::slug($this->opds->getConfig()->getName());
         $id .= ':'.OpdsConfig::slug($this->opds->getTitle());
 
-        $title = "{$this->opds->getConfig()->name} OPDS";
+        $title = "{$this->opds->getConfig()->getName()} OPDS";
         $title .= ': '.ucfirst(strtolower($this->opds->getTitle()));
 
-        $updated = $this->opds->getConfig()->updated ?? new \DateTime();
+        $updated = $this->opds->getConfig()->getUpdated();
 
         $this->xml = [
             'id' => $id,
@@ -38,30 +38,39 @@ class OpdsXmlConverter extends OpdsConverter
             'updated' => $updated->format(DATE_ATOM),
         ];
 
-        if ($this->opds->getConfig()->iconUrl) {
-            $this->xml['icon'] = $this->opds->getConfig()->iconUrl;
+        if ($this->opds->getConfig()->getIconUrl()) {
+            $this->xml['icon'] = $this->opds->getConfig()->getIconUrl();
         }
 
-        $this->xml['__custom:link:1'] = $this->addXmlLink(href: OpdsConverter::getCurrentUrl(), title: 'self', rel: 'self');
+        $this->xml['__custom:link:1'] = $this->addXmlLink(href: OpdsEngine::getCurrentUrl(), title: 'self', rel: 'self');
 
-        if ($this->opds->getConfig()->startUrl) {
-            $this->xml['__custom:link:2'] = $this->addXmlLink(href: $this->opds->getConfig()->startUrl, title: 'Home', rel: 'start');
+        if ($this->opds->getConfig()->getStartUrl()) {
+            $this->xml['__custom:link:2'] = $this->addXmlLink(href: $this->opds->getConfig()->getStartUrl(), title: 'Home', rel: 'start');
         }
 
-        if ($this->opds->getConfig()->searchUrl) {
-            $this->xml['__custom:link:3'] = $this->addXmlLink(href: $this->opds->getConfig()->searchUrl, title: 'Search here', rel: 'search');
+        if ($this->opds->getConfig()->getSearchUrl()) {
+            $this->xml['__custom:link:3'] = $this->addXmlLink(href: $this->opds->getConfig()->getSearchUrl(), title: 'Search here', rel: 'search');
         }
 
-        if ($this->opds->getConfig()->version1Dot2Url) {
-            $this->xml['__custom:link:4'] = $this->addXmlLink(href: $this->opds->getConfig()->version1Dot2Url, title: 'OPDS 1.2', rel: 'alternate', type: 'application/atom+xml');
+        if ($this->opds->getConfig()->getStartUrl()) {
+            $startUrl = $this->opds->getConfig()->getStartUrl();
+            $query = $this->opds->getConfig()->getVersionQuery();
+            $this->xml['__custom:link:4'] = $this->addXmlLink(
+                href: "{$startUrl}?{$query}=1.2",
+                title: 'OPDS 1.2',
+                rel: 'alternate',
+                type: 'application/atom+xml'
+            );
+            $this->xml['__custom:link:5'] = $this->addXmlLink(
+                href: "{$startUrl}?{$query}=2.0",
+                title: 'OPDS 2.0',
+                rel: 'alternate',
+                type: 'application/opds+json'
+            );
         }
 
-        if ($this->opds->getConfig()->version2Dot0Url) {
-            $this->xml['__custom:link:5'] = $this->addXmlLink(href: $this->opds->getConfig()->version2Dot0Url, title: 'OPDS 2.0', rel: 'alternate', type: 'application/opds+json');
-        }
-
-        if ($this->opds->getConfig()->author) {
-            $this->xml['author'] = ['name' => $this->opds->getConfig()->author, 'uri' => $this->opds->getConfig()->authorUrl];
+        if ($this->opds->getConfig()->getAuthor()) {
+            $this->xml['author'] = ['name' => $this->opds->getConfig()->getAuthor(), 'uri' => $this->opds->getConfig()->getAuthorUrl()];
         }
 
         $this->xml = $this->handleXmlPagination($this->xml);
@@ -85,11 +94,11 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function search(): self
     {
-        $searchQuery = $this->opds->getConfig()->searchQuery;
-        $app = OpdsConfig::slug($this->opds->getConfig()->name);
+        $searchQuery = $this->opds->getConfig()->getSearchQuery();
+        $app = OpdsConfig::slug($this->opds->getConfig()->getName());
 
         $query = $this->opds->getQuery()[$searchQuery] ?? null;
-        $searchURL = $this->opds->getConfig()->searchUrl.'?'.$searchQuery.'={searchTerms}';
+        $searchURL = $this->opds->getConfig()->getSearchUrl().'?'.$searchQuery.'={searchTerms}';
 
         if ($query) {
             $this->feed();
@@ -103,11 +112,11 @@ class OpdsXmlConverter extends OpdsConverter
             'InputEncoding' => $this->addXmlNode('UTF-8'),
             'OutputEncoding' => $this->addXmlNode('UTF-8'),
             'Image' => $this->addXmlNode(
-                value: $this->opds->getConfig()->authorUrl.'/favicon.ico',
+                value: $this->opds->getConfig()->getAuthorUrl().'/favicon.ico',
                 attributes: ['width' => '16', 'height' => '16', 'type' => 'image/x-icon']
             ),
             // 'template' => 'http://gallica.bnf.fr/assets/static/opensearchdescription.xml',
-            '__custom:Url:3' => $this->addXmlNode(attributes: ['template' => $this->opds->getConfig()->searchUrl, 'type' => 'application/opensearchdescription+xml', 'rel' => 'self']),
+            '__custom:Url:3' => $this->addXmlNode(attributes: ['template' => $this->opds->getConfig()->getSearchUrl(), 'type' => 'application/opensearchdescription+xml', 'rel' => 'self']),
             '__custom:Url:4' => $this->addXmlNode(attributes: ['template' => $searchURL, 'type' => 'application/atom+xml']),
             'Query' => $this->addXmlNode(attributes: ['role' => 'example', 'searchTerms' => 'robot']),
             'Developer' => $this->addXmlNode("{$app} Team"),
@@ -132,7 +141,7 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function entry(OpdsEntryNavigation $entry): array
     {
-        $app = OpdsConfig::slug($this->opds->getConfig()->name);
+        $app = OpdsConfig::slug($this->opds->getConfig()->getName());
         $feed = [
             'title' => $entry->getTitle(),
             'id' => "{$app}:{$entry->getId()}",
@@ -173,7 +182,7 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function addNavigationEntry(OpdsEntryNavigation $entry): array
     {
-        $app = OpdsConfig::slug($this->opds->getConfig()->name);
+        $app = OpdsConfig::slug($this->opds->getConfig()->getName());
         $entryXml = [
             'title' => $entry->getTitle(),
             'id' => "{$app}:{$entry->getId()}",
@@ -219,7 +228,7 @@ class OpdsXmlConverter extends OpdsConverter
 
     public function addBookEntry(OpdsEntryBook $entry): array
     {
-        $app = OpdsConfig::slug($this->opds->getConfig()->name);
+        $app = OpdsConfig::slug($this->opds->getConfig()->getName());
         $id = $app.':books:';
         $id .= $entry->getSerie() ? OpdsConfig::slug($entry->getSerie()).':' : null;
         $id .= OpdsConfig::slug($entry->getTitle());
