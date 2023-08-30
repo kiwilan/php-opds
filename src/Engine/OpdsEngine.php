@@ -188,7 +188,7 @@ abstract class OpdsEngine
             return $route;
         }
 
-        $query = [$query];
+        $query = [$this->opds->getConfig()->getVersionQuery() => $query];
 
         return $route.'?'.http_build_query($query);
     }
