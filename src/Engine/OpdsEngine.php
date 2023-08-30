@@ -5,6 +5,8 @@ namespace Kiwilan\Opds\Engine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsConfig;
+use Kiwilan\Opds\OpdsVersionEnum;
 
 abstract class OpdsEngine
 {
@@ -88,6 +90,30 @@ abstract class OpdsEngine
         return "{$http}://{$host}{$uri}";
     }
 
+    protected function getFeedId(): string
+    {
+        $id = OpdsConfig::slug($this->opds->getConfig()->getName());
+        $id .= ':'.OpdsConfig::slug($this->opds->getTitle());
+
+        return $id;
+    }
+
+    protected function getFeedTitle(): string
+    {
+        $title = "{$this->opds->getConfig()->getName()} OPDS";
+        $title .= ': '.ucfirst(strtolower($this->opds->getTitle()));
+
+        return $title;
+    }
+
+    protected function getVersionUrl(OpdsVersionEnum $version): string
+    {
+        $startUrl = $this->opds->getConfig()->getStartUrl();
+        $query = $this->opds->getConfig()->getVersionQuery();
+
+        return "{$startUrl}?{$query}={$version->value}";
+    }
+
     protected function addXmlNode(string $value = null, ?array $attributes = []): array
     {
         $node = [];
@@ -103,8 +129,38 @@ abstract class OpdsEngine
         return $node;
     }
 
+    protected function addJsonLink(
+        string $href = null,
+        string $title = null,
+        string $rel = null,
+        string $type = 'application/opds+json',
+        array $attributes = [],
+    ): array {
+        $data = [
+            'href' => $href,
+        ];
+
+        if ($title) {
+            $data['title'] = $title;
+        }
+
+        if ($type) {
+            $data['type'] = $type;
+        }
+
+        if ($rel) {
+            $data['rel'] = $rel;
+        }
+
+        if ($attributes) {
+            $data = array_merge($data, $attributes);
+        }
+
+        return $data;
+    }
+
     protected function addXmlLink(
-        string $href,
+        string $href = null,
         string $title = null,
         string $rel = null,
         string $type = 'application/atom+xml;profile=opds-catalog;kind=acquisition',
@@ -119,13 +175,20 @@ abstract class OpdsEngine
         ];
     }
 
-    protected function route(string $route): string
+    protected function route(?string $route): ?string
     {
+        if (! $route) {
+            return null;
+        }
+
         $query = $this->opds->getQuery();
+        $query = $query[$this->opds->getConfig()->getVersionQuery()] ?? null;
 
         if (! $query) {
             return $route;
         }
+
+        $query = [$query];
 
         return $route.'?'.http_build_query($query);
     }

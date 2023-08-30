@@ -26,6 +26,7 @@ class Opds
         protected array $feeds = [],
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
+        protected string $output = 'xml', // xml or json
         protected ?OpdsResponse $response = null,
     ) {
     }
@@ -96,10 +97,26 @@ class Opds
     }
 
     /**
-     * Mock XML or JSON response (depends on `version`).
+     * Get OPDS with full response.
      */
-    public function mock(): self
+    public function get(): self
     {
+        if ($this->queryVersion) {
+            $this->version = $this->queryVersion;
+        }
+
+        if ($this->config->isForceJson()) {
+            $this->version = OpdsVersionEnum::v2Dot0;
+        }
+
+        if ($this->version === OpdsVersionEnum::v1Dot2) {
+            $this->output = 'xml';
+        }
+
+        if ($this->version === OpdsVersionEnum::v2Dot0) {
+            $this->output = 'json';
+        }
+
         $this->engine = match ($this->version) {
             OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
             OpdsVersionEnum::v2Dot0 => Opds2Dot0Module::make($this),
@@ -109,12 +126,11 @@ class Opds
         return $this;
     }
 
-    /**
-     * Get XML or JSON response (depends on `version`).
-     */
-    public function get(): never
+    public function response(): self
     {
-        $this->mock();
+        if (! $this->response) {
+            $this->get();
+        }
 
         $this->response->response();
     }
@@ -147,7 +163,7 @@ class Opds
         };
 
         if ($version !== null && $enumVersion === null) {
-            throw new \Exception("Query param {$this->config->getVersionQuery()} {$version} is not supported.");
+            throw new \Exception("OPDS version {$version} is not supported.");
         }
 
         if ($enumVersion) {
@@ -229,7 +245,7 @@ class Opds
     public function getEngine(): ?OpdsEngine
     {
         if (! $this->engine) {
-            $this->mock();
+            $this->get();
         }
 
         return $this->engine;
@@ -241,7 +257,7 @@ class Opds
     public function getResponse(): ?OpdsResponse
     {
         if (! $this->response) {
-            $this->mock();
+            $this->get();
         }
 
         return $this->response;

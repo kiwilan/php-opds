@@ -79,9 +79,9 @@ class OpdsController
       ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
     ;
 
-    $debug = $opds->mock(); // `Opds::class` instance with response
+    $debug = $opds->get(); // `Opds::class` instance with response
 
-    return $opds->get(); // XML or JSON response
+    return $opds->response(); // XML or JSON response
   }
 }
 ```
@@ -147,7 +147,7 @@ class OpdsController
       ])
     );
 
-    return $opds->get();
+    return $opds->response();
   }
 
   public function books()
@@ -178,7 +178,7 @@ class OpdsController
         ),
       ]);
 
-    return $opds->get();
+    return $opds->response();
   }
 
   private function config(): OpdsConfig
@@ -202,6 +202,8 @@ class OpdsController
 ## More
 
 -   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
+-   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
+-   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
 
 ## Testing
 

@@ -37,6 +37,9 @@ dataset('feeds-books', [
         volume: 1,
         serie: 'Earth\'s Children',
         language: 'English',
+        isbn: '1234567890',
+        translator: 'Translator',
+        publisher: 'Publisher',
     ),
     new OpdsEntryBook(
         id: 'the-clan-of-the-cave-bear-2-epub-en',
@@ -59,6 +62,9 @@ dataset('feeds-books', [
         volume: 1,
         serie: 'Earth\'s Children',
         language: 'English',
+        isbn: '1234567890',
+        translator: 'Translator',
+        publisher: 'Publisher',
     ),
     new OpdsEntryBook(
         id: 'the-clan-of-the-cave-bear-3-epub-en',
@@ -81,5 +87,8 @@ dataset('feeds-books', [
         volume: 1,
         serie: 'Earth\'s Children',
         language: 'English',
+        isbn: '1234567890',
+        translator: 'Translator',
+        publisher: 'Publisher',
     ),
 ]);
