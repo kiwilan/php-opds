@@ -202,6 +202,8 @@ class OpdsController
 ## More
 
 -   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
+-   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
+-   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
 
 ## Testing
 
