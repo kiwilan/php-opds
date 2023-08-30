@@ -143,15 +143,13 @@ class IndexController extends Controller
 {
     public function index()
     {
-        $opds = Opds::make(
-            config: MyOpds::config(),
-            feeds: MyOpds::home(),
-        );
-
-        return $opds->response();
+        return Opds::make(MyOpds::config())
+            ->feeds(MyOpds::home())
+            ->get()
+        ;
     }
 
-    public function search(Request $request)
+    public function searchResults(Request $request)
     {
         $query = $request->input('q');
         $results = // use your search engine here
@@ -163,13 +161,12 @@ class IndexController extends Controller
             $feeds[] = MyOpds::bookToEntry($result);
         }
 
-        $opds = Opds::make(
-            config: MyOpds::config(),
-            feeds: $feeds,
-            title: "Search for {$query}",
-        );
-
-        return $opds->response();
+        return Opds::make(MyOpds::config())
+            ->title("Search for {$query}")
+            ->isSearch()
+            ->feeds($feeds)
+            ->get()
+        ;
     }
 }
 ```
@@ -200,15 +197,11 @@ class BookController extends Controller
             ->firstOrFail()
         ;
 
-        $opds = Opds::make(
-            config: MyOpds::config(),
-            feeds: [
-                MyOpds::bookToEntry($book),
-            ],
-            title: "Book {$book->title}",
-        );
-
-        return $opds->response();
+        return Opds::make(MyOpds::config())
+            ->title("Book {$book->title}")
+            ->feeds(MyOpds::bookToEntry($book))
+            ->get()
+        ;
     }
 }
 ```

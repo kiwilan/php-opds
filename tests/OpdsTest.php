@@ -9,7 +9,7 @@ use Kiwilan\Opds\Tests\Utils\XmlReader;
 
 it('is string', function () {
     $opds = Opds::make()
-        ->mockResponse()
+        ->mock()
         ->getResponse();
 
     expect($opds->getContent())->toBeString();
@@ -17,7 +17,7 @@ it('is string', function () {
 
 it('is valid xml', function () {
     $opds = Opds::make()
-        ->mockResponse()
+        ->mock()
         ->getResponse();
 
     expect(isValidXml($opds->getContent()))->toBeTrue();
@@ -25,7 +25,7 @@ it('is valid xml', function () {
 
 it('can be parsed', function () {
     $opds = Opds::make()
-        ->mockResponse()
+        ->mock()
         ->getResponse();
 
     $xml = XmlReader::toArray($opds->getContent());
@@ -44,7 +44,7 @@ it('can be display feeds', function () {
                 updated: new DateTime(),
             ),
         ])
-        ->mockResponse()
+        ->mock()
         ->getResponse();
 
     $xml = XmlReader::toArray($opds->getContent());
@@ -102,7 +102,7 @@ it('can be display feeds books', function () {
                 language: 'English',
             ),
         ])
-        ->mockResponse()
+        ->mock()
         ->getResponse();
 
     // $xml = XmlReader::toArray($opds);
@@ -136,7 +136,7 @@ it('can search', function () {
                 language: 'English',
             ),
         ])
-        ->mockResponse()
+        ->mock()
         ->getResponse();
 
     // $xml = XmlReader::toArray($opds);

@@ -2,7 +2,7 @@
 
 namespace Kiwilan\Opds;
 
-use Kiwilan\Opds\Converters\OpdsConverter;
+use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Modules\Opds1Dot2Module;
@@ -25,7 +25,7 @@ class Opds
         protected array $query = [],
         protected array $feeds = [],
         protected bool $isSearch = false,
-        protected ?OpdsConverter $engine = null,
+        protected ?OpdsEngine $engine = null,
         protected ?OpdsResponse $response = null,
     ) {
     }
@@ -37,16 +37,15 @@ class Opds
     {
         $self = new self($config);
 
-        $self->url = OpdsConverter::getCurrentUrl();
+        $self->url = OpdsEngine::getCurrentUrl();
         $self->parseUrl();
-        $self->version($self->version);
 
-        if ($config->version) {
-            $self->version($config->version);
+        if ($config->isForceJson()) {
+            $self->version = OpdsVersionEnum::v2Dot0;
         }
 
         if ($self->queryVersion) {
-            $self->version($self->queryVersion);
+            $self->version = $self->queryVersion;
         }
 
         return $self;
@@ -69,20 +68,6 @@ class Opds
     {
         $this->url = $url;
         $this->parseUrl();
-
-        return $this;
-    }
-
-    /**
-     * Change OPDS version, default is `v1Dot2`.
-     *
-     * Overridable with:
-     * - static version into `OpdsConfig::class` with `version` property.
-     * - query param like `?version=1.2` or `?version=2.0`.
-     */
-    public function version(OpdsVersionEnum $version): self
-    {
-        $this->version = $version;
 
         return $this;
     }
@@ -113,9 +98,12 @@ class Opds
     /**
      * Mock XML or JSON response (depends on `version`).
      */
-    public function mockResponse(): self
+    public function mock(): self
     {
-        $this->run();
+        $this->engine = match ($this->version) {
+            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
+            OpdsVersionEnum::v2Dot0 => Opds2Dot0Module::make($this),
+        };
         $this->response = OpdsResponse::make($this->engine, 200);
 
         return $this;
@@ -124,24 +112,11 @@ class Opds
     /**
      * Get XML or JSON response (depends on `version`).
      */
-    public function response(): string
+    public function get(): never
     {
-        $this->mockResponse();
+        $this->mock();
 
-        return $this->response->response();
-    }
-
-    /**
-     * Only for testing, run OPDS engine.
-     */
-    private function run(): self
-    {
-        $this->engine = match ($this->version) {
-            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
-            OpdsVersionEnum::v2Dot0 => Opds2Dot0Module::make($this),
-        };
-
-        return $this;
+        $this->response->response();
     }
 
     /**
@@ -152,23 +127,31 @@ class Opds
         $this->urlParts = parse_url($this->url);
         $query = $this->urlParts['query'] ?? null;
 
-        if ($query) {
-            parse_str($this->urlParts['query'], $query);
-            $this->query = $query;
+        if (! $query) {
+            return $this;
+        }
 
-            $version = $query[$this->config->versionQuery] ?? null;
+        parse_str($this->urlParts['query'], $query);
+        $this->query = $query;
 
-            if ($version) {
-                $enumVersion = match ($version) {
-                    '1.2' => OpdsVersionEnum::v1Dot2,
-                    '2.0' => OpdsVersionEnum::v2Dot0,
-                    default => null,
-                };
+        $version = $query[$this->config->getVersionQuery()] ?? null;
 
-                if ($enumVersion) {
-                    $this->queryVersion = $enumVersion;
-                }
-            }
+        if (! $version) {
+            return $this;
+        }
+
+        $enumVersion = match ($version) {
+            '1.2' => OpdsVersionEnum::v1Dot2,
+            '2.0' => OpdsVersionEnum::v2Dot0,
+            default => null,
+        };
+
+        if ($version !== null && $enumVersion === null) {
+            throw new \Exception("Query param {$this->config->getVersionQuery()} {$version} is not supported.");
+        }
+
+        if ($enumVersion) {
+            $this->queryVersion = $enumVersion;
         }
 
         return $this;
@@ -243,10 +226,10 @@ class Opds
     /**
      * Get OPDS engine.
      */
-    public function getEngine(): ?OpdsConverter
+    public function getEngine(): ?OpdsEngine
     {
         if (! $this->engine) {
-            $this->run();
+            $this->mock();
         }
 
         return $this->engine;
@@ -257,6 +240,10 @@ class Opds
      */
     public function getResponse(): ?OpdsResponse
     {
+        if (! $this->response) {
+            $this->mock();
+        }
+
         return $this->response;
     }
 }

@@ -11,33 +11,93 @@ use Transliterator;
 class OpdsConfig
 {
     /**
-     * @param  ?string  $name OPDS application name, for example: `Gallica`, default is `OPDS`.
+     * @param  string  $name OPDS application name, for example: `Gallica`, default is `opds`.
      * @param  ?string  $author Application author, for example: `Hadrien Gardeur`.
      * @param  ?string  $authorUrl Application author URL, for example: `https://example.com`.
      * @param  ?string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
      * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
      * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
-     * @param  ?string  $searchQuery Search query, for example: `q`, default is `q`.
-     * @param  ?string  $versionQuery Version query, for example: `version`, default is `version`.
-     * @param  ?OpdsVersionEnum  $version OPDS version, default is `v1Dot2`.
-     * @param  ?DateTime  $updated Updated date, for example: `new DateTime()`.
-     * @param  ?bool  $usePagination Use pagination, default is `true`.
-     * @param  ?int  $maxItemsPerPage Maximum items per page, default is `32`.
+     * @param  string  $searchQuery Search query, for example: `q`, default is `q`.
+     * @param  string  $versionQuery Version query, for example: `version`, default is `version`.
+     * @param  DateTime  $updated Updated date, for example: `new DateTime()`.
+     * @param  bool  $usePagination Use pagination, default is `true`.
+     * @param  int  $maxItemsPerPage Maximum items per page, default is `32`.
+     * @param  bool  $forceJson Force OPDS version 2.0 as default, default is `false`.
      */
     public function __construct(
-        public ?string $name = 'opds',
-        public ?string $author = null,
-        public ?string $authorUrl = null,
-        public ?string $iconUrl = null,
-        public ?string $startUrl = null,
-        public ?string $searchUrl = null,
-        public ?string $searchQuery = 'q',
-        public ?string $versionQuery = 'version',
-        public ?OpdsVersionEnum $version = null,
-        public ?DateTime $updated = null,
-        public ?bool $usePagination = false,
-        public ?int $maxItemsPerPage = 32,
+        protected ?string $name = 'opds',
+        protected ?string $author = null,
+        protected ?string $authorUrl = null,
+        protected ?string $iconUrl = null,
+        protected ?string $startUrl = null,
+        protected ?string $searchUrl = null,
+        protected string $searchQuery = 'q',
+        protected string $versionQuery = 'version',
+        protected DateTime $updated = new DateTime(),
+        protected bool $usePagination = false,
+        protected int $maxItemsPerPage = 32,
+        protected bool $forceJson = false,
     ) {
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
+    public function getAuthorUrl(): ?string
+    {
+        return $this->authorUrl;
+    }
+
+    public function getIconUrl(): ?string
+    {
+        return $this->iconUrl;
+    }
+
+    public function getStartUrl(): ?string
+    {
+        return $this->startUrl;
+    }
+
+    public function getSearchUrl(): ?string
+    {
+        return $this->searchUrl;
+    }
+
+    public function getSearchQuery(): string
+    {
+        return $this->searchQuery;
+    }
+
+    public function getVersionQuery(): string
+    {
+        return $this->versionQuery;
+    }
+
+    public function getUpdated(): DateTime
+    {
+        return $this->updated;
+    }
+
+    public function isUsePagination(): bool
+    {
+        return $this->usePagination;
+    }
+
+    public function getMaxItemsPerPage(): int
+    {
+        return $this->maxItemsPerPage;
+    }
+
+    public function isForceJson(): bool
+    {
+        return $this->forceJson;
     }
 
     /**

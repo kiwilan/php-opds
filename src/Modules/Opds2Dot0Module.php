@@ -2,8 +2,8 @@
 
 namespace Kiwilan\Opds\Modules;
 
-use Kiwilan\Opds\Converters\OpdsConverter;
-use Kiwilan\Opds\Converters\OpdsJsonConverter;
+use Kiwilan\Opds\Engine\OpdsEngine;
+use Kiwilan\Opds\Engine\OpdsJsonEngine;
 use Kiwilan\Opds\Opds;
 
 /**
@@ -13,10 +13,10 @@ use Kiwilan\Opds\Opds;
  */
 class Opds2Dot0Module extends OpdsModule
 {
-    public static function make(Opds $opds): OpdsConverter
+    public static function make(Opds $opds): OpdsEngine
     {
         $self = new self($opds);
 
-        return OpdsJsonConverter::make($self->opds);
+        return OpdsJsonEngine::make($self->opds);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Kiwilan\Opds\Converters;
+namespace Kiwilan\Opds\Engine;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Opds;
 
-abstract class OpdsConverter
+abstract class OpdsEngine
 {
     protected function __construct(
         protected Opds $opds,
@@ -151,8 +151,8 @@ abstract class OpdsConverter
     protected function handleXmlPagination(array &$xml)
     {
         $feeds = $this->opds->getFeeds();
-        $paginate = $this->opds->getConfig()->usePagination;
-        $perPage = $this->opds->getConfig()->maxItemsPerPage;
+        $paginate = $this->opds->getConfig()->isUsePagination();
+        $perPage = $this->opds->getConfig()->getMaxItemsPerPage();
         $page = 1;
 
         if (! $paginate) {
@@ -163,7 +163,7 @@ abstract class OpdsConverter
             return $xml;
         }
 
-        $current = OpdsConverter::getCurrentUrl();
+        $current = OpdsEngine::getCurrentUrl();
 
         if (str_contains($current, '?')) {
             $current = explode('?', $current)[0];

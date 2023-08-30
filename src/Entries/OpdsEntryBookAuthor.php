@@ -2,7 +2,7 @@
 
 namespace Kiwilan\Opds\Entries;
 
-class OpdsEntryBookAuthor
+class OpdsEntryBookAuthor extends OpdsEntry
 {
     public function __construct(
         protected string $name,
