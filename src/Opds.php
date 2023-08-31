@@ -7,6 +7,8 @@ use Kiwilan\Opds\Engine\OpdsJsonEngine;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
+use Kiwilan\Opds\Enums\OpdsOutputEnum;
+use Kiwilan\Opds\Enums\OpdsVersionEnum;
 
 class Opds
 {
@@ -128,14 +130,17 @@ class Opds
 
     /**
      * Send response to browser.
+     *
+     * @param  bool  $send  To send valid response to browser it should be to `true`.
+     * @return  void|never
      */
-    public function response(): never
+    public function response(bool $send = true)
     {
         if (! $this->response) {
             $this->get();
         }
 
-        $this->response->response();
+        $this->response->response($send);
     }
 
     /**

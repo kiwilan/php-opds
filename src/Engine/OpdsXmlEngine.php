@@ -5,9 +5,9 @@ namespace Kiwilan\Opds\Engine;
 use Kiwilan\Opds\Engine\Utils\OpdsNamespaces;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
+use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\OpdsVersionEnum;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class OpdsXmlEngine extends OpdsEngine

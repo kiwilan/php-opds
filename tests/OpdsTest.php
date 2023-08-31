@@ -1,10 +1,10 @@
 <?php
 
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Enums\OpdsOutputEnum;
+use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
-use Kiwilan\Opds\OpdsOutputEnum;
 use Kiwilan\Opds\OpdsResponse;
-use Kiwilan\Opds\OpdsVersionEnum;
 use Kiwilan\XmlReader\XmlReader;
 
 it('is string', function () {
