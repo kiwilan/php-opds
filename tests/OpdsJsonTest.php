@@ -1,8 +1,8 @@
 <?php
 
+use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Kiwilan\Opds\OpdsVersionEnum;
 
 function getConfigV2(): OpdsConfig
 {

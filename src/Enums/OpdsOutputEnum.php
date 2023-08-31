@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiwilan\Opds;
+namespace Kiwilan\Opds\Enums;
 
 enum OpdsOutputEnum: string
 {

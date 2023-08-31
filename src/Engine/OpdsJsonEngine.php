@@ -4,8 +4,8 @@ namespace Kiwilan\Opds\Engine;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
+use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
-use Kiwilan\Opds\OpdsVersionEnum;
 
 /**
  * @docs https://drafts.opds.io/opds-2.0

@@ -7,6 +7,8 @@ use Kiwilan\Opds\Engine\OpdsJsonEngine;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
+use Kiwilan\Opds\Enums\OpdsOutputEnum;
+use Kiwilan\Opds\Enums\OpdsVersionEnum;
 
 class Opds
 {
