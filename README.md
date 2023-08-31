@@ -32,7 +32,7 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 >
 > From [Wikipedia](https://en.wikipedia.org/wiki/Open_Publication_Distribution_System)
 
-### Resources
+Some resources about OPDS and eBooks:
 
 -   [opds.io](https://opds.io/): OPDS official website
 -   [thorium-reader](https://github.com/edrlab/thorium-reader): test OPDS feed with Thorium Reader
@@ -42,6 +42,14 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 -   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
 -   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
 -   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
+
+## Features
+
+-   ⚛️ Generate OPDS XML and JSON feed (navigation feeds and acquisition feeds)
+-   👌 Support OPDS 1.2 and 2.0
+-   🔖 With pagination option
+-   🔍 Search page included, but NOT search engine
+-   🌐 Can handle sending response to browser
 
 ## Installation
 
