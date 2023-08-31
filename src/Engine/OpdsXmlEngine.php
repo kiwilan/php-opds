@@ -29,34 +29,34 @@ class OpdsXmlEngine extends OpdsEngine
         $title = $this->getFeedTitle();
         $updated = $this->opds->getConfig()->getUpdated();
 
-        $this->xml = [
+        $this->content = [
             'id' => $id,
             'title' => $title,
             'updated' => $updated->format(DATE_ATOM),
         ];
 
         if ($this->opds->getConfig()->getIconUrl()) {
-            $this->xml['icon'] = $this->opds->getConfig()->getIconUrl();
+            $this->content['icon'] = $this->opds->getConfig()->getIconUrl();
         }
 
-        $this->xml['__custom:link:1'] = $this->addXmlLink(href: OpdsEngine::getCurrentUrl(), title: 'self', rel: 'self');
+        $this->content['__custom:link:1'] = $this->addXmlLink(href: OpdsEngine::getCurrentUrl(), title: 'self', rel: 'self');
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $this->xml['__custom:link:2'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getStartUrl()), title: 'Home', rel: 'start');
+            $this->content['__custom:link:2'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getStartUrl()), title: 'Home', rel: 'start');
         }
 
         if ($this->opds->getConfig()->getSearchUrl()) {
-            $this->xml['__custom:link:3'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getSearchUrl()), title: 'Search here', rel: 'search');
+            $this->content['__custom:link:3'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getSearchUrl()), title: 'Search here', rel: 'search');
         }
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $this->xml['__custom:link:4'] = $this->addXmlLink(
+            $this->content['__custom:link:4'] = $this->addXmlLink(
                 href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
                 title: 'OPDS 1.2',
                 rel: 'alternate',
                 type: 'application/atom+xml'
             );
-            $this->xml['__custom:link:5'] = $this->addXmlLink(
+            $this->content['__custom:link:5'] = $this->addXmlLink(
                 href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
                 title: 'OPDS 2.0',
                 rel: 'alternate',
@@ -65,18 +65,18 @@ class OpdsXmlEngine extends OpdsEngine
         }
 
         if ($this->opds->getConfig()->getAuthor()) {
-            $this->xml['author'] = ['name' => $this->opds->getConfig()->getAuthor(), 'uri' => $this->opds->getConfig()->getAuthorUrl()];
+            $this->content['author'] = ['name' => $this->opds->getConfig()->getAuthor(), 'uri' => $this->opds->getConfig()->getAuthorUrl()];
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->handleXmlPagination($this->xml, $feeds);
+        $this->handleXmlPagination($this->content, $feeds);
 
         foreach ($feeds as $entry) {
-            $this->xml['entry'][] = $this->addEntry($entry);
+            $this->content['entry'][] = $this->addEntry($entry);
         }
 
         $this->response = ArrayToXml::convert(
-            array: $this->xml,
+            array: $this->content,
             rootElement: [
                 'rootElementName' => 'feed',
                 '_attributes' => OpdsNamespaces::VERSION_1_2,
@@ -102,7 +102,7 @@ class OpdsXmlEngine extends OpdsEngine
             return $this;
         }
 
-        $this->xml = [
+        $this->content = [
             'ShortName' => $this->addXmlNode($app),
             'Description' => $this->addXmlNode("OPDS search engine {$app}"),
             'InputEncoding' => $this->addXmlNode('UTF-8'),
@@ -123,7 +123,7 @@ class OpdsXmlEngine extends OpdsEngine
         ];
 
         $this->response = ArrayToXml::convert(
-            array: $this->xml,
+            array: $this->content,
             rootElement: [
                 'rootElementName' => 'OpenSearchDescription',
                 '_attributes' => OpdsNamespaces::VERSION_1_2_SEARCH,

@@ -48,7 +48,7 @@ it('can use feeds', function () {
         ->get();
 
     expect($opds)->toBeInstanceOf(Opds::class);
-    expect($opds->getEngine()->getXml())->toBeArray();
+    expect($opds->getEngine()->getContent())->toBeArray();
 });
 
 it('can use navigation feeds', function () {
@@ -57,5 +57,5 @@ it('can use navigation feeds', function () {
         ->get();
 
     expect($opds)->toBeInstanceOf(Opds::class);
-    expect($opds->getEngine()->getXml())->toBeArray();
+    expect($opds->getEngine()->getContent())->toBeArray();
 });
