@@ -82,10 +82,10 @@ class OpdsResponse
     /**
      * Send content to browser with correct header.
      *
-     * @param  bool  $never  To send valid response to browser it should be to `true`.
+     * @param  bool  $send  To send valid response to browser it should be to `true`.
      * @return never|void
      */
-    public function response(bool $never = true)
+    public function response(bool $send = true)
     {
         foreach ($this->headers as $type => $value) {
             header($type.': '.$value);
@@ -95,7 +95,7 @@ class OpdsResponse
 
         echo $this->content;
 
-        if ($never) {
+        if ($send) {
             exit;
         }
     }
