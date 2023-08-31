@@ -10,6 +10,20 @@ class OpdsEntryBookAuthor extends OpdsEntry
     ) {
     }
 
+    public function name(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function uri(string $uri): self
+    {
+        $this->uri = $uri;
+
+        return $this;
+    }
+
     public function getName(): string
     {
         return $this->name;

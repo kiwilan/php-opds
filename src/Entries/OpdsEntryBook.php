@@ -41,6 +41,89 @@ class OpdsEntryBook extends OpdsEntryNavigation
         );
     }
 
+    public function download(string $download): self
+    {
+        $this->download = $download;
+
+        return $this;
+    }
+
+    public function mediaThumbnail(string $mediaThumbnail): self
+    {
+        $this->mediaThumbnail = $mediaThumbnail;
+
+        return $this;
+    }
+
+    /**
+     * @param  string[]  $categories
+     */
+    public function categories(array $categories): self
+    {
+        $this->categories = $categories;
+
+        return $this;
+    }
+
+    /**
+     * @param  OpdsEntryBookAuthor[]  $authors
+     */
+    public function authors(array $authors): self
+    {
+        $this->authors = $authors;
+
+        return $this;
+    }
+
+    public function published(DateTime|string|null $published): self
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    public function volume(int $volume): self
+    {
+        $this->volume = $volume;
+
+        return $this;
+    }
+
+    public function serie(string $serie): self
+    {
+        $this->serie = $serie;
+
+        return $this;
+    }
+
+    public function language(string $language): self
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function isbn(string $isbn): self
+    {
+        $this->isbn = $isbn;
+
+        return $this;
+    }
+
+    public function translator(string $translator): self
+    {
+        $this->translator = $translator;
+
+        return $this;
+    }
+
+    public function publisher(string $publisher): self
+    {
+        $this->publisher = $publisher;
+
+        return $this;
+    }
+
     public function getDownload(): ?string
     {
         return $this->download;

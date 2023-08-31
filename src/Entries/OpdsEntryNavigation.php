@@ -19,6 +19,55 @@ class OpdsEntryNavigation extends OpdsEntry
         $this->content = OpdsEntryNavigation::handleContent($this->content, 500, false);
     }
 
+    public function id(string $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    public function title(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function route(string $route): self
+    {
+        $this->route = $route;
+
+        return $this;
+    }
+
+    public function summary(string $summary): self
+    {
+        $this->summary = $summary;
+
+        return $this;
+    }
+
+    public function content(string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function media(string $media): self
+    {
+        $this->media = $media;
+
+        return $this;
+    }
+
+    public function updated(DateTime|string|null $updated): self
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
     public function getId(): string
     {
         return $this->id;

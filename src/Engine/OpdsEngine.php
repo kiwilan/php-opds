@@ -211,7 +211,10 @@ abstract class OpdsEngine
         ];
     }
 
-    protected function handleXmlPagination(array &$xml)
+    /**
+     * Handle XML pagination.
+     */
+    protected function handleXmlPagination(array &$xml, array &$feeds): void
     {
         $feeds = $this->opds->getFeeds();
         $paginate = $this->opds->getConfig()->isUsePagination();
@@ -219,17 +222,17 @@ abstract class OpdsEngine
         $page = 1;
 
         if (! $paginate) {
-            return $xml;
+            return;
         }
 
         if (count($feeds) < $perPage) {
-            return $xml;
+            return;
         }
 
-        $current = OpdsEngine::getCurrentUrl();
+        $currentUrl = $this->opds->getUrl();
 
-        if (str_contains($current, '?')) {
-            $current = explode('?', $current)[0];
+        if (str_contains($currentUrl, '?')) {
+            $current = explode('?', $currentUrl)[0];
         }
 
         $queryStartRecord = $this->opds->getQuery()['startRecord'] ?? 0;
@@ -245,22 +248,22 @@ abstract class OpdsEngine
 
         $startRecord = $start + $perPage;
 
-        $previousUrl = $current.'?'.http_build_query([
+        $previousUrl = $currentUrl.'?'.http_build_query([
             'q' => $this->opds->getQuery()['q'] ?? null,
             'startRecord' => '-'.$startRecord,
             'maximumRecords' => $perPage,
         ]);
-        $nextUrl = $current.'?'.http_build_query([
+        $nextUrl = $currentUrl.'?'.http_build_query([
             'q' => $this->opds->getQuery()['q'] ?? null,
             'startRecord' => $startRecord,
             'maximumRecords' => $perPage,
         ]);
-        $firstUrl = $current.'?'.http_build_query([
+        $firstUrl = $currentUrl.'?'.http_build_query([
             'q' => $this->opds->getQuery()['q'] ?? null,
             'startRecord' => 0,
             'maximumRecords' => $perPage,
         ]);
-        $lastUrl = $current.'?'.http_build_query([
+        $lastUrl = $currentUrl.'?'.http_build_query([
             'q' => $this->opds->getQuery()['q'] ?? null,
             'startRecord' => $last,
             'maximumRecords' => $perPage,
@@ -285,7 +288,5 @@ abstract class OpdsEngine
         $xml['opensearch:totalResults'] = count($this->opds->getFeeds());
         $xml['opensearch:itemsPerPage'] = $perPage;
         $xml['opensearch:startIndex'] = $startRecord === 0 ? 1 : $start;
-
-        return $xml;
     }
 }

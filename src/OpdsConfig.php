@@ -163,9 +163,9 @@ class OpdsConfig
         return $this;
     }
 
-    public function usePagination(bool $usePagination): self
+    public function usePagination(): self
     {
-        $this->usePagination = $usePagination;
+        $this->usePagination = true;
 
         return $this;
     }
@@ -177,9 +177,9 @@ class OpdsConfig
         return $this;
     }
 
-    public function forceJson(bool $forceJson): self
+    public function forceJson(): self
     {
-        $this->forceJson = $forceJson;
+        $this->forceJson = true;
 
         return $this;
     }

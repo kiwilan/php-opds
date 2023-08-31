@@ -3,10 +3,10 @@
 namespace Kiwilan\Opds;
 
 use Kiwilan\Opds\Engine\OpdsEngine;
+use Kiwilan\Opds\Engine\OpdsJsonEngine;
+use Kiwilan\Opds\Engine\OpdsXmlEngine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
-use Kiwilan\Opds\Modules\Opds1Dot2Module;
-use Kiwilan\Opds\Modules\Opds2Dot0Module;
 
 class Opds
 {
@@ -26,7 +26,7 @@ class Opds
         protected array $feeds = [],
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
-        protected string $output = 'xml', // xml or json
+        protected ?OpdsOutputEnum $output = null, // xml or json
         protected ?OpdsResponse $response = null,
     ) {
     }
@@ -97,7 +97,7 @@ class Opds
     }
 
     /**
-     * Get OPDS with full response.
+     * Get OPDS with full response, you generate response with headers with `response()`.
      */
     public function get(): self
     {
@@ -110,23 +110,26 @@ class Opds
         }
 
         if ($this->version === OpdsVersionEnum::v1Dot2) {
-            $this->output = 'xml';
+            $this->output = OpdsOutputEnum::xml;
         }
 
         if ($this->version === OpdsVersionEnum::v2Dot0) {
-            $this->output = 'json';
+            $this->output = OpdsOutputEnum::json;
         }
 
         $this->engine = match ($this->version) {
-            OpdsVersionEnum::v1Dot2 => Opds1Dot2Module::make($this),
-            OpdsVersionEnum::v2Dot0 => Opds2Dot0Module::make($this),
+            OpdsVersionEnum::v1Dot2 => OpdsXmlEngine::make($this),
+            OpdsVersionEnum::v2Dot0 => OpdsJsonEngine::make($this),
         };
         $this->response = OpdsResponse::make($this->engine, 200);
 
         return $this;
     }
 
-    public function response(): self
+    /**
+     * Send response to browser.
+     */
+    public function response(): never
     {
         if (! $this->response) {
             $this->get();
@@ -234,7 +237,7 @@ class Opds
     /**
      * Know if current page is search page.
      */
-    public function isSearchPage(): bool
+    public function checkIfSearch(): bool
     {
         return $this->isSearch;
     }
@@ -249,6 +252,18 @@ class Opds
         }
 
         return $this->engine;
+    }
+
+    /**
+     * Get OPDS output: xml or json.
+     */
+    public function getOutput(): ?OpdsOutputEnum
+    {
+        if (! $this->output) {
+            $this->get();
+        }
+
+        return $this->output;
     }
 
     /**

@@ -16,7 +16,7 @@ class OpdsJsonEngine extends OpdsEngine
     {
         $self = new self($opds);
 
-        if ($self->opds->isSearchPage()) {
+        if ($self->opds->checkIfSearch()) {
             return $self->search();
         }
 
