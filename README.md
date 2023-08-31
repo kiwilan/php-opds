@@ -153,7 +153,7 @@ $config = new OpdsConfig(
 );
 ```
 
-### OPDS feeds
+### OPDS entry
 
 #### Navigation
 
