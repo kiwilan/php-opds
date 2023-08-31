@@ -16,7 +16,7 @@ class OpdsXmlEngine extends OpdsEngine
     {
         $self = new self($opds);
 
-        if ($self->opds->isSearchPage()) {
+        if ($self->opds->checkIfSearch()) {
             return $self->search();
         }
 
@@ -68,9 +68,10 @@ class OpdsXmlEngine extends OpdsEngine
             $this->xml['author'] = ['name' => $this->opds->getConfig()->getAuthor(), 'uri' => $this->opds->getConfig()->getAuthorUrl()];
         }
 
-        $this->xml = $this->handleXmlPagination($this->xml);
+        $feeds = $this->opds->getFeeds();
+        $this->handleXmlPagination($this->xml, $feeds);
 
-        foreach ($this->opds->getFeeds() as $entry) {
+        foreach ($feeds as $entry) {
             $this->xml['entry'][] = $this->addEntry($entry);
         }
 
@@ -224,9 +225,10 @@ class OpdsXmlEngine extends OpdsEngine
     public function addBookEntry(OpdsEntryBook $entry): array
     {
         $app = OpdsConfig::slug($this->opds->getConfig()->getName());
-        $id = $app.':books:';
-        $id .= $entry->getSerie() ? OpdsConfig::slug($entry->getSerie()).':' : null;
-        $id .= OpdsConfig::slug($entry->getTitle());
+        $id = "{$entry->getId()}";
+        // $id = $app.':books:';
+        // $id .= $entry->getSerie() ? OpdsConfig::slug($entry->getSerie()).':' : null;
+        // $id .= OpdsConfig::slug($entry->getTitle());
 
         $authors = [];
         $categories = [];
@@ -247,7 +249,6 @@ class OpdsXmlEngine extends OpdsEngine
 
         if ($media) {
             $ext = pathinfo($media, PATHINFO_EXTENSION);
-            // The image Resources MUST be in GIF, JPEG, or PNG format.
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $mediaMimeType = "image/{$ext}";
             }
@@ -255,7 +256,6 @@ class OpdsXmlEngine extends OpdsEngine
 
         if ($mediaThumbnail) {
             $ext = pathinfo($mediaThumbnail, PATHINFO_EXTENSION);
-            // The image Resources MUST be in GIF, JPEG, or PNG format.
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $mediaThumbnailMimeType = "image/{$ext}";
             }
@@ -275,8 +275,6 @@ class OpdsXmlEngine extends OpdsEngine
             'author' => $authors,
             'dcterms:issued' => $entry->getPublished()?->format('Y-m-d'),
             'published' => $entry->getPublished()?->format(DATE_ATOM),
-            // Element "volume" not allowed here; expected the element end-tag, element "author", "category", "contributor", "link", "rights" or "source" or an element from another namespace
-            //'volume' => $entry->volume(),
             'dcterms:language' => $entry->getLanguage(),
         ];
     }

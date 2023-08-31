@@ -1,4 +1,4 @@
-# Real world application
+# Advanced usage
 
 ## Laravel
 

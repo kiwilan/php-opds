@@ -1,5 +1,8 @@
 <?php
 
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\OpdsConfig;
 
 /**
@@ -85,4 +88,121 @@ function getConfig(bool $json = false): OpdsConfig
         maxItemsPerPage: 32,
         forceJson: $json,
     );
+}
+
+/**
+ * @return OpdsEntryBook[]
+ */
+function feeds(): array
+{
+    return [
+        new OpdsEntryBook(
+            id: 'the-clan-of-the-cave-bear-epub-1-en',
+            title: 'The Clan of the Cave Bear',
+            route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+            summary: 'summary',
+            content: 'content',
+            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            updated: new DateTime(),
+            download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+            mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            categories: ['category'],
+            authors: [
+                new OpdsEntryBookAuthor(
+                    name: 'Jean M. Auel',
+                    uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+                ),
+            ],
+            published: new DateTime(),
+            volume: 1,
+            serie: 'Earth\'s Children',
+            language: 'English',
+        ),
+        new OpdsEntryBook(
+            id: 'the-clan-of-the-cave-bear-epub-2-en',
+            title: 'The Clan of the Cave Bear',
+            route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+            summary: 'summary',
+            content: 'content',
+            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            updated: new DateTime(),
+            download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+            mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            categories: ['category'],
+            authors: [
+                new OpdsEntryBookAuthor(
+                    name: 'Jean M. Auel',
+                    uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+                ),
+            ],
+            published: new DateTime(),
+            volume: 1,
+            serie: 'Earth\'s Children',
+            language: 'English',
+        ),
+    ];
+}
+
+/**
+ * @return OpdsEntryNavigation[]
+ */
+function navigationEntries(): array
+{
+    return [
+        new OpdsEntryNavigation(
+            id: 'authors',
+            title: 'Authors',
+            route: 'http://localhost:8000/opds/authors',
+            summary: 'Authors, 1 available',
+            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            updated: new DateTime(),
+        ),
+        new OpdsEntryNavigation(
+            id: 'authors',
+            title: 'Authors',
+            route: 'http://localhost:8000/opds/authors',
+            summary: 'Authors, 1 available',
+            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            updated: new DateTime(),
+        ),
+    ];
+}
+
+/**
+ * @return OpdsEntryBook[]
+ */
+function manyFeeds(int $count = 100): array
+{
+
+    $items = [];
+
+    for ($i = 0; $i < $count; $i++) {
+        $feed = new OpdsEntryBook(
+            id: 'the-clan-of-the-cave-bear-epub-1-en',
+            title: 'The Clan of the Cave Bear',
+            route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+            summary: 'summary',
+            content: 'content',
+            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            updated: new DateTime(),
+            download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+            mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            categories: ['category'],
+            authors: [
+                new OpdsEntryBookAuthor(
+                    name: 'Jean M. Auel',
+                    uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+                ),
+            ],
+            published: new DateTime(),
+            volume: 1,
+            serie: 'Earth\'s Children',
+            language: 'English',
+        );
+
+        $feed->id("{$i}");
+        $items[] = $feed;
+    }
+
+    return $items;
 }

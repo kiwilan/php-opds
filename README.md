@@ -57,34 +57,75 @@ You can use query parameter `version` to set it dynamically. You could change th
 -   Version `1.2` can be set with `?version=1.2`
 -   Version `2.0` can be set with `?version=2.0`
 
-### Response
-
-You can use the `Opds::make()` method to create an OPDS instance, default response is XML with OPDS version 1.2.
+You can use the `Opds::make()` method to create an OPDS instance, default response is XML with OPDS version 1.2, you can force JSON response with `OpdsConfig::class` method `forceJson()`.
 
 ```php
-<?php
-
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 
-class OpdsController
-{
-  /**
-   * OPDS version can be set with query parameter: `?version=1.2` or `?version=2.0`
-   */
-  public function index()
-  {
-    return Opds::make(new OpdsConfig())
-      ->title('My feed')
-      ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
-    ;
-
-    $debug = $opds->get(); // `Opds::class` instance with response
-
-    return $opds->response(); // XML or JSON response
-  }
-}
+$opds = Opds::make(new OpdsConfig()) // OpdsConfig::class, optional
+  ->title('My feed')
+  ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
+  ->get()
+;
 ```
+
+You have different informations into `Opds::class`.
+
+Some informations about OPDS instance:
+
+```php
+$opds->getConfig(); // OpdsConfig - Configuration used to create OPDS feed set into `make()` method
+$opds->getUrl(); // string|null - Current URL, generated automatically but can be overrided with `url()` method
+$opds->getTitle(); // string - Title of OPDS feed set with `title()` method
+$opds->getVersion(); // OpdsVersionEnum - OPDS version used, determined by query parameter `version` or `OpdsConfig::class` method `forceJson()`
+$opds->getQueryVersion(); // OpdsVersionEnum|null - Name of query parameter used to set OPDS version, default is `version`
+$opds->getUrlParts(); // array - URL parts, determined from `url`
+$opds->getQuery(); // array - Query parameters, determined from `url`
+$opds->getFeeds(); // array - Feeds set with `feeds()` method
+$opds->checkIfSearch(); // bool, default is false, set to true if `isSearch()` method is used
+```
+
+And about engine and response:
+
+```php
+$opds->getEngine(); // OpdsEngine|null - Engine used to create OPDS feed, determined by OPDS version, can be `OpdsXmlEngine::class` or `OpdsJsonEngine::class`
+$opds->getOutput(); // OpdsOutputEnum|null - Output of response, useful for debug
+$opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `OpdsEngine` to create a response
+```
+
+### Response
+
+You can send response to browser if you want:
+
+> **Warning**
+>
+> If you send response to browser, you can't use any method after that.
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([])
+  ->get()
+;
+
+return $opds->response(); // XML or JSON response
+```
+
+You can send directly response to browser:
+
+```php
+use Kiwilan\Opds\Opds;
+
+return Opds::make()
+  ->title('My feed')
+  ->feeds([])
+  ->response();
+```
+
+### Config
 
 OPDS config can be set with `OpdsConfig::class`:
 
@@ -93,7 +134,7 @@ OPDS config can be set with `OpdsConfig::class`:
 
 use Kiwilan\Opds\OpdsConfig;
 
-new OpdsConfig(
+$config = new OpdsConfig(
   name: 'My OPDS Catalog',
   author: 'John Doe',
   authorUrl: 'https://example.com',
@@ -109,95 +150,113 @@ new OpdsConfig(
 );
 ```
 
-### Basic usage
+### OPDS feeds
 
-Example of a simple OPDS feed into controller (like Laravel).
+#### Navigation
+
+You can create a navigation entry with `OpdsEntryNavigation::class`:
 
 ```php
-<?php
-
-use Kiwilan\Opds\Opds;
-use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
-use Kiwilan\Opds\Entries\OpdsEntryBook;
-use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
-class OpdsController
-{
-  public function index()
-  {
-    $opds = Opds::make($this->config())
-      ->feeds([
-        new OpdsEntryNavigation(
-          id: 'authors',
-          title: 'Authors',
-          route: 'http://localhost:8000/opds/authors',
-          summary: 'Authors, 1 available',
-          media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-          updated: new DateTime(),
-        ),
-        new OpdsEntryNavigation(
-          id: 'series',
-          title: 'Series',
-          route: 'http://localhost:8000/opds/series',
-          summary: 'Series, 1 available',
-          media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-          updated: new DateTime(),
-        ),
-      ])
-    );
-
-    return $opds->response();
-  }
-
-  public function books()
-  {
-    $opds = Opds::make($this->config())
-      ->feeds([
-        new OpdsEntryBook(
-          id: 'the-clan-of-the-cave-bear-epub-en',
-          title: 'The Clan of the Cave Bear',
-          route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
-          summary: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel.',
-          content: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel about prehistoric times. It is the first book in the Earth\'s Children book series which speculates on the possibilities of interactions between Neanderthal and modern Cro-Magnon humans.',
-          media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-          updated: new DateTime(),
-          download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
-          mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-          categories: ['category'],
-          authors: [
-              new OpdsEntryBookAuthor(
-                  name: 'Jean M. Auel',
-                  uri: 'http://localhost:8000/opds/authors/jean-m-auel',
-              ),
-          ],
-          published: new DateTime(),
-          volume: 1,
-          serie: 'Earth\'s Children',
-          language: 'English',
-        ),
-      ]);
-
-    return $opds->response();
-  }
-
-  private function config(): OpdsConfig
-  {
-    return new OpdsConfig(
-      name: 'My OPDS Catalog',
-      author: 'John Doe',
-      authorUrl: 'https://example.com',
-      startUrl: 'https://example.com/opds',
-      searchUrl: 'https://example.com/opds/search',
-      updated: new DateTime(),
-    );
-  }
-}
+$entry = new OpdsEntryNavigation(
+  id: 'authors',
+  title: 'Authors',
+  route: 'http://localhost:8000/opds/authors',
+  summary: 'Authors, 1 available',
+  media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+  updated: new DateTime(),
+);
 ```
 
-### Advanced usage
+And you can add this entry to OPDS feed with `feeds()` method:
 
--   [With Laravel application](docs/real-world-application.md)
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->feeds([$entry])
+  ->get();
+```
+
+#### Book
+
+You can create a book entry with `OpdsEntryBook::class`:
+
+> **Warning**
+>
+> Some properties can be used only into OPDS 2.0, see [OPDS 2.0 specification](https://drafts.opds.io/opds-2.0.html#book).
+
+```php
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+
+$entry = new OpdsEntryBook(
+  id: 'the-clan-of-the-cave-bear-epub-en',
+  title: 'The Clan of the Cave Bear',
+  route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+  summary: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel.',
+  content: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel about prehistoric times. It is the first book in the Earth\'s Children book series which speculates on the possibilities of interactions between Neanderthal and modern Cro-Magnon humans.',
+  media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+  updated: new DateTime(),
+  download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+  mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+  categories: ['category'],
+  authors: [
+    new OpdsEntryBookAuthor(
+      name: 'Jean M. Auel',
+      uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+    ),
+  ],
+  published: new DateTime(),
+  volume: 1,
+  serie: 'Earth\'s Children',
+  language: 'English',
+  isbn: '9780553381672',
+  translator: 'translator',
+  publisher: 'publisher',
+);
+```
+
+And you can add this entry to OPDS feed with `feeds()` method:
+
+```php
+$opds = Opds::make()
+  ->feeds([$entry])
+  ->get();
+```
+
+#### Search
+
+This package do NOT implements any search engine, you can use your own search engine and use `Opds::class` to create OPDS feed.
+
+Here an example:
+
+```php
+use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\Entries\OpdsEntryBook;
+
+$query = // get query from URL
+$feeds = [];
+
+if ($query) {
+    $results = // use your search engine here
+
+    foreach ($results as $result) {
+      $feeds[] = new OpdsEntryBook();
+    }
+}
+
+$opds = Opds::make()
+  ->title("Search for {$query}")
+  ->isSearch()
+  ->feeds($feeds)
+  ->get();
+```
+
+### More usages
+
+-   [Basic usage](docs/basic-usage.md)
+-   [Advanced usage](docs/advanced-usage.md)
 
 ## More
 
