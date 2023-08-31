@@ -36,7 +36,7 @@ it('can send response', function () { // @phpstan-ignore-line
     $engine->setResponse(exampleXml());
     $response = OpdsResponse::make($engine, 200);
 
-    $response->response(never: false);
+    $response->response(send: false);
 
     expect($opds)->toBeInstanceOf(Opds::class);
 })->expectOutputString(exampleXml());
