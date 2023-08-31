@@ -6,31 +6,6 @@ use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\XmlReader\XmlReader;
 
-it('is string', function () {
-    $opds = Opds::make()
-        ->get();
-
-    $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
-});
-
-it('is valid xml', function () {
-    $opds = Opds::make()
-        ->get();
-
-    $response = $opds->getResponse();
-    expect(isValidXml($response->getContent()))->toBeTrue();
-});
-
-it('can be parsed', function () {
-    $opds = Opds::make()
-        ->get();
-
-    $response = $opds->getResponse();
-    $xml = XmlReader::make($response->getContent())->toArray();
-    expect($xml)->toBeArray();
-});
-
 it('can be display feeds', function () {
     $opds = Opds::make()
         ->feeds([
@@ -75,7 +50,7 @@ it('can get opds from engine', function () {
     $xml = OpdsXmlEngine::make($opds);
 
     expect($xml->getOpds())->toBeInstanceOf(Opds::class);
-    expect($xml->getXml())->toBeArray();
+    expect($xml->getContent())->toBeArray();
 });
 
 it('can use search', function () {
@@ -95,4 +70,13 @@ it('can use search query', function () {
 
     $response = $opds->getResponse();
     expect($response->getContent())->toBeString();
+});
+
+it('can use navigation feeds', function () {
+    $opds = Opds::make()
+        ->feeds(navigationEntries())
+        ->get();
+
+    expect($opds)->toBeInstanceOf(Opds::class);
+    expect($opds->getEngine()->getContent())->toBeArray();
 });

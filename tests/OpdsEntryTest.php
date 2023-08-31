@@ -38,3 +38,64 @@ it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
     expect($entry->getPublisher())->toBe('Publisher');
     expect($entry->toArray())->toBeArray();
 })->with('feeds-books');
+
+it('can use setter', function () {
+    $entry = new OpdsEntryBook(
+        id: 'the-clan-of-the-cave-bear-epub-1-en',
+        title: 'The Clan of the Cave Bear',
+        route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+    );
+
+    $entry->id('the-clan-of-the-cave-bear-epub-2-en');
+    $entry->title('The Clan of the Cave Bear 2');
+    $entry->route('http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en-2');
+    $entry->summary('summary');
+    $entry->content('content');
+    $entry->media('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
+    $entry->updated(new DateTime());
+    $entry->download('http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en');
+    $entry->mediaThumbnail('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
+    $entry->categories(['category']);
+    $entry->authors([new OpdsEntryBookAuthor('author')]);
+    $entry->published(new DateTime());
+    $entry->volume(1);
+    $entry->serie('Earth\'s Children');
+    $entry->language('English');
+    $entry->isbn('1234567890');
+    $entry->translator('Translator');
+    $entry->publisher('Publisher');
+
+    expect($entry->getId())->toBe('the-clan-of-the-cave-bear-epub-2-en');
+    expect($entry->getTitle())->toBe('The Clan of the Cave Bear 2');
+    expect($entry->getRoute())->toBe('http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en-2');
+    expect($entry->getSummary())->toBe('summary');
+    expect($entry->getContent())->toBe('content');
+    expect($entry->getMedia())->toBe('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
+    expect($entry->getUpdated())->toBeInstanceOf(DateTime::class);
+    expect($entry->getDownload())->toBe('http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en');
+    expect($entry->getMediaThumbnail())->toBe('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
+    expect($entry->getCategories())->toBeArray();
+    expect($entry->getCategories())->toBe(['category']);
+    expect($entry->getAuthors())->toBeArray();
+    expect($entry->getAuthors())->each()->toBeInstanceOf(OpdsEntryBookAuthor::class);
+    expect($entry->getPublished())->toBeInstanceOf(DateTime::class);
+    expect($entry->getVolume())->toBe(1);
+    expect($entry->getSerie())->toBe('Earth\'s Children');
+    expect($entry->getLanguage())->toBe('English');
+    expect($entry->getIsbn())->toBe('1234567890');
+    expect($entry->getTranslator())->toBe('Translator');
+    expect($entry->getPublisher())->toBe('Publisher');
+});
+
+it('can use setter for author', function () {
+    $entry = new OpdsEntryBookAuthor(
+        name: 'Jean M. Auel',
+        uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+    );
+
+    $entry->name('New author');
+    $entry->uri('http://localhost:8000/opds/authors/new-author');
+
+    expect($entry->getName())->toBe('New author');
+    expect($entry->getUri())->toBe('http://localhost:8000/opds/authors/new-author');
+});

@@ -12,7 +12,7 @@ abstract class OpdsEngine
 {
     protected function __construct(
         protected Opds $opds,
-        protected array $xml = [],
+        protected array $content = [],
         protected ?string $response = null,
     ) {
     }
@@ -54,6 +54,20 @@ abstract class OpdsEngine
      */
     abstract public function addBookEntry(OpdsEntryBook $entry): array;
 
+    public function setContent(array $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function setResponse(string $response): self
+    {
+        $this->response = $response;
+
+        return $this;
+    }
+
     /**
      * Get OPDS instance.
      */
@@ -63,15 +77,15 @@ abstract class OpdsEngine
     }
 
     /**
-     * Get XML array.
+     * Get content array.
      */
-    public function getXml(): array
+    public function getContent(): array
     {
-        return $this->xml;
+        return $this->content;
     }
 
     /**
-     * Get XML response.
+     * Get response as XML or JSON.
      */
     public function getResponse(): string
     {
@@ -214,7 +228,7 @@ abstract class OpdsEngine
     /**
      * Handle XML pagination.
      */
-    protected function handleXmlPagination(array &$xml, array &$feeds): void
+    protected function handleXmlPagination(array &$content, array &$feeds): void
     {
         $feeds = $this->opds->getFeeds();
         $paginate = $this->opds->getConfig()->isUsePagination();
@@ -270,23 +284,23 @@ abstract class OpdsEngine
         ]);
 
         if ($queryStartRecord !== 0) {
-            $xml['__custom:link:4'] = $this->addXmlLink(href: $previousUrl, rel: 'previous', title: 'Previous page');
+            $content['__custom:link:4'] = $this->addXmlLink(href: $previousUrl, rel: 'previous', title: 'Previous page');
         }
 
         if ($queryStartRecord !== $last) {
-            $xml['__custom:link:5'] = $this->addXmlLink(href: $nextUrl, rel: 'next', title: 'Next page');
+            $content['__custom:link:5'] = $this->addXmlLink(href: $nextUrl, rel: 'next', title: 'Next page');
         }
 
         if ($queryStartRecord !== 0) {
-            $xml['__custom:link:6'] = $this->addXmlLink(href: $firstUrl, rel: 'first', title: 'First page');
+            $content['__custom:link:6'] = $this->addXmlLink(href: $firstUrl, rel: 'first', title: 'First page');
         }
 
         if ($queryStartRecord !== $last) {
-            $xml['__custom:link:7'] = $this->addXmlLink(href: $lastUrl, rel: 'last', title: 'Last page');
+            $content['__custom:link:7'] = $this->addXmlLink(href: $lastUrl, rel: 'last', title: 'Last page');
         }
 
-        $xml['opensearch:totalResults'] = count($this->opds->getFeeds());
-        $xml['opensearch:itemsPerPage'] = $perPage;
-        $xml['opensearch:startIndex'] = $startRecord === 0 ? 1 : $start;
+        $content['opensearch:totalResults'] = count($this->opds->getFeeds());
+        $content['opensearch:itemsPerPage'] = $perPage;
+        $content['opensearch:startIndex'] = $startRecord === 0 ? 1 : $start;
     }
 }

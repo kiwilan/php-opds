@@ -39,6 +39,9 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 -   OPDS feeds examples (these projects don't use `kiwilan/php-opds`)
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
+-   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
+-   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
+-   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
 
 ## Installation
 
@@ -257,12 +260,6 @@ $opds = Opds::make()
 
 -   [Basic usage](docs/basic-usage.md)
 -   [Advanced usage](docs/advanced-usage.md)
-
-## More
-
--   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
--   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
--   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
 
 ## Testing
 

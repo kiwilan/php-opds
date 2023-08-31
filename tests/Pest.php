@@ -154,7 +154,8 @@ function navigationEntries(): array
             title: 'Authors',
             route: 'http://localhost:8000/opds/authors',
             summary: 'Authors, 1 available',
-            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            content: 'content',
+            media: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
             updated: new DateTime(),
         ),
         new OpdsEntryNavigation(
@@ -162,6 +163,7 @@ function navigationEntries(): array
             title: 'Authors',
             route: 'http://localhost:8000/opds/authors',
             summary: 'Authors, 1 available',
+            content: 'content',
             media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
             updated: new DateTime(),
         ),
@@ -183,10 +185,10 @@ function manyFeeds(int $count = 100): array
             route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
             summary: 'summary',
             content: 'content',
-            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            media: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
+            mediaThumbnail: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
             updated: new DateTime(),
             download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
-            mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
             categories: ['category'],
             authors: [
                 new OpdsEntryBookAuthor(
