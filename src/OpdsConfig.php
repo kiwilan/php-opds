@@ -35,7 +35,7 @@ class OpdsConfig
         protected string $versionQuery = 'version',
         protected DateTime $updated = new DateTime(),
         protected bool $usePagination = false,
-        protected int $maxItemsPerPage = 32,
+        protected int $maxItemsPerPage = 16,
         protected bool $forceJson = false,
     ) {
     }
