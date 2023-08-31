@@ -31,7 +31,6 @@ class OpdsResponse
         if ($self->isJson || $self->isXml) {
             $self->content = $engine->getResponse();
         } else {
-            dump($engine->getResponse());
             throw new \Exception('OPDS Response: invalid content');
         }
 
