@@ -228,7 +228,7 @@ $opds = Opds::make()
   ->get();
 ```
 
-#### Search
+### Search
 
 This package do NOT implements any search engine, you can use your own search engine and use `Opds::class` to create OPDS feed.
 
