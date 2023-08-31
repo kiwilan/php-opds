@@ -135,47 +135,6 @@ class OpdsXmlEngine extends OpdsEngine
         return $this;
     }
 
-    public function entry(OpdsEntryNavigation $entry): array
-    {
-        $app = OpdsConfig::slug($this->opds->getConfig()->getName());
-        $feed = [
-            'title' => $entry->getTitle(),
-            'id' => "{$app}:{$entry->getId()}",
-            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute())),
-        ];
-
-        if ($entry->getUpdated()) {
-            $feed['updated'] = $entry->getUpdated()->format(DATE_ATOM);
-        }
-
-        if ($entry->getSummary()) {
-            $feed['summary'] = $this->addXmlNode(
-                value: strip_tags($entry->getSummary()),
-                attributes: ['type' => 'text']
-            );
-        }
-
-        if ($entry->getContent()) {
-            $feed['content'] = $this->addXmlNode(
-                value: $entry->getContent(),
-                attributes: ['type' => 'text/html']
-            );
-        }
-
-        if ($entry->getMedia()) {
-            $type = 'unknown';
-            $ext = pathinfo($entry->getMedia(), PATHINFO_EXTENSION);
-
-            if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
-                $type = "image/{$ext}";
-            }
-
-            $feed['__custom:link:2'] = $this->addXmlLink(href: $entry->getMedia(), rel: 'http://opds-spec.org/image/thumbnail', type: $type);
-        }
-
-        return $feed;
-    }
-
     public function addNavigationEntry(OpdsEntryNavigation $entry): array
     {
         $app = OpdsConfig::slug($this->opds->getConfig()->getName());
