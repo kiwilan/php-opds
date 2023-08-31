@@ -146,17 +146,17 @@ OPDS config can be set with `OpdsConfig::class`:
 use Kiwilan\Opds\OpdsConfig;
 
 $config = new OpdsConfig(
-  name: 'My OPDS Catalog',
-  author: 'John Doe',
-  authorUrl: 'https://example.com',
-  iconUrl: 'https://example.com/icon.png',
-  startUrl: 'https://example.com/opds',
-  searchUrl: 'https://example.com/opds/search',
+  name: 'My OPDS Catalog', // Name of OPDS feed
+  author: 'John Doe', // Author name
+  authorUrl: 'https://example.com', // Author URL
+  iconUrl: 'https://example.com/icon.png', // Icon URL
+  startUrl: 'https://example.com/opds', // Start URL, will be included in top navigation
+  searchUrl: 'https://example.com/opds/search', // Search URL, will be included in top navigation
   searchQuery: 'q', // query parameter for search
   versionQuery: 'version', // query parameter for version
-  updated: new DateTime(),
+  updated: new DateTime(), // Last update of OPDS feed
   usePagination: false, // To enable pagination, default is false
-  maxItemsPerPage: 32,
+  maxItemsPerPage: 16, // Max items per page, default is 16
   forceJson: false, // To force JSON response as OPDS 2.0, default is false
 );
 ```
