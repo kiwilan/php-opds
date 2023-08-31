@@ -208,3 +208,8 @@ function manyFeeds(int $count = 100): array
 
     return $items;
 }
+
+function exampleXml(): string
+{
+    return '<?xml version="1.0" encoding="UTF-8"?><rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"><channel></channel></rss>';
+}

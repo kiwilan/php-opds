@@ -128,14 +128,17 @@ class Opds
 
     /**
      * Send response to browser.
+     *
+     * @param  bool  $never  To send valid response to browser it should be to `true`.
+     * @return  void|never
      */
-    public function response(): never
+    public function response(bool $never = true)
     {
         if (! $this->response) {
             $this->get();
         }
 
-        $this->response->response();
+        $this->response->response($never);
     }
 
     /**

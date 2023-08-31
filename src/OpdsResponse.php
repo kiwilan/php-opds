@@ -6,10 +6,14 @@ use Kiwilan\Opds\Engine\OpdsEngine;
 
 class OpdsResponse
 {
+    /**
+     * @param  array<string, string>  $headers
+     */
     protected function __construct(
         protected int $status = 200,
         protected bool $isJson = false,
         protected bool $isXml = false,
+        protected array $headers = [],
         protected ?string $content = null,
     ) {
     }
@@ -27,7 +31,18 @@ class OpdsResponse
         if ($self->isJson || $self->isXml) {
             $self->content = $engine->getResponse();
         } else {
+            dump($engine->getResponse());
             throw new \Exception('OPDS Response: invalid content');
+        }
+
+        $self->headers['Access-Control-Allow-Origin'] = '*';
+
+        if ($self->isXml) {
+            $self->headers['Content-Type'] = 'text/xml; charset=UTF-8';
+        }
+
+        if ($self->isJson) {
+            $self->headers['Content-Type'] = 'application/json; charset=UTF-8';
         }
 
         return $self;
@@ -67,45 +82,28 @@ class OpdsResponse
 
     /**
      * Send content to browser with correct header.
+     *
+     * @param  bool  $never  To send valid response to browser it should be to `true`.
+     * @return never|void
      */
-    public function response(): never
+    public function response(bool $never = true)
     {
-        if ($this->isXml) {
-            $this->xml();
+        foreach ($this->headers as $type => $value) {
+            header($type.': '.$value);
         }
-
-        $this->json();
-    }
-
-    private function json(): never
-    {
-        header('Access-Control-Allow-Origin: *');
-        header('Content-Type: application/json; charset=UTF-8');
 
         http_response_code($this->status);
 
         echo $this->content;
 
-        exit;
-    }
-
-    private function xml(): never
-    {
-        header('Access-Control-Allow-Origin: *');
-        header('Content-Type: text/xml; charset=UTF-8');
-
-        echo $this->content;
-
-        exit;
+        if ($never) {
+            exit;
+        }
     }
 
     private function isValidXml(string $content): bool
     {
         $content = trim($content);
-
-        if (empty($content)) {
-            return false;
-        }
 
         if (false !== stripos($content, '<!DOCTYPE html>')) {
             return false;

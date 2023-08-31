@@ -28,3 +28,15 @@ it('can use response', function () {
     expect($response->isXml())->toBeTrue();
     expect($response->getContent())->toBeString();
 });
+
+it('can send response', function () { // @phpstan-ignore-line
+    $opds = Opds::make();
+    $engine = OpdsXmlEngine::make($opds);
+    $engine->setContent([exampleXml()]);
+    $engine->setResponse(exampleXml());
+    $response = OpdsResponse::make($engine, 200);
+
+    $response->response(never: false);
+
+    expect($opds)->toBeInstanceOf(Opds::class);
+})->expectOutputString(exampleXml());
