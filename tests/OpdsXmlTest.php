@@ -96,3 +96,12 @@ it('can use search query', function () {
     $response = $opds->getResponse();
     expect($response->getContent())->toBeString();
 });
+
+it('can use navigation feeds', function () {
+    $opds = Opds::make()
+        ->feeds(navigationEntries())
+        ->get();
+
+    expect($opds)->toBeInstanceOf(Opds::class);
+    expect($opds->getEngine()->getXml())->toBeArray();
+});
