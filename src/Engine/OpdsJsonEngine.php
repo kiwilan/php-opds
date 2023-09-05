@@ -53,7 +53,10 @@ class OpdsJsonEngine extends OpdsEngine
             );
         }
 
-        foreach ($this->opds->getFeeds() as $feed) {
+        $feeds = $this->opds->getFeeds();
+        $this->paginate($this->content, $feeds);
+
+        foreach ($feeds as $feed) {
             if ($feed instanceof OpdsEntryBook) {
                 $this->content['publications'][] = $this->addEntry($feed);
 
