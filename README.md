@@ -32,7 +32,7 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 >
 > From [Wikipedia](https://en.wikipedia.org/wiki/Open_Publication_Distribution_System)
 
-### Resources
+Some resources about OPDS and eBooks:
 
 -   [opds.io](https://opds.io/): OPDS official website
 -   [thorium-reader](https://github.com/edrlab/thorium-reader): test OPDS feed with Thorium Reader
@@ -43,12 +43,20 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 -   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
 -   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
 
+## Features
+
+-   ⚛️ Generate OPDS XML and JSON feed (navigation feeds and acquisition feeds)
+-   👌 Support OPDS 1.2 and 2.0
+-   🔖 With pagination option
+-   🔍 Search page included, but NOT search engine
+-   🌐 Can handle sending response to browser
+
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require kiwilan/php-opds
+composer require kiwilan/php-opds:1.0.0-alpha.5
 ```
 
 ## Usage
@@ -138,22 +146,22 @@ OPDS config can be set with `OpdsConfig::class`:
 use Kiwilan\Opds\OpdsConfig;
 
 $config = new OpdsConfig(
-  name: 'My OPDS Catalog',
-  author: 'John Doe',
-  authorUrl: 'https://example.com',
-  iconUrl: 'https://example.com/icon.png',
-  startUrl: 'https://example.com/opds',
-  searchUrl: 'https://example.com/opds/search',
+  name: 'My OPDS Catalog', // Name of OPDS feed
+  author: 'John Doe', // Author name
+  authorUrl: 'https://example.com', // Author URL
+  iconUrl: 'https://example.com/icon.png', // Icon URL
+  startUrl: 'https://example.com/opds', // Start URL, will be included in top navigation
+  searchUrl: 'https://example.com/opds/search', // Search URL, will be included in top navigation
   searchQuery: 'q', // query parameter for search
   versionQuery: 'version', // query parameter for version
-  updated: new DateTime(),
+  updated: new DateTime(), // Last update of OPDS feed
   usePagination: false, // To enable pagination, default is false
-  maxItemsPerPage: 32,
+  maxItemsPerPage: 16, // Max items per page, default is 16
   forceJson: false, // To force JSON response as OPDS 2.0, default is false
 );
 ```
 
-### OPDS feeds
+### OPDS entry
 
 #### Navigation
 
@@ -228,7 +236,7 @@ $opds = Opds::make()
   ->get();
 ```
 
-#### Search
+### Search
 
 This package do NOT implements any search engine, you can use your own search engine and use `Opds::class` to create OPDS feed.
 
