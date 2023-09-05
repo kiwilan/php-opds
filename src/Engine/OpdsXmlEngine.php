@@ -39,14 +39,27 @@ class OpdsXmlEngine extends OpdsEngine
             $this->content['icon'] = $this->opds->getConfig()->getIconUrl();
         }
 
-        $this->content['__custom:link:1'] = $this->addXmlLink(href: OpdsEngine::getCurrentUrl(), title: 'self', rel: 'self');
+        $this->content['__custom:link:1'] = $this->addXmlLink(
+            href: OpdsEngine::getCurrentUrl(),
+            title: 'self',
+            rel: 'self'
+        );
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $this->content['__custom:link:2'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getStartUrl()), title: 'Home', rel: 'start');
+            $this->content['__custom:link:2'] = $this->addXmlLink(
+                href: $this->route($this->opds->getConfig()->getStartUrl()),
+                title: 'Home',
+                rel: 'start'
+            );
         }
 
         if ($this->opds->getConfig()->getSearchUrl()) {
-            $this->content['__custom:link:3'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getSearchUrl()), title: 'Search here', rel: 'search');
+            $this->content['__custom:link:3'] = $this->addXmlLink(
+                href: $this->route($this->opds->getConfig()->getSearchUrl()),
+                title: 'Search here',
+                rel: 'search',
+                type: 'application/opensearchdescription+xml',
+            );
         }
 
         if ($this->opds->getConfig()->getStartUrl()) {
@@ -65,11 +78,14 @@ class OpdsXmlEngine extends OpdsEngine
         }
 
         if ($this->opds->getConfig()->getAuthor()) {
-            $this->content['author'] = ['name' => $this->opds->getConfig()->getAuthor(), 'uri' => $this->opds->getConfig()->getAuthorUrl()];
+            $this->content['author'] = [
+                'name' => $this->opds->getConfig()->getAuthor(),
+                'uri' => $this->opds->getConfig()->getAuthorUrl(),
+            ];
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->handleXmlPagination($this->content, $feeds);
+        $this->paginate($this->content, $feeds);
 
         foreach ($feeds as $entry) {
             $this->content['entry'][] = $this->addEntry($entry);
