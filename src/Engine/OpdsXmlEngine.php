@@ -2,7 +2,6 @@
 
 namespace Kiwilan\Opds\Engine;
 
-use Kiwilan\Opds\Engine\Utils\OpdsNamespaces;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
