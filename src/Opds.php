@@ -47,10 +47,6 @@ class Opds
             $self->version = OpdsVersionEnum::v2Dot0;
         }
 
-        if ($self->queryVersion) {
-            $self->version = $self->queryVersion;
-        }
-
         return $self;
     }
 
@@ -165,6 +161,9 @@ class Opds
         }
 
         $enumVersion = match ($version) {
+            '0.9' => OpdsVersionEnum::v1Dot2,
+            '1.0' => OpdsVersionEnum::v1Dot2,
+            '1.1' => OpdsVersionEnum::v1Dot2,
             '1.2' => OpdsVersionEnum::v1Dot2,
             '2.0' => OpdsVersionEnum::v2Dot0,
             default => null,
@@ -176,6 +175,7 @@ class Opds
 
         if ($enumVersion) {
             $this->queryVersion = $enumVersion;
+            $this->version = $this->queryVersion;
         }
 
         return $this;
