@@ -40,3 +40,10 @@ it('can send response', function () { // @phpstan-ignore-line
 
     expect($opds)->toBeInstanceOf(Opds::class);
 })->expectOutputString(exampleXml());
+
+it('can use response method', function () {
+    $opds = Opds::make() // @phpstan-ignore-line
+        ->response(send: false);
+
+    expect($opds)->toBeNull();
+});
