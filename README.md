@@ -40,9 +40,11 @@ Some resources about OPDS and eBooks:
 -   OPDS feeds examples (these projects don't use `kiwilan/php-opds`)
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
+    -   [feedbooks.com](https://www.feedbooks.com/catalog.atom): Feedbooks
+        https://bookshelves.ink/opds
 -   [`kiwilan/php-ebook`](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
--   [`koreader/koreader`](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
--   [`edrlab/thorium-reader`](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
+-   [`koreader/koreader`](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it
+-   [`edrlab/thorium-reader`](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks
 
 ## Features
 
@@ -62,7 +64,7 @@ composer require kiwilan/php-opds:1.0.0-alpha.5
 
 ## Usage
 
-You have to use `Opds::make()` method to create an OPDS instance, the only param is `config` to set OPDS config, totally optional. Default response is XML with OPDS version 1.2, you can force JSON response with `OpdsConfig::class` method `forceJson()` to use only OPDS 2.0.
+You have to use `Opds::make()` method to create an OPDS instance, the only param is `config` to set OPDS config, totally optional. Default response is XML with OPDS version 1.2, you can force JSON response with `OpdsConfig::class` method `forceJson()` to use only OPDS 2.0. With `get()` method, you can get full instance of `Opds` with `OpdsEngine` and `OpdsResponse`.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -110,13 +112,14 @@ You can use query parameter `version` to set it dynamically. You could change th
 >
 > If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, it will be ignored.
 
-### Response
+### Engine
 
-You can send response to browser if you want:
+Engine will convert your feeds to OPDS, depending of OPDS version.
 
-> **Warning**
->
-> If you send response to browser, you can't use any method after that.
+-   OPDS 1.2 will use `OpdsXmlEngine::class`
+-   OPDS 2.0 will use `OpdsJsonEngine::class`
+
+You can get engine used with `getEngine()` method from `Opds::class`. Property `content` contains array of feeds, `OpdsEngine` allow conversion into XML or JSON with `__toString()` method, the output depends of OPDS version.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -127,18 +130,62 @@ $opds = Opds::make()
   ->get()
 ;
 
-return $opds->response(); // XML or JSON response
+$engine = $opds->getEngine(); // OpdsEngine
+$content = $engine->getContents(); // array
+$output = $engine->__toString(); // string
 ```
 
-You can send directly response to browser:
+### Response
+
+You can use `get()` method and after that, use `send()` method to send response to browser.
 
 ```php
 use Kiwilan\Opds\Opds;
 
-return Opds::make()
+$opds = Opds::make()
   ->title('My feed')
   ->feeds([...])
-  ->response();
+  ->get()
+;
+
+$opds->send(); // XML or JSON response, stop script
+```
+
+You can send directly response to browser:
+
+> **Warning**
+>
+> If you send response to browser, you can't use any method after that.
+
+```php
+use Kiwilan\Opds\Opds;
+
+Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->send(); // XML or JSON response, stop script
+```
+
+To get only instance of `OpdsResponse`, you can use `getResponse()` method from `Opds::class`. You can use this response to get status code, headers and contents, you can send it to browser by yourself or use `send()` method.
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
+$response = $opds->getResponse(); // OpdsResponse
+
+$response->getStatus(); // int - Status code of response
+$response->isJson(); // bool - If response is JSON
+$response->isXml(); // bool - If response is XML
+$response->getHeaders(); // array - Headers of response
+$response->getContents(); // string - Contents of response
+
+$response->send(); // Send response to browser, stop script
 ```
 
 ### Config

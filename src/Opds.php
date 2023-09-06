@@ -4,6 +4,7 @@ namespace Kiwilan\Opds;
 
 use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Engine\OpdsJsonEngine;
+use Kiwilan\Opds\Engine\OpdsPaginator;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
@@ -28,6 +29,7 @@ class Opds
         protected array $feeds = [],
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
+        protected ?OpdsPaginator $paginator = null,
         protected ?OpdsOutputEnum $output = null, // xml or json
         protected ?OpdsResponse $response = null,
     ) {
@@ -95,7 +97,7 @@ class Opds
     }
 
     /**
-     * Get OPDS with full response, you generate response with headers with `response()`.
+     * Get OPDS with `OpdsEngine` and `OpdsResponse`.
      */
     public function get(): self
     {
@@ -119,7 +121,8 @@ class Opds
             OpdsVersionEnum::v1Dot2 => OpdsXmlEngine::make($this),
             OpdsVersionEnum::v2Dot0 => OpdsJsonEngine::make($this),
         };
-        $this->response = OpdsResponse::make($this->engine, 200);
+        $this->paginator = $this->engine->getPaginator();
+        $this->response = OpdsResponse::make($this->engine->__toString(), $this->output, 200);
 
         return $this;
     }
@@ -127,16 +130,16 @@ class Opds
     /**
      * Send response to browser.
      *
-     * @param  bool  $send  To send valid response to browser it should be to `true`.
+     * @param  bool  $mock  To send valid response to browser it should be to `true`.
      * @return  void|never
      */
-    public function response(bool $send = true)
+    public function send(bool $mock = true)
     {
         if (! $this->response) {
             $this->get();
         }
 
-        $this->response->response($send);
+        $this->response->send($mock);
     }
 
     /**
@@ -257,6 +260,18 @@ class Opds
         }
 
         return $this->engine;
+    }
+
+    /**
+     * Get OPDS paginator.
+     */
+    public function getPaginator(): ?OpdsPaginator
+    {
+        if (! $this->paginator) {
+            $this->get();
+        }
+
+        return $this->paginator;
     }
 
     /**

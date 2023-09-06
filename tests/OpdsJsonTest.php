@@ -30,7 +30,7 @@ it('is string', function () {
         ->get();
 
     $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can use search', function () {
@@ -39,7 +39,7 @@ it('can use search', function () {
         ->get();
 
     $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can use feeds', function () {
@@ -48,7 +48,7 @@ it('can use feeds', function () {
         ->get();
 
     expect($opds)->toBeInstanceOf(Opds::class);
-    expect($opds->getEngine()->getContent())->toBeArray();
+    expect($opds->getEngine()->getContents())->toBeArray();
 });
 
 it('can use navigation feeds', function () {
@@ -57,5 +57,20 @@ it('can use navigation feeds', function () {
         ->get();
 
     expect($opds)->toBeInstanceOf(Opds::class);
-    expect($opds->getEngine()->getContent())->toBeArray();
+    expect($opds->getEngine()->getContents())->toBeArray();
 });
+
+// it('can use pagination', function () {
+//     $config = getConfigV2();
+//     $config->setMaxItemsPerPage(10);
+//     $config->usePagination();
+//     $opds = Opds::make($config)
+//         ->feeds(manyFeeds())
+//         ->get();
+
+//     ray($opds);
+//     ray($opds->getEngine()->getContents());
+//     ray($opds->getPaginator());
+//     // expect($opds)->toBeInstanceOf(Opds::class);
+//     // expect($opds->getEngine()->getContents())->toBeArray();
+// });

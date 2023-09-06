@@ -2,7 +2,7 @@
 
 namespace Kiwilan\Opds;
 
-use Kiwilan\Opds\Engine\OpdsEngine;
+use Kiwilan\Opds\Enums\OpdsOutputEnum;
 
 class OpdsResponse
 {
@@ -14,23 +14,27 @@ class OpdsResponse
         protected bool $isJson = false,
         protected bool $isXml = false,
         protected array $headers = [],
-        protected ?string $content = null,
+        protected ?string $contents = null,
     ) {
     }
 
     /**
      * Create a new Response.
      */
-    public static function make(OpdsEngine $engine, int $status = 200): self
+    public static function make(string $contents, OpdsOutputEnum $output, int $status = 200): self
     {
         $self = new self($status);
+        $self->contents = $contents;
 
-        $self->isXml = $self->isValidXml($engine->getResponse());
-        $self->isJson = $self->isValidJson($engine->getResponse());
+        if ($output === OpdsOutputEnum::xml) {
+            $self->isXml = $self->isValidXml($self->contents);
+        }
 
-        if ($self->isJson || $self->isXml) {
-            $self->content = $engine->getResponse();
-        } else {
+        if ($output === OpdsOutputEnum::json) {
+            $self->isJson = $self->isValidJson($self->contents);
+        }
+
+        if (! $self->isJson && ! $self->isXml) {
             throw new \Exception('OPDS Response: invalid content');
         }
 
@@ -72,20 +76,52 @@ class OpdsResponse
     }
 
     /**
-     * Get content.
+     * Get headers.
+     *
+     * @return array<string, string>
      */
-    public function getContent(): string
+    public function getHeaders(): array
     {
-        return $this->content;
+        return $this->headers;
+    }
+
+    /**
+     * Get contents.
+     */
+    public function getContents(): string
+    {
+        return $this->contents;
+    }
+
+    /**
+     * Set headers.
+     *
+     * @param  array<string, string>  $headers
+     */
+    public function setHeaders(array $headers): self
+    {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
+     * Set contents.
+     */
+    public function setContents(string $contents): self
+    {
+        $this->contents = $contents;
+
+        return $this;
     }
 
     /**
      * Send content to browser with correct header.
      *
-     * @param  bool  $send  To send valid response to browser it should be to `true`.
+     * @param  bool  $mock  To send valid response to browser it should be to `true`.
      * @return never|void
      */
-    public function response(bool $send = true)
+    public function send(bool $mock = true)
     {
         foreach ($this->headers as $type => $value) {
             header($type.': '.$value);
@@ -93,9 +129,9 @@ class OpdsResponse
 
         http_response_code($this->status);
 
-        echo $this->content;
+        echo $this->contents;
 
-        if ($send) {
+        if ($mock) {
             exit;
         }
     }

@@ -25,7 +25,7 @@ class OpdsJsonEngine extends OpdsEngine
 
     public function feed(): self
     {
-        $this->content = [
+        $this->contents = [
             'metadata' => [
                 'title' => $this->getFeedTitle(),
             ],
@@ -38,14 +38,14 @@ class OpdsJsonEngine extends OpdsEngine
 
         if ($this->opds->getConfig()->getStartUrl()) {
             if (! $this->opds->getConfig()->isForceJson()) {
-                $this->content['links'][] = $this->addJsonLink(
+                $this->contents['links'][] = $this->addJsonLink(
                     rel: 'alternate',
                     href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
                     title: 'OPDS 1.2',
                     type: 'application/atom+xml',
                 );
             }
-            $this->content['links'][] = $this->addJsonLink(
+            $this->contents['links'][] = $this->addJsonLink(
                 rel: 'alternate',
                 href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
                 title: 'OPDS 2.0',
@@ -54,19 +54,17 @@ class OpdsJsonEngine extends OpdsEngine
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->paginate($this->content, $feeds);
+        $this->paginate($this->contents, $feeds);
 
         foreach ($feeds as $feed) {
             if ($feed instanceof OpdsEntryBook) {
-                $this->content['publications'][] = $this->addEntry($feed);
+                $this->contents['publications'][] = $this->addEntry($feed);
 
                 continue;
             }
 
-            $this->content['navigation'][] = $this->addEntry($feed);
+            $this->contents['navigation'][] = $this->addEntry($feed);
         }
-
-        $this->response = json_encode($this->content);
 
         return $this;
     }

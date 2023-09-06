@@ -4,16 +4,18 @@ namespace Kiwilan\Opds\Engine;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
+use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
+use Spatie\ArrayToXml\ArrayToXml;
 
 abstract class OpdsEngine
 {
     protected function __construct(
         protected Opds $opds,
-        protected array $content = [],
-        protected ?string $response = null,
+        protected ?OpdsPaginator $paginator = null,
+        protected array $contents = [],
     ) {
     }
 
@@ -54,16 +56,9 @@ abstract class OpdsEngine
      */
     abstract public function addBookEntry(OpdsEntryBook $entry): array;
 
-    public function setContent(array $content): self
+    public function setContents(array $content): self
     {
-        $this->content = $content;
-
-        return $this;
-    }
-
-    public function setResponse(string $response): self
-    {
-        $this->response = $response;
+        $this->contents = $content;
 
         return $this;
     }
@@ -77,19 +72,55 @@ abstract class OpdsEngine
     }
 
     /**
-     * Get content array.
+     * Get paginator instance.
      */
-    public function getContent(): array
+    public function getPaginator(): ?OpdsPaginator
     {
-        return $this->content;
+        return $this->paginator;
     }
 
     /**
-     * Get response as XML or JSON.
+     * Get content array.
      */
-    public function getResponse(): string
+    public function getContents(): array
     {
-        return $this->response;
+        return $this->contents;
+    }
+
+    /**
+     * Convert `content` to XML.
+     */
+    protected function toXML(): string
+    {
+        return ArrayToXml::convert(
+            array: $this->contents,
+            rootElement: [
+                'rootElementName' => 'feed',
+                '_attributes' => OpdsNamespaces::VERSION_1_2,
+            ],
+            replaceSpacesByUnderScoresInKeyNames: true,
+            xmlEncoding: 'UTF-8'
+        );
+    }
+
+    /**
+     * Convert `content` to JSON.
+     */
+    protected function toJSON(): string
+    {
+        return json_encode($this->contents);
+    }
+
+    /**
+     * Convert `content` to string, XML or JSON.
+     */
+    public function __toString(): string
+    {
+        if ($this->opds->getOutput() === OpdsOutputEnum::xml) {
+            return $this->toXML();
+        }
+
+        return $this->toJSON();
     }
 
     /**
@@ -211,6 +242,6 @@ abstract class OpdsEngine
      */
     protected function paginate(array &$content, array &$feeds): void
     {
-        OpdsPagination::make($this)->paginate($this->content, $feeds);
+        $this->paginator = OpdsPaginator::make($this)->paginate($content, $feeds);
     }
 }

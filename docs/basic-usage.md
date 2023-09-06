@@ -36,7 +36,7 @@ class OpdsController
       ])
     );
 
-    return $opds->response();
+    return $opds->send();
   }
 
   public function books()
@@ -67,7 +67,7 @@ class OpdsController
         ),
       ]);
 
-    return $opds->response();
+    return $opds->send();
   }
 
   private function config(): OpdsConfig

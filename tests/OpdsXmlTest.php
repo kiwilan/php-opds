@@ -21,10 +21,10 @@ it('can be display feeds', function () {
         ->get();
 
     $response = $opds->getResponse();
-    $xml = XmlReader::make($response->getContent())->toArray();
+    $xml = XmlReader::make($response->getContents())->toArray();
 
     expect($xml)->toBeArray();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can be display feeds books', function () {
@@ -33,7 +33,7 @@ it('can be display feeds books', function () {
         ->get();
 
     $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can search', function () {
@@ -42,7 +42,7 @@ it('can search', function () {
         ->get();
 
     $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can get opds from engine', function () {
@@ -50,7 +50,7 @@ it('can get opds from engine', function () {
     $xml = OpdsXmlEngine::make($opds);
 
     expect($xml->getOpds())->toBeInstanceOf(Opds::class);
-    expect($xml->getContent())->toBeArray();
+    expect($xml->getContents())->toBeArray();
 });
 
 it('can use search', function () {
@@ -59,7 +59,7 @@ it('can use search', function () {
         ->get();
 
     $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can use search query', function () {
@@ -69,7 +69,7 @@ it('can use search query', function () {
         ->get();
 
     $response = $opds->getResponse();
-    expect($response->getContent())->toBeString();
+    expect($response->getContents())->toBeString();
 });
 
 it('can use navigation feeds', function () {
@@ -78,5 +78,5 @@ it('can use navigation feeds', function () {
         ->get();
 
     expect($opds)->toBeInstanceOf(Opds::class);
-    expect($opds->getEngine()->getContent())->toBeArray();
+    expect($opds->getEngine()->getContents())->toBeArray();
 });
