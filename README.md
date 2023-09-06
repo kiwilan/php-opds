@@ -64,7 +64,7 @@ Some resources about OPDS and eBooks:
 You can install the package via composer:
 
 ```bash
-composer require kiwilan/php-opds:1.0.0-alpha.5
+composer require kiwilan/php-opds
 ```
 
 ## Usage
