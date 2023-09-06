@@ -11,6 +11,8 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
+-   **Demo**: <https://bookshelves.ink/opds>
+
 | Version | Supported |       Date        | Format |  Query param   |
 | :-----: | :-------: | :---------------: | :----: | :------------: |
 |   1.2   |    ✅     | November 11, 2018 |  XML   | `?version=1.2` |
@@ -41,7 +43,6 @@ Some resources about OPDS and eBooks:
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
     -   [feedbooks.com](https://www.feedbooks.com/catalog.atom): Feedbooks
-        https://bookshelves.ink/opds
 -   [`kiwilan/php-ebook`](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
 -   [`koreader/koreader`](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it
 -   [`edrlab/thorium-reader`](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks
