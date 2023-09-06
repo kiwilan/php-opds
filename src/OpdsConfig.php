@@ -17,7 +17,6 @@ class OpdsConfig
      * @param  ?string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
      * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
      * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
-     * @param  string  $searchQuery Search query, for example: `q`, default is `q`.
      * @param  string  $versionQuery Version query, for example: `version`, default is `version`.
      * @param  DateTime  $updated Updated date, for example: `new DateTime()`.
      * @param  bool  $usePagination Use pagination, default is `true`.
@@ -31,7 +30,6 @@ class OpdsConfig
         protected ?string $iconUrl = null,
         protected ?string $startUrl = null,
         protected ?string $searchUrl = null,
-        protected string $searchQuery = 'q',
         protected string $versionQuery = 'version',
         protected DateTime $updated = new DateTime(),
         protected bool $usePagination = false,
@@ -68,11 +66,6 @@ class OpdsConfig
     public function getSearchUrl(): ?string
     {
         return $this->searchUrl;
-    }
-
-    public function getSearchQuery(): string
-    {
-        return $this->searchQuery;
     }
 
     public function getVersionQuery(): string
@@ -138,13 +131,6 @@ class OpdsConfig
     public function setSearchUrl(?string $searchUrl): self
     {
         $this->searchUrl = $searchUrl;
-
-        return $this;
-    }
-
-    public function setSearchQuery(string $searchQuery): self
-    {
-        $this->searchQuery = $searchQuery;
 
         return $this;
     }

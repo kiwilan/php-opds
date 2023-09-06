@@ -151,7 +151,7 @@ class IndexController extends Controller
 
     public function searchResults(Request $request)
     {
-        $query = $request->input('q');
+        $query = $request->input('q') ?? $request->input('query');
         $results = // use your search engine here
 
         $feeds = [];

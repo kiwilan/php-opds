@@ -59,18 +59,3 @@ it('can use navigation feeds', function () {
     expect($opds)->toBeInstanceOf(Opds::class);
     expect($opds->getEngine()->getContents())->toBeArray();
 });
-
-// it('can use pagination', function () {
-//     $config = getConfigV2();
-//     $config->setMaxItemsPerPage(10);
-//     $config->usePagination();
-//     $opds = Opds::make($config)
-//         ->feeds(manyFeeds())
-//         ->get();
-
-//     ray($opds);
-//     ray($opds->getEngine()->getContents());
-//     ray($opds->getPaginator());
-//     // expect($opds)->toBeInstanceOf(Opds::class);
-//     // expect($opds->getEngine()->getContents())->toBeArray();
-// });

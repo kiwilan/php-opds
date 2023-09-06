@@ -62,12 +62,6 @@ class OpdsXmlEngine extends OpdsEngine
 
         if ($this->opds->getConfig()->getStartUrl()) {
             $this->contents['__custom:link:4'] = $this->addXmlLink(
-                href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
-                title: 'OPDS 1.2',
-                rel: 'alternate',
-                type: 'application/atom+xml'
-            );
-            $this->contents['__custom:link:5'] = $this->addXmlLink(
                 href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
                 title: 'OPDS 2.0',
                 rel: 'alternate',
@@ -94,7 +88,7 @@ class OpdsXmlEngine extends OpdsEngine
 
     public function search(): self
     {
-        $searchQuery = $this->opds->getConfig()->getSearchQuery();
+        $searchQuery = 'q';
         $app = OpdsConfig::slug($this->opds->getConfig()->getName());
 
         $query = $this->opds->getQuery()[$searchQuery] ?? null;
@@ -202,6 +196,7 @@ class OpdsXmlEngine extends OpdsEngine
 
         if ($media) {
             $ext = pathinfo($media, PATHINFO_EXTENSION);
+
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $mediaMimeType = "image/{$ext}";
             }
@@ -209,6 +204,7 @@ class OpdsXmlEngine extends OpdsEngine
 
         if ($mediaThumbnail) {
             $ext = pathinfo($mediaThumbnail, PATHINFO_EXTENSION);
+
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $mediaThumbnailMimeType = "image/{$ext}";
             }

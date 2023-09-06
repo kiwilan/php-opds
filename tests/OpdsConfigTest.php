@@ -11,7 +11,6 @@ it('can use setter', function () {
     $config->setIconUrl('https://example.com/favicon.ico');
     $config->setStartUrl('https://example.com/opds');
     $config->setSearchUrl('https://example.com/opds/search');
-    $config->setSearchQuery('query');
     $config->setVersionQuery('v');
     $config->setUpdated(new DateTime());
     $config->usePagination();
@@ -24,7 +23,6 @@ it('can use setter', function () {
     expect($config->getIconUrl())->toBe('https://example.com/favicon.ico');
     expect($config->getStartUrl())->toBe('https://example.com/opds');
     expect($config->getSearchUrl())->toBe('https://example.com/opds/search');
-    expect($config->getSearchQuery())->toBe('query');
     expect($config->getVersionQuery())->toBe('v');
     expect($config->getUpdated())->toBeInstanceOf(DateTime::class);
     expect($config->isUsePagination())->toBeTrue();
