@@ -9,13 +9,11 @@ it('can fail on bad content', function () {
 
     $opds = Opds::make();
     $engine = OpdsXmlEngine::make($opds);
-    $engine->setContent([$html]);
-    $engine->setResponse($html);
+    $engine->setContents(['html' => $html]);
 
-    expect($engine->getContent())->toBe([$html]);
-    expect($engine->getResponse())->toBe($html);
-    expect(fn () => OpdsResponse::make($engine, 500))->toThrow(Exception::class);
-    expect(fn () => OpdsResponse::make($engine, 500))->toThrow('OPDS Response: invalid content');
+    expect($engine->getContents())->toBe(['html' => $html]);
+    expect(fn () => OpdsResponse::make(json_encode($html), $opds->getOutput(), 500))->toThrow(Exception::class);
+    expect(fn () => OpdsResponse::make(json_encode($html), $opds->getOutput(), 500))->toThrow('OPDS Response: invalid content');
 });
 
 it('can use response', function () {
@@ -26,17 +24,30 @@ it('can use response', function () {
     expect($response->getStatus())->toBe(200);
     expect($response->isJson())->toBeFalse();
     expect($response->isXml())->toBeTrue();
-    expect($response->getContent())->toBeString();
+    expect($response->getHeaders())->toBeArray();
+    expect($response->getHeaders())->toHaveKey('Access-Control-Allow-Origin');
+    expect($response->getHeaders())->toHaveKey('Content-Type');
+    expect($response->getContents())->toBeString();
+
+    $response->setHeaders(['Content-Encoding' => 'gzip']);
+    expect($response->getHeaders())->toHaveKey('Content-Encoding');
 });
 
 it('can send response', function () { // @phpstan-ignore-line
     $opds = Opds::make();
     $engine = OpdsXmlEngine::make($opds);
-    $engine->setContent([exampleXml()]);
-    $engine->setResponse(exampleXml());
-    $response = OpdsResponse::make($engine, 200);
 
-    $response->response(send: false);
+    $response = OpdsResponse::make($engine, $opds->getOutput(), 200);
+    $response->setContents(exampleXml());
+
+    $response->send(mock: false);
 
     expect($opds)->toBeInstanceOf(Opds::class);
 })->expectOutputString(exampleXml());
+
+it('can use response method', function () {
+    $opds = Opds::make() // @phpstan-ignore-line
+        ->send(mock: false);
+
+    expect($opds)->toBeNull();
+});

@@ -2,13 +2,11 @@
 
 namespace Kiwilan\Opds\Engine;
 
-use Kiwilan\Opds\Engine\Utils\OpdsNamespaces;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Spatie\ArrayToXml\ArrayToXml;
 
 class OpdsXmlEngine extends OpdsEngine
 {
@@ -29,34 +27,47 @@ class OpdsXmlEngine extends OpdsEngine
         $title = $this->getFeedTitle();
         $updated = $this->opds->getConfig()->getUpdated();
 
-        $this->content = [
+        $this->contents = [
             'id' => $id,
             'title' => $title,
             'updated' => $updated->format(DATE_ATOM),
         ];
 
         if ($this->opds->getConfig()->getIconUrl()) {
-            $this->content['icon'] = $this->opds->getConfig()->getIconUrl();
+            $this->contents['icon'] = $this->opds->getConfig()->getIconUrl();
         }
 
-        $this->content['__custom:link:1'] = $this->addXmlLink(href: OpdsEngine::getCurrentUrl(), title: 'self', rel: 'self');
+        $this->contents['__custom:link:1'] = $this->addXmlLink(
+            href: OpdsEngine::getCurrentUrl(),
+            title: 'self',
+            rel: 'self'
+        );
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $this->content['__custom:link:2'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getStartUrl()), title: 'Home', rel: 'start');
+            $this->contents['__custom:link:2'] = $this->addXmlLink(
+                href: $this->route($this->opds->getConfig()->getStartUrl()),
+                title: 'Home',
+                rel: 'start'
+            );
         }
 
         if ($this->opds->getConfig()->getSearchUrl()) {
-            $this->content['__custom:link:3'] = $this->addXmlLink(href: $this->route($this->opds->getConfig()->getSearchUrl()), title: 'Search here', rel: 'search');
+            $this->contents['__custom:link:3'] = $this->addXmlLink(
+                href: $this->route($this->opds->getConfig()->getSearchUrl()),
+                title: 'Search here',
+                rel: 'search',
+                type: 'application/opensearchdescription+xml',
+            );
         }
 
         if ($this->opds->getConfig()->getStartUrl()) {
-            $this->content['__custom:link:4'] = $this->addXmlLink(
+            $this->contents['__custom:link:4'] = $this->addXmlLink(
                 href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
                 title: 'OPDS 1.2',
                 rel: 'alternate',
                 type: 'application/atom+xml'
             );
-            $this->content['__custom:link:5'] = $this->addXmlLink(
+            $this->contents['__custom:link:5'] = $this->addXmlLink(
                 href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
                 title: 'OPDS 2.0',
                 rel: 'alternate',
@@ -65,25 +76,18 @@ class OpdsXmlEngine extends OpdsEngine
         }
 
         if ($this->opds->getConfig()->getAuthor()) {
-            $this->content['author'] = ['name' => $this->opds->getConfig()->getAuthor(), 'uri' => $this->opds->getConfig()->getAuthorUrl()];
+            $this->contents['author'] = [
+                'name' => $this->opds->getConfig()->getAuthor(),
+                'uri' => $this->opds->getConfig()->getAuthorUrl(),
+            ];
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->handleXmlPagination($this->content, $feeds);
+        $this->paginate($this->contents, $feeds);
 
         foreach ($feeds as $entry) {
-            $this->content['entry'][] = $this->addEntry($entry);
+            $this->contents['entry'][] = $this->addEntry($entry);
         }
-
-        $this->response = ArrayToXml::convert(
-            array: $this->content,
-            rootElement: [
-                'rootElementName' => 'feed',
-                '_attributes' => OpdsNamespaces::VERSION_1_2,
-            ],
-            replaceSpacesByUnderScoresInKeyNames: true,
-            xmlEncoding: 'UTF-8'
-        );
 
         return $this;
     }
@@ -102,7 +106,7 @@ class OpdsXmlEngine extends OpdsEngine
             return $this;
         }
 
-        $this->content = [
+        $this->contents = [
             'ShortName' => $this->addXmlNode($app),
             'Description' => $this->addXmlNode("OPDS search engine {$app}"),
             'InputEncoding' => $this->addXmlNode('UTF-8'),
@@ -121,16 +125,6 @@ class OpdsXmlEngine extends OpdsEngine
             'AdultContent' => $this->addXmlNode('false'),
             'Language' => $this->addXmlNode('*'),
         ];
-
-        $this->response = ArrayToXml::convert(
-            array: $this->content,
-            rootElement: [
-                'rootElementName' => 'OpenSearchDescription',
-                '_attributes' => OpdsNamespaces::VERSION_1_2_SEARCH,
-            ],
-            replaceSpacesByUnderScoresInKeyNames: true,
-            xmlEncoding: 'UTF-8',
-        );
 
         return $this;
     }
@@ -155,9 +149,9 @@ class OpdsXmlEngine extends OpdsEngine
             );
         }
 
-        if ($entry->getContent()) {
+        if ($entry->getContents()) {
             $entryXml['content'] = $this->addXmlNode(
-                value: $entry->getContent(),
+                value: $entry->getContents(),
                 attributes: ['type' => 'text/html']
             );
         }
@@ -225,7 +219,7 @@ class OpdsXmlEngine extends OpdsEngine
             'updated' => $entry->getUpdated()?->format(DATE_ATOM),
             'id' => $id,
             'summary' => $this->addXmlNode(value: $entry->getSummary(), attributes: ['type' => 'text']),
-            'content' => $this->addXmlNode(value: $entry->getContent(), attributes: ['type' => 'text/html']),
+            'content' => $this->addXmlNode(value: $entry->getContents(), attributes: ['type' => 'text/html']),
             '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute())),
             '__custom:link:2' => $this->addXmlLink(href: $media, rel: 'http://opds-spec.org/image', type: $mediaMimeType),
             '__custom:link:3' => $this->addXmlLink(href: $mediaThumbnail, rel: 'http://opds-spec.org/image/thumbnail', type: $mediaThumbnailMimeType),

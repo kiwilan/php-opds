@@ -20,7 +20,7 @@ it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
     expect($entry->getTitle())->toBe('The Clan of the Cave Bear');
     expect($entry->getRoute())->toBe('http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en');
     expect($entry->getSummary())->toBeString();
-    expect($entry->getContent())->toBeString();
+    expect($entry->getContents())->toBeString();
     expect($entry->getMedia())->toBe('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
     expect($entry->getUpdated())->toBeInstanceOf(DateTime::class);
     expect($entry->getDownload())->toBe('http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en');
@@ -69,7 +69,7 @@ it('can use setter', function () {
     expect($entry->getTitle())->toBe('The Clan of the Cave Bear 2');
     expect($entry->getRoute())->toBe('http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en-2');
     expect($entry->getSummary())->toBe('summary');
-    expect($entry->getContent())->toBe('content');
+    expect($entry->getContents())->toBe('content');
     expect($entry->getMedia())->toBe('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
     expect($entry->getUpdated())->toBeInstanceOf(DateTime::class);
     expect($entry->getDownload())->toBe('http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en');

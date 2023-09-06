@@ -16,6 +16,8 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 |   1.2   |    ✅     | November 11, 2018 |  XML   | `?version=1.2` |
 |   2.0   |    ✅     |       Draft       |  JSON  | `?version=2.0` |
 
+All old versions: 0.9, 1.0 and 1.1 have a fallback to OPDS 1.2.
+
 ## Requirements
 
 -   PHP >= 8.1
@@ -24,7 +26,7 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 
 OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks between libraries, bookstores, publishers, and readers. Developed by [Hadrien Gardeur](https://github.com/HadrienGardeur) and [Leonard Richardson](https://github.com/leonardr).
 
-This package has been created to be used with [bookshelves-project/bookshelves](https://github.com/bookshelves-project/bookshelves), an open source eBook web app.
+This package has been created to be used with [`bookshelves-project/bookshelves`](https://github.com/bookshelves-project/bookshelves), an open source eBook web app.
 
 > The Open Publication Distribution System (OPDS) catalog format is a syndication format for electronic publications based on Atom and HTTP. OPDS catalogs enable the aggregation, distribution, discovery, and acquisition of electronic publications. OPDS catalogs use existing or emergent open standards and conventions, with a priority on simplicity.
 >
@@ -35,13 +37,14 @@ This package has been created to be used with [bookshelves-project/bookshelves](
 Some resources about OPDS and eBooks:
 
 -   [opds.io](https://opds.io/): OPDS official website
--   [thorium-reader](https://github.com/edrlab/thorium-reader): test OPDS feed with Thorium Reader
 -   OPDS feeds examples (these projects don't use `kiwilan/php-opds`)
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
--   [kiwilan/php-ebook](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
--   [koreader/koreader](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it.
--   [edrlab/thorium-reader](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks.
+    -   [feedbooks.com](https://www.feedbooks.com/catalog.atom): Feedbooks
+        https://bookshelves.ink/opds
+-   [`kiwilan/php-ebook`](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
+-   [`koreader/koreader`](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it
+-   [`edrlab/thorium-reader`](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks
 
 ## Features
 
@@ -49,7 +52,7 @@ Some resources about OPDS and eBooks:
 -   👌 Support OPDS 1.2 and 2.0
 -   🔖 With pagination option
 -   🔍 Search page included, but NOT search engine
--   🌐 Can handle sending response to browser
+-   🌐 Option to handle response to browser as XML or JSON
 
 ## Installation
 
@@ -61,14 +64,7 @@ composer require kiwilan/php-opds:1.0.0-alpha.5
 
 ## Usage
 
-### Version
-
-You can use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
-
--   Version `1.2` can be set with `?version=1.2`
--   Version `2.0` can be set with `?version=2.0`
-
-You can use the `Opds::make()` method to create an OPDS instance, default response is XML with OPDS version 1.2, you can force JSON response with `OpdsConfig::class` method `forceJson()`.
+You have to use `Opds::make()` method to create an OPDS instance, the only param is `config` to set OPDS config, totally optional. Default response is XML with OPDS version 1.2, you can force JSON response with `OpdsConfig::class` method `forceJson()` to use only OPDS 2.0. With `get()` method, you can get full instance of `Opds` with `OpdsEngine` and `OpdsResponse`.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -76,7 +72,7 @@ use Kiwilan\Opds\OpdsConfig;
 
 $opds = Opds::make(new OpdsConfig()) // OpdsConfig::class, optional
   ->title('My feed')
-  ->feeds([]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
+  ->feeds([...]) // OpdsEntryNavigation[]|OpdsEntryBook[]|OpdsEntryNavigation|OpdsEntryBook
   ->get()
 ;
 ```
@@ -105,9 +101,57 @@ $opds->getOutput(); // OpdsOutputEnum|null - Output of response, useful for debu
 $opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `OpdsEngine` to create a response
 ```
 
+### Version
+
+You can use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
+
+-   Version `1.2` can be set with `?version=1.2`
+-   Version `2.0` can be set with `?version=2.0`
+
+> **Warning**
+>
+> If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, it will be ignored.
+
+### Engine
+
+Engine will convert your feeds to OPDS, depending of OPDS version.
+
+-   OPDS 1.2 will use `OpdsXmlEngine::class`
+-   OPDS 2.0 will use `OpdsJsonEngine::class`
+
+You can get engine used with `getEngine()` method from `Opds::class`. Property `content` contains array of feeds, `OpdsEngine` allow conversion into XML or JSON with `__toString()` method, the output depends of OPDS version.
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
+$engine = $opds->getEngine(); // OpdsEngine
+$content = $engine->getContents(); // array
+$output = $engine->__toString(); // string
+```
+
 ### Response
 
-You can send response to browser if you want:
+You can use `get()` method and after that, use `send()` method to send response to browser.
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
+$opds->send(); // XML or JSON response, stop script
+```
+
+You can send directly response to browser:
 
 > **Warning**
 >
@@ -116,24 +160,32 @@ You can send response to browser if you want:
 ```php
 use Kiwilan\Opds\Opds;
 
-$opds = Opds::make()
+Opds::make()
   ->title('My feed')
-  ->feeds([])
-  ->get()
-;
-
-return $opds->response(); // XML or JSON response
+  ->feeds([...])
+  ->send(); // XML or JSON response, stop script
 ```
 
-You can send directly response to browser:
+To get only instance of `OpdsResponse`, you can use `getResponse()` method from `Opds::class`. You can use this response to get status code, headers and contents, you can send it to browser by yourself or use `send()` method.
 
 ```php
 use Kiwilan\Opds\Opds;
 
-return Opds::make()
+$opds = Opds::make()
   ->title('My feed')
-  ->feeds([])
-  ->response();
+  ->feeds([...])
+  ->get()
+;
+
+$response = $opds->getResponse(); // OpdsResponse
+
+$response->getStatus(); // int - Status code of response
+$response->isJson(); // bool - If response is JSON
+$response->isXml(); // bool - If response is XML
+$response->getHeaders(); // array - Headers of response
+$response->getContents(); // string - Contents of response
+
+$response->send(); // Send response to browser, stop script
 ```
 
 ### Config
@@ -161,6 +213,10 @@ $config = new OpdsConfig(
 );
 ```
 
+> **Note**
+>
+> You can override `OpdsConfig` with setter methods.
+
 ### OPDS entry
 
 #### Navigation
@@ -179,6 +235,10 @@ $entry = new OpdsEntryNavigation(
   updated: new DateTime(),
 );
 ```
+
+> **Note**
+>
+> You can override `OpdsEntryNavigation` with setter methods.
 
 And you can add this entry to OPDS feed with `feeds()` method:
 
@@ -200,6 +260,7 @@ You can create a book entry with `OpdsEntryBook::class`:
 
 ```php
 use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 
 $entry = new OpdsEntryBook(
   id: 'the-clan-of-the-cave-bear-epub-en',
@@ -228,6 +289,10 @@ $entry = new OpdsEntryBook(
 );
 ```
 
+> **Note**
+>
+> You can override `OpdsEntryBook` with setter methods.
+
 And you can add this entry to OPDS feed with `feeds()` method:
 
 ```php
@@ -239,6 +304,10 @@ $opds = Opds::make()
 ### Search
 
 This package do NOT implements any search engine, you can use your own search engine and use `Opds::class` to create OPDS feed.
+
+> **Note**
+>
+> I advice [Meilisearch](https://www.meilisearch.com/) for search engine, it's a powerful and easy to use search engine.
 
 Here an example:
 
@@ -281,9 +350,10 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Credits
 
--   [Ewilan Rivière](https://github.com/ewilan-riviere)
--   [spatie/array-to-xml](https://github.com/spatie/array-to-xml)
--   [spatie/package-skeleton-php](https://github.com/spatie/package-skeleton-php)
+-   [`ewilan-riviere`](https://github.com/ewilan-riviere): Author
+-   [`spatie/array-to-xml`](https://github.com/spatie/array-to-xml): to convert array to XML
+-   [`spatie/package-skeleton-php`](https://github.com/spatie/package-skeleton-php): skeleton for PHP package
+-   [Contributors](https://github.com/kiwilan/php-opds/graphs/contributors)
 
 ## License
 

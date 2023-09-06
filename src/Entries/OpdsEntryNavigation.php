@@ -88,7 +88,7 @@ class OpdsEntryNavigation extends OpdsEntry
         return $this->summary;
     }
 
-    public function getContent(): ?string
+    public function getContents(): ?string
     {
         return $this->content;
     }

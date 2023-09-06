@@ -1,6 +1,6 @@
 <?php
 
-namespace Kiwilan\Opds\Engine\Utils;
+namespace Kiwilan\Opds\Engine;
 
 class OpdsNamespaces
 {

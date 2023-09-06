@@ -145,7 +145,7 @@ class IndexController extends Controller
     {
         return Opds::make(MyOpds::config())
             ->feeds(MyOpds::home())
-            ->get()
+            ->send()
         ;
     }
 
@@ -165,7 +165,7 @@ class IndexController extends Controller
             ->title("Search for {$query}")
             ->isSearch()
             ->feeds($feeds)
-            ->get()
+            ->send()
         ;
     }
 }
@@ -200,7 +200,7 @@ class BookController extends Controller
         return Opds::make(MyOpds::config())
             ->title("Book {$book->title}")
             ->feeds(MyOpds::bookToEntry($book))
-            ->get()
+            ->send()
         ;
     }
 }
