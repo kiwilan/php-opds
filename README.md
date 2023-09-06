@@ -54,6 +54,11 @@ Some resources about OPDS and eBooks:
 -   🔍 Search page included, but NOT search engine
 -   🌐 Option to handle response to browser as XML or JSON
 
+### Roadmap
+
+-   OPDS 1.2: support advanced acquisition feeds
+-   OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
+
 ## Installation
 
 You can install the package via composer:
@@ -204,7 +209,6 @@ $config = new OpdsConfig(
   iconUrl: 'https://example.com/icon.png', // Icon URL
   startUrl: 'https://example.com/opds', // Start URL, will be included in top navigation
   searchUrl: 'https://example.com/opds/search', // Search URL, will be included in top navigation
-  searchQuery: 'q', // query parameter for search
   versionQuery: 'version', // query parameter for version
   updated: new DateTime(), // Last update of OPDS feed
   usePagination: false, // To enable pagination, default is false
@@ -305,6 +309,11 @@ $opds = Opds::make()
 
 This package do NOT implements any search engine, you can use your own search engine and use `Opds::class` to create OPDS feed.
 
+**Query parameters used for search are statically defined into specifications**:
+
+-   `q` param is used by OPDS 1.2
+-   `query` param is used by OPDS 2.0
+
 > **Note**
 >
 > I advice [Meilisearch](https://www.meilisearch.com/) for search engine, it's a powerful and easy to use search engine.
@@ -315,7 +324,7 @@ Here an example:
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 
-$query = // get query from URL
+$query = // get query from URL, `q` or `query` param
 $feeds = [];
 
 if ($query) {

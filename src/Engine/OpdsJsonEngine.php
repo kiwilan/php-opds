@@ -25,31 +25,42 @@ class OpdsJsonEngine extends OpdsEngine
 
     public function feed(): self
     {
+        $updated = $this->opds->getConfig()->getUpdated();
+
         $this->contents = [
             'metadata' => [
+                'id' => $this->getFeedId(),
                 'title' => $this->getFeedTitle(),
+                'updated' => $updated->format(DATE_ATOM),
+                'author' => '',
+                'icon' => $this->opds->getConfig()->getIconUrl(),
             ],
             'links' => [
                 $this->addJsonLink(rel: 'self', href: OpdsEngine::getCurrentUrl()),
                 $this->addJsonLink(rel: 'start', href: $this->route($this->opds->getConfig()->getStartUrl())),
-                $this->addJsonLink(rel: 'search', href: $this->route($this->opds->getConfig()->getSearchUrl()), attributes: ['templated' => true]),
             ],
         ];
 
-        if ($this->opds->getConfig()->getStartUrl()) {
-            if (! $this->opds->getConfig()->isForceJson()) {
-                $this->contents['links'][] = $this->addJsonLink(
-                    rel: 'alternate',
-                    href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
-                    title: 'OPDS 1.2',
-                    type: 'application/atom+xml',
-                );
-            }
+        if ($this->opds->getConfig()->getSearchUrl()) {
+            $searchUrl = $this->route($this->opds->getConfig()->getSearchUrl());
+            $searchUrl .= '{&query}';
+
+            $this->contents['links'][] = $this->addJsonLink(rel: 'search', href: $searchUrl, attributes: ['templated' => true]);
+        }
+
+        if ($this->opds->getConfig()->getAuthor()) {
+            $this->contents['metadata']['author'] = [
+                'name' => $this->opds->getConfig()->getAuthor(),
+                'uri' => $this->opds->getConfig()->getAuthorUrl(),
+            ];
+        }
+
+        if ($this->opds->getConfig()->getStartUrl() && ! $this->opds->getConfig()->isForceJson()) {
             $this->contents['links'][] = $this->addJsonLink(
                 rel: 'alternate',
-                href: $this->getVersionUrl(OpdsVersionEnum::v2Dot0),
-                title: 'OPDS 2.0',
-                type: 'application/opds+json',
+                href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),
+                title: 'OPDS 1.2',
+                type: 'application/atom+xml',
             );
         }
 

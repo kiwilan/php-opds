@@ -36,11 +36,11 @@ it('can use pagination', function () {
         }
     }
 
-    // expect(count($pagination))->toBe(4);
-    // expect($pagination['first']['href'])->toBe('http://localhost:8000/opds?startRecord=0&maximumRecords=32');
-    // expect($pagination['last']['href'])->toBe('http://localhost:8000/opds?startRecord=96&maximumRecords=32');
-    // expect($pagination['next']['href'])->toBe('http://localhost:8000/opds?startRecord=64&maximumRecords=32');
-    // expect($pagination['previous']['href'])->toBe('http://localhost:8000/opds?startRecord=-64&maximumRecords=32');
+    expect(count($pagination))->toBe(4);
+    expect($pagination['first']['href'])->toBe('http://localhost:8000/opds?startRecord=0&maximumRecords=32');
+    expect($pagination['last']['href'])->toBe('http://localhost:8000/opds?startRecord=96&maximumRecords=32');
+    expect($pagination['next']['href'])->toBe('http://localhost:8000/opds?startRecord=64&maximumRecords=32');
+    expect($pagination['previous']['href'])->toBe('http://localhost:8000/opds?startRecord=0&maximumRecords=32');
 
     expect($xml)->toBeArray();
     expect(count($xml))->toBe(32);
@@ -75,8 +75,39 @@ it('can use paginator', function () {
     expect($paginator->getPage())->toBe(1);
     expect($paginator->getTotal())->toBe(100);
     expect($paginator->getStart())->toBe(0);
-    expect($paginator->getStartRecord())->toBe(32);
     expect($paginator->getSize())->toBe(4);
     expect($paginator->getFirst())->toBe(0);
     expect($paginator->getLast())->toBe(96);
+});
+
+it('can use json pagination', function () {
+    $opds = Opds::make(getConfig()->usePagination()->forceJson())
+        ->feeds(manyFeeds())
+        ->get();
+
+    $response = json_decode($opds->getResponse()->getContents(), true);
+
+    expect($response['publications'])->toBeArray();
+    expect(count($response['publications']))->toBe(32);
+
+    $opds = Opds::make(getConfig()->usePagination()->forceJson())
+        ->url('http://localhost:8000/opds?page=2')
+        ->feeds(manyFeeds())
+        ->get();
+
+    $response = json_decode($opds->getResponse()->getContents(), true);
+
+    $pagination = [];
+    foreach ($response['links'] as $item) {
+        $pagination[$item['rel']] = $item;
+    }
+
+    expect(count($pagination))->toBe(5);
+    expect($pagination['first']['href'])->toBe('http://localhost:8000/opds?page=1');
+    expect($pagination['last']['href'])->toBe('http://localhost:8000/opds?page=4');
+    expect($pagination['next']['href'])->toBe('http://localhost:8000/opds?page=3');
+    expect($pagination['previous']['href'])->toBe('http://localhost:8000/opds?page=1');
+
+    expect($response['publications'])->toBeArray();
+    expect(count($response['publications']))->toBe(32);
 });
