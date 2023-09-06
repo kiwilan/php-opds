@@ -11,7 +11,7 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
--   **Demo**: <https://bookshelves.ink/opds>
+-   **Demo**: <https://bookshelves.ink/opds> from [`bookshelves-project/bookshelves`](https://github.com/bookshelves-project/bookshelves)
 
 | Version | Supported |       Date        | Format |  Query param   |
 | :-----: | :-------: | :---------------: | :----: | :------------: |
