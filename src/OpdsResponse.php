@@ -140,7 +140,7 @@ class OpdsResponse
     {
         $content = trim($content);
 
-        if (false !== stripos($content, '<!DOCTYPE html>')) {
+        if (stripos($content, '<!DOCTYPE html>') !== false) {
             return false;
         }
 
@@ -156,6 +156,6 @@ class OpdsResponse
     {
         json_decode($content);
 
-        return JSON_ERROR_NONE === json_last_error();
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }

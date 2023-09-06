@@ -53,7 +53,7 @@ function isValidXml(string $content): bool
         return false;
     }
 
-    if (false !== stripos($content, '<!DOCTYPE html>')) {
+    if (stripos($content, '<!DOCTYPE html>') !== false) {
         return false;
     }
 
@@ -69,7 +69,7 @@ function isValidJson(string $content): bool
 {
     json_decode($content);
 
-    return JSON_ERROR_NONE === json_last_error();
+    return json_last_error() === JSON_ERROR_NONE;
 }
 
 function getConfig(bool $json = false): OpdsConfig
