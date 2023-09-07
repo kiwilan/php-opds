@@ -2,6 +2,10 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v1.0.1 - 2023-09-07
+
+- Add `useAutoPagination` option for `OpdsConfig` to enable/disable auto pagination (works only for `OpdsEntryBook`)
+
 ## v1.0.0 - 2023-09-06
 
 This version rework completely the library, it's not compatible with previous version. Now you can use OPDS 2.0 with partial support.
@@ -18,19 +22,30 @@ $opds = Opds::make()
 
 return $opds->send(); // `never` because send response
 
+
 ```
 - To add `entries`, you have to use `feeds()` arrow method   
+     
   - `feeds()` accept `OpdsEntryBook[]` or `OpdsEntryNavigation[]` but also `OpdsEntryNavigation` or `OpdsEntryBook`   
   
-- To add `isSearch`, you have to use `isSearch()` arrow method
-- To add `title`, you have to use `title()` arrow method
-- To add `url`, you have to use `url()` arrow method (only for testing, URL is automatically generated)
-- OPDS version can be handle by query param `version`: `?version=2.0` or `?version=1.2`
-- To get generate response and keep `Opds::class` instance, you can use `get()` arrow method
-- To get response as XML or JSON, you can use `send()` arrow method
-- `asString` param removed, now you can use `get()` arrow method to debug response
-- To get response after `get()` you can use `getResponse()` arrow method (different that `send()` will return full content as `never` with headers)
-- Add fallback for old OPDS versions to v1.2
+- To add `isSearch`, you have to use `isSearch()` arrow method   
+  
+- To add `title`, you have to use `title()` arrow method   
+  
+- To add `url`, you have to use `url()` arrow method (only for testing, URL is automatically generated)   
+  
+- OPDS version can be handle by query param `version`: `?version=2.0` or `?version=1.2`   
+  
+- To get generate response and keep `Opds::class` instance, you can use `get()` arrow method   
+  
+- To get response as XML or JSON, you can use `send()` arrow method   
+  
+- `asString` param removed, now you can use `get()` arrow method to debug response   
+  
+- To get response after `get()` you can use `getResponse()` arrow method (different that `send()` will return full content as `never` with headers)   
+  
+- Add fallback for old OPDS versions to v1.2   
+  
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -46,20 +61,28 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->get()
 ;
 
+
 ```
 #### Misc
 
 - `OpdsConfig`   
+     
   - `usePagination` is now default to `false`   
   - `forceJson` param allow to skip OPDS 1.2   
   - `searchQuery` removed from `OpdsConfig` because query parameter is statically defined (`q` for OPDS 1.2, `query` for OPDS 2.0)   
   
-- `OpdsEntry` is now `OpdsEntryNavigation`
-- `OpdsEngine` rewrite completely
-- `OpdsResponse` can be debug with `getContents()` method to inspect response (accessible if you use `get()` method)
-- `OpdsEntry` items have now `get` prefix for all getter
-- remove modules system
+- `OpdsEntry` is now `OpdsEntryNavigation`   
+  
+- `OpdsEngine` rewrite completely   
+  
+- `OpdsResponse` can be debug with `getContents()` method to inspect response (accessible if you use `get()` method)   
+  
+- `OpdsEntry` items have now `get` prefix for all getter   
+  
+- remove modules system   
+  
 - `OpdsEngine` property `xml` is now `contents`   
+     
   - `getXml()` is now `getContents()`   
   - add setter `setContents()`   
   
@@ -97,10 +120,13 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
 ## 0.2.0 - 2023-05-09
 
 - `OpdsApp` is now `OpdsConfig`   
+     
   - `Opds` property `app` is now `config`   
   
-- `OpdsEntry`, `OpdsEntryBook`, `OpdsEntryBookAuthor` has now namespace `Kiwilan\Opds\Entries`
-- `OpdsXmlConverter` is has now one static method
+- `OpdsEntry`, `OpdsEntryBook`, `OpdsEntryBookAuthor` has now namespace `Kiwilan\Opds\Entries`   
+  
+- `OpdsXmlConverter` is has now one static method   
+  
 
 ## 0.1.30 - 2023-05-09
 
