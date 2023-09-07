@@ -71,6 +71,7 @@ it('can use paginator', function () {
     expect($paginator->getUrl())->toBe('http://localhost/');
     expect($paginator->getQuery())->toBeArray();
     expect($paginator->usePagination())->toBeTrue();
+    expect($paginator->useAutoPagination())->toBeFalse();
     expect($paginator->getPerPage())->toBe(32);
     expect($paginator->getPage())->toBe(1);
     expect($paginator->getTotal())->toBe(100);
@@ -110,4 +111,17 @@ it('can use json pagination', function () {
 
     expect($response['publications'])->toBeArray();
     expect(count($response['publications']))->toBe(32);
+});
+
+it('can use auto pagination', function () {
+    $opds = Opds::make(getConfig()->useAutoPagination())
+        ->feeds(manyFeeds())
+        ->get();
+
+    $xml = XmlReader::make($opds->getResponse()->getContents())->find('entry');
+
+    expect($opds->getConfig()->isUsePagination())->toBeFalse();
+    expect($opds->getConfig()->isUseAutoPagination())->toBeTrue();
+    expect($xml)->toBeArray();
+    expect(count($xml))->toBe(32);
 });
