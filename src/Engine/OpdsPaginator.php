@@ -18,6 +18,7 @@ class OpdsPaginator
         protected string $url,
         protected array $query = [],
         protected bool $usePagination = false,
+        protected bool $useAutoPagination = false,
         protected int $perPage = 0,
         protected int $page = 1,
 
@@ -50,6 +51,7 @@ class OpdsPaginator
             url: $url,
             query: $query,
             usePagination: $engine->getOpds()->getConfig()->isUsePagination(),
+            useAutoPagination: $engine->getOpds()->getConfig()->isUseAutoPagination(),
             perPage: $engine->getOpds()->getConfig()->getMaxItemsPerPage(),
             page: $page,
         );
@@ -73,6 +75,11 @@ class OpdsPaginator
     public function usePagination(): bool
     {
         return $this->usePagination;
+    }
+
+    public function useAutoPagination(): bool
+    {
+        return $this->useAutoPagination;
     }
 
     public function getPerPage(): int
@@ -118,7 +125,7 @@ class OpdsPaginator
      */
     public function paginate(array &$content, array &$feeds): self
     {
-        if (! $this->usePagination) {
+        if (! $this->usePagination && ! $this->useAutoPagination) {
             return $this;
         }
 

@@ -11,6 +11,8 @@
 
 PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distribution System) for eBooks.
 
+-   **Demo**: <https://bookshelves.ink/opds> from [`bookshelves-project/bookshelves`](https://github.com/bookshelves-project/bookshelves)
+
 | Version | Supported |       Date        | Format |  Query param   |
 | :-----: | :-------: | :---------------: | :----: | :------------: |
 |   1.2   |    ✅     | November 11, 2018 |  XML   | `?version=1.2` |
@@ -41,7 +43,6 @@ Some resources about OPDS and eBooks:
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
     -   [feedbooks.com](https://www.feedbooks.com/catalog.atom): Feedbooks
-        https://bookshelves.ink/opds
 -   [`kiwilan/php-ebook`](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
 -   [`koreader/koreader`](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it
 -   [`edrlab/thorium-reader`](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks
@@ -103,6 +104,7 @@ And about engine and response:
 ```php
 $opds->getEngine(); // OpdsEngine|null - Engine used to create OPDS feed, determined by OPDS version, can be `OpdsXmlEngine::class` or `OpdsJsonEngine::class`
 $opds->getOutput(); // OpdsOutputEnum|null - Output of response, useful for debug
+$opds->getPaginator(); // Paginator|null - Paginator used to paginate feeds, determined by `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`
 $opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `OpdsEngine` to create a response
 ```
 
@@ -124,7 +126,7 @@ Engine will convert your feeds to OPDS, depending of OPDS version.
 -   OPDS 1.2 will use `OpdsXmlEngine::class`
 -   OPDS 2.0 will use `OpdsJsonEngine::class`
 
-You can get engine used with `getEngine()` method from `Opds::class`. Property `content` contains array of feeds, `OpdsEngine` allow conversion into XML or JSON with `__toString()` method, the output depends of OPDS version.
+You can get engine used with `getEngine()` method from `Opds::class`. Property `contents` contains array of feeds, `OpdsEngine` allow conversion into XML or JSON with `__toString()` method, the output depends of OPDS version.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -136,7 +138,7 @@ $opds = Opds::make()
 ;
 
 $engine = $opds->getEngine(); // OpdsEngine
-$content = $engine->getContents(); // array
+$contents = $engine->getContents(); // array
 $output = $engine->__toString(); // string
 ```
 
@@ -212,6 +214,7 @@ $config = new OpdsConfig(
   versionQuery: 'version', // query parameter for version
   updated: new DateTime(), // Last update of OPDS feed
   usePagination: false, // To enable pagination, default is false
+  useAutoPagination: false, // To enable auto pagination, default is false, if `usePagination` is true, this option will be ignored
   maxItemsPerPage: 16, // Max items per page, default is 16
   forceJson: false, // To force JSON response as OPDS 2.0, default is false
 );
@@ -220,6 +223,14 @@ $config = new OpdsConfig(
 > **Note**
 >
 > You can override `OpdsConfig` with setter methods.
+
+#### Pagination
+
+You can use pagination with `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`.
+
+-   `usePagination()` will paginate feeds based on `maxItemsPerPage` property
+-   `useAutoPagination()` will paginate only `OpdsEntryBook` feeds if exceed `maxItemsPerPage` property
+    -   Useful if you have a lot of navigations feeds, e.g. 1000 authors, you don't want to paginate this feed
 
 ### OPDS entry
 
