@@ -2,6 +2,13 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v1.x.x - 2023-09-13
+
+- Update `OpdsJsonEngine` to use these options for OPDS 2.0 output - @todo OPDS 1.2 was not adapted in this PR
+- Add `properties` option for `OpdsEntryNavigation` to include extra properties (like numberOfItems for facets)
+- Add `relation` option for `OpdsEntryNavigation` to specify the relation to use (instead of `current`)
+- Add `identifier` option for `OpdsEntryBook` to specify the actual identifier to use (instead of `urn:isbn:...`)
+
 ## v1.0.1 - 2023-09-07
 
 - Add `useAutoPagination` option for `OpdsConfig` to enable/disable auto pagination (works only for `OpdsEntryBook`)
