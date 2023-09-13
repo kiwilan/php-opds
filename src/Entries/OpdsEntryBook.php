@@ -27,6 +27,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         protected ?string $serie = null,
         protected ?string $language = null,
         protected ?string $isbn = null,
+        protected ?string $identifier = null,
         protected ?string $translator = null,
         protected ?string $publisher = null,
     ) {
@@ -110,6 +111,13 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this;
     }
 
+    public function identifier(string $identifier): self
+    {
+        $this->identifier = $identifier;
+
+        return $this;
+    }
+
     public function translator(string $translator): self
     {
         $this->translator = $translator;
@@ -175,6 +183,11 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this->isbn;
     }
 
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
     public function getTranslator(): ?string
     {
         return $this->translator;
@@ -197,6 +210,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
             'serie' => $this->getSerie(),
             'language' => $this->getLanguage(),
             'isbn' => $this->getIsbn(),
+            'identifier' => $this->getIdentifier(),
             'translator' => $this->getTranslator(),
             'publisher' => $this->getPublisher(),
         ]);
