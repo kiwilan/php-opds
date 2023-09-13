@@ -93,7 +93,7 @@ class OpdsJsonEngine extends OpdsEngine
             'href' => $this->route($entry->getRoute()),
             'title' => $entry->getTitle(),
             'type' => 'application/opds+json',
-            'rel' => 'current',
+            'rel' => $entry->getRelation() ?? 'current',
         ];
     }
 
