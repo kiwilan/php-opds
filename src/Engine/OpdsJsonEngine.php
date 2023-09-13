@@ -89,6 +89,18 @@ class OpdsJsonEngine extends OpdsEngine
 
     public function addNavigationEntry(OpdsEntryNavigation $entry): array
     {
+        $properties = $entry->getProperties();
+
+        if ($properties) {
+            return [
+                'href' => $this->route($entry->getRoute()),
+                'title' => $entry->getTitle(),
+                'type' => 'application/opds+json',
+                'rel' => $entry->getRelation() ?? 'current',
+                'properties' => $properties,
+            ];
+        }
+
         return [
             'href' => $this->route($entry->getRoute()),
             'title' => $entry->getTitle(),
