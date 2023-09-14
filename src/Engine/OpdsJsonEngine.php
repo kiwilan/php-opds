@@ -89,11 +89,23 @@ class OpdsJsonEngine extends OpdsEngine
 
     public function addNavigationEntry(OpdsEntryNavigation $entry): array
     {
+        $properties = $entry->getProperties();
+
+        if ($properties) {
+            return [
+                'href' => $this->route($entry->getRoute()),
+                'title' => $entry->getTitle(),
+                'type' => 'application/opds+json',
+                'rel' => $entry->getRelation() ?? 'current',
+                'properties' => $properties,
+            ];
+        }
+
         return [
             'href' => $this->route($entry->getRoute()),
             'title' => $entry->getTitle(),
             'type' => 'application/opds+json',
-            'rel' => 'current',
+            'rel' => $entry->getRelation() ?? 'current',
         ];
     }
 
@@ -134,10 +146,15 @@ class OpdsJsonEngine extends OpdsEngine
             $summary = (string) json_decode($summary, true, 512, JSON_THROW_ON_ERROR);
         }
 
+        $identifier = $entry->getIdentifier();
+        if (empty($identifier)) {
+            $identifier = "urn:isbn:{$entry->getIsbn()}";
+        }
+
         return [
             'metadata' => [
                 '@type' => 'http://schema.org/EBook',
-                'identifier' => "urn:isbn:{$entry->getIsbn()}",
+                'identifier' => $identifier,
                 'title' => $entry->getTitle(),
                 'author' => $mainAuthor,
                 'translator' => $entry->getTranslator(),

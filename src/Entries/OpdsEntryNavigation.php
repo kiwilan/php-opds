@@ -13,6 +13,8 @@ class OpdsEntryNavigation extends OpdsEntry
         protected ?string $summary = null,
         protected ?string $content = null,
         protected ?string $media = null,
+        protected ?string $relation = null,
+        protected ?array $properties = null,
         protected DateTime|string|null $updated = null,
     ) {
         $this->summary = OpdsEntryNavigation::handleContent($this->summary);
@@ -61,6 +63,20 @@ class OpdsEntryNavigation extends OpdsEntry
         return $this;
     }
 
+    public function relation(string $relation): self
+    {
+        $this->relation = $relation;
+
+        return $this;
+    }
+
+    public function properties(array $properties): self
+    {
+        $this->properties = $properties;
+
+        return $this;
+    }
+
     public function updated(DateTime|string|null $updated): self
     {
         $this->updated = $updated;
@@ -98,6 +114,16 @@ class OpdsEntryNavigation extends OpdsEntry
         return $this->media;
     }
 
+    public function getRelation(): ?string
+    {
+        return $this->relation;
+    }
+
+    public function getProperties(): ?array
+    {
+        return $this->properties;
+    }
+
     public function getUpdated(): DateTime|string|null
     {
         return $this->updated;
@@ -111,6 +137,8 @@ class OpdsEntryNavigation extends OpdsEntry
             'route' => $this->getRoute(),
             'summary' => $this->getSummary(),
             'media' => $this->getMedia(),
+            'relation' => $this->getRelation(),
+            'properties' => $this->getProperties(),
             'updated' => $this->getUpdated(),
         ];
     }
