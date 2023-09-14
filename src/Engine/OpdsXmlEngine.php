@@ -216,7 +216,7 @@ class OpdsXmlEngine extends OpdsEngine
             'id' => $id,
             'summary' => $this->addXmlNode(value: $entry->getSummary(), attributes: ['type' => 'text']),
             'content' => $this->addXmlNode(value: $entry->getContents(), attributes: ['type' => 'text/html']),
-            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute())),
+            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute()), acquisition: true),
             '__custom:link:2' => $this->addXmlLink(href: $media, rel: 'http://opds-spec.org/image', type: $mediaMimeType),
             '__custom:link:3' => $this->addXmlLink(href: $mediaThumbnail, rel: 'http://opds-spec.org/image/thumbnail', type: $mediaThumbnailMimeType),
             '__custom:link:4' => $this->addXmlLink(href: $entry->getDownload(), title: 'EPUB', rel: 'http://opds-spec.org/acquisition', type: 'application/epub+zip'),
