@@ -9,6 +9,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
     /**
      * @param  string[]  $categories
      * @param  OpdsEntryBookAuthor[]  $authors
+     * @param  ?string  $isbn @deprecated Use `identifier` instead
      */
     public function __construct(
         protected string $id,

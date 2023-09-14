@@ -208,8 +208,13 @@ abstract class OpdsEngine
         string $href = null,
         string $title = null,
         string $rel = null,
-        string $type = 'application/atom+xml;profile=opds-catalog;kind=acquisition',
+        string $type = 'application/atom+xml;profile=opds-catalog;kind=navigation',
+        bool $acquisition = false,
     ): array {
+        if ($acquisition) {
+            $type = 'application/atom+xml;profile=opds-catalog;kind=acquisition';
+        }
+
         return [
             '_attributes' => [
                 'rel' => $rel,
@@ -242,6 +247,10 @@ abstract class OpdsEngine
      */
     protected function paginate(array &$content, array &$feeds): void
     {
+        if (! $this->getOpds()->getConfig()->isUsePagination() && ! $this->getOpds()->getConfig()->isUseAutoPagination()) {
+            return;
+        }
+
         $this->paginator = OpdsPaginator::make($this)->paginate($content, $feeds);
     }
 }

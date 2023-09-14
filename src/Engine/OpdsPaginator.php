@@ -15,6 +15,7 @@ class OpdsPaginator
     protected function __construct(
         protected OpdsOutputEnum $output,
         protected string $versionQuery,
+        protected string $paginationQuery,
         protected string $url,
         protected array $query = [],
         protected bool $usePagination = false,
@@ -43,11 +44,13 @@ class OpdsPaginator
 
         $output = $engine->getOpds()->getOutput();
         $query = $engine->getOpds()->getQuery();
-        $page = $query['page'] ?? 1;
+        $pagination = $engine->getOpds()->getConfig()->getPaginationQuery();
+        $page = $query[$pagination] ?? 1;
 
         return new self(
             output: $output,
             versionQuery: $engine->getOpds()->getConfig()->getVersionQuery(),
+            paginationQuery: $pagination,
             url: $url,
             query: $query,
             usePagination: $engine->getOpds()->getConfig()->isUsePagination(),
@@ -196,24 +199,24 @@ class OpdsPaginator
         if ($this->page !== 1) {
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'first',
-                href: $this->route($this->url, ['page' => 1]),
+                href: $this->route($this->url, [$this->paginationQuery => 1]),
             );
 
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'previous',
-                href: $this->route($this->url, ['page' => $this->page - 1]),
+                href: $this->route($this->url, [$this->paginationQuery => $this->page - 1]),
             );
         }
 
         if ($this->page !== $this->size) {
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'next',
-                href: $this->route($this->url, ['page' => $this->page + 1]),
+                href: $this->route($this->url, [$this->paginationQuery => $this->page + 1]),
             );
 
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'last',
-                href: $this->route($this->url, ['page' => $this->size]),
+                href: $this->route($this->url, [$this->paginationQuery => $this->size]),
             );
         }
     }

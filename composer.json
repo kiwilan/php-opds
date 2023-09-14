@@ -1,7 +1,7 @@
 {
     "name": "kiwilan/php-opds",
     "description": "PHP package to create OPDS feed for eBooks.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "keywords": [
         "php",
         "ebook",

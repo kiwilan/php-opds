@@ -5,6 +5,7 @@ use Kiwilan\Opds\Engine\OpdsXmlEngine;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\OpdsResponse;
 use Kiwilan\XmlReader\XmlReader;
 
@@ -45,12 +46,16 @@ it('can use opds properties', function () {
     expect($opds->getOutput())->toBe(OpdsOutputEnum::xml);
     expect($opds->getResponse())->toBeInstanceOf(OpdsResponse::class);
     expect($opds->getUrlParts())->toBeArray();
-    expect($opds->getPaginator())->toBeInstanceOf(OpdsPaginator::class);
+    expect($opds->getPaginator())->toBeNull();
 });
 
 it('can use opds paginator', function () {
-    $opds = Opds::make()
-        ->title('feed');
+    $config = (new OpdsConfig())->usePagination()
+        ->setVersionQuery('v')
+        ->setPaginationQuery('pagination');
+    $opds = Opds::make($config)
+        ->title('feed')
+        ->get();
 
     expect($opds->getPaginator())->toBeInstanceOf(OpdsPaginator::class);
 });

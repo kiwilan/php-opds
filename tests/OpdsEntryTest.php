@@ -12,7 +12,16 @@ it('is OpdsEntryNavigation', function (OpdsEntryNavigation $entry) {
     expect($entry->getSummary())->toBe('Authors, 1 available');
     expect($entry->getMedia())->toBe('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
     expect($entry->getUpdated())->toBeInstanceOf(DateTime::class);
+    expect($entry->getRelation())->toBe('series');
+    expect($entry->getProperties())->toBeArray();
+    expect($entry->getProperties())->toBe(['properties']);
     expect($entry->toArray())->toBeArray();
+
+    $entry->relation('new relation');
+    $entry->properties(['new properties']);
+    expect($entry->getRelation())->toBe('new relation');
+    expect($entry->getProperties())->toBeArray();
+    expect($entry->getProperties())->toBe(['new properties']);
 })->with('feeds');
 
 it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
@@ -62,6 +71,7 @@ it('can use setter', function () {
     $entry->serie('Earth\'s Children');
     $entry->language('English');
     $entry->isbn('1234567890');
+    $entry->identifier('1234567890');
     $entry->translator('Translator');
     $entry->publisher('Publisher');
 
@@ -83,6 +93,7 @@ it('can use setter', function () {
     expect($entry->getSerie())->toBe('Earth\'s Children');
     expect($entry->getLanguage())->toBe('English');
     expect($entry->getIsbn())->toBe('1234567890');
+    expect($entry->getIdentifier())->toBe('1234567890');
     expect($entry->getTranslator())->toBe('Translator');
     expect($entry->getPublisher())->toBe('Publisher');
 });

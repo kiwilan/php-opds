@@ -12,6 +12,7 @@ it('can use setter', function () {
     $config->setStartUrl('https://example.com/opds');
     $config->setSearchUrl('https://example.com/opds/search');
     $config->setVersionQuery('v');
+    $config->setPaginationQuery('pagination');
     $config->setUpdated(new DateTime());
     $config->usePagination();
     $config->useAutoPagination();
@@ -25,6 +26,7 @@ it('can use setter', function () {
     expect($config->getStartUrl())->toBe('https://example.com/opds');
     expect($config->getSearchUrl())->toBe('https://example.com/opds/search');
     expect($config->getVersionQuery())->toBe('v');
+    expect($config->getPaginationQuery())->toBe('pagination');
     expect($config->getUpdated())->toBeInstanceOf(DateTime::class);
     expect($config->isUsePagination())->toBeTrue();
     expect($config->isUseAutoPagination())->toBeTrue();

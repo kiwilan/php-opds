@@ -156,6 +156,9 @@ function navigationEntries(): array
             content: 'content',
             media: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
             updated: new DateTime(),
+            properties: [
+                'numberOfItems' => 1,
+            ],
         ),
         new OpdsEntryNavigation(
             id: 'authors',
