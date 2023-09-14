@@ -212,6 +212,7 @@ $config = new OpdsConfig(
   startUrl: 'https://example.com/opds', // Start URL, will be included in top navigation
   searchUrl: 'https://example.com/opds/search', // Search URL, will be included in top navigation
   versionQuery: 'version', // query parameter for version
+  paginationQuery: 'page', // query parameter for pagination
   updated: new DateTime(), // Last update of OPDS feed
   usePagination: false, // To enable pagination, default is false
   useAutoPagination: false, // To enable auto pagination, default is false, if `usePagination` is true, this option will be ignored
@@ -248,6 +249,10 @@ $entry = new OpdsEntryNavigation(
   summary: 'Authors, 1 available',
   media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   updated: new DateTime(),
+  properties: [
+    'numberOfItems' => 1,
+  ], // to include extra properties (like numberOfItems for facets)
+  relation: 'current', // to specify the relation to use (instead of `current`)
 );
 ```
 
@@ -298,7 +303,8 @@ $entry = new OpdsEntryBook(
   volume: 1,
   serie: 'Earth\'s Children',
   language: 'English',
-  isbn: '9780553381672',
+  isbn: '9780553381672', // deprecated, use `identifier` instead
+  identifier: 'urn:isbn:9780553381672', // to specify the actual identifier to use (instead of `urn:isbn:...`)
   translator: 'translator',
   publisher: 'publisher',
 );
