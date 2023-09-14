@@ -121,6 +121,10 @@ abstract class OpdsEngine
                 return $this->toXML();
             }
 
+            if (! empty($this->getOpds()->getFeeds())) {
+                return $this->toXML();
+            }
+
             return $this->toXML([
                 'rootElementName' => 'OpenSearchDescription',
                 '_attributes' => [
