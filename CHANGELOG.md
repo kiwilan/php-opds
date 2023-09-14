@@ -2,6 +2,10 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v1.0.22 - 2023-09-14
+
+- Fix XML search page root
+
 ## v1.0.21 - 2023-09-14
 
 - [fix navigation xml](https://github.com/kiwilan/php-opds/commit/0a3a0cbd6df35fa8975d1172ebb1392348f6eb97)
@@ -36,6 +40,7 @@ $opds = Opds::make()
     ->get(); // `Opds::class` instance with response
 
 return $opds->send(); // `never` because send response
+
 
 
 
@@ -77,6 +82,7 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->feeds($entries) // Accept `OpdsEntryBook[]`, `OpdsEntryNavigation[]`, `OpdsEntryNavigation` or `OpdsEntryBook`
   ->get()
 ;
+
 
 
 
