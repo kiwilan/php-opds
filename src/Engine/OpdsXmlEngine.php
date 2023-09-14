@@ -129,7 +129,12 @@ class OpdsXmlEngine extends OpdsEngine
         $entryXml = [
             'title' => $entry->getTitle(),
             'id' => "{$app}:{$entry->getId()}",
-            '__custom:link:1' => $this->addXmlLink(href: $this->route($entry->getRoute()), title: $entry->getTitle(), rel: 'start'),
+            '__custom:link:1' => [
+                '_attributes' => [
+                    'href' => $this->route($entry->getRoute()),
+                    'type' => 'application/atom+xml;profile=opds-catalog;kind=navigation',
+                ],
+            ],
         ];
 
         if ($entry->getUpdated()) {
