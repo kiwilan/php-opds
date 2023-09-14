@@ -125,3 +125,22 @@ it('can use auto pagination', function () {
     expect($xml)->toBeArray();
     expect(count($xml))->toBe(32);
 });
+
+it('can skip json pagination', function () {
+    $opds = Opds::make(getConfig()->forceJson())
+        ->feeds(manyFeeds())
+        ->get();
+
+    $response = json_decode($opds->getResponse()->getContents(), true);
+
+    expect(count($response['publications']))->toBe(100);
+
+    $opds = Opds::make(getConfig()->forceJson())
+        ->url('http://localhost:8000/opds?page=2')
+        ->feeds(manyFeeds())
+        ->get();
+
+    $response = json_decode($opds->getResponse()->getContents(), true);
+
+    expect(count($response['publications']))->toBe(100);
+});

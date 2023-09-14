@@ -32,6 +32,7 @@ class OpdsConfig
         protected ?string $startUrl = null,
         protected ?string $searchUrl = null,
         protected string $versionQuery = 'version',
+        protected string $paginationQuery = 'page',
         protected DateTime $updated = new DateTime(),
         protected bool $usePagination = false,
         protected bool $useAutoPagination = false,
@@ -73,6 +74,11 @@ class OpdsConfig
     public function getVersionQuery(): string
     {
         return $this->versionQuery;
+    }
+
+    public function getPaginationQuery(): string
+    {
+        return $this->paginationQuery;
     }
 
     public function getUpdated(): DateTime
@@ -145,6 +151,13 @@ class OpdsConfig
     public function setVersionQuery(string $versionQuery): self
     {
         $this->versionQuery = $versionQuery;
+
+        return $this;
+    }
+
+    public function setPaginationQuery(string $paginationQuery): self
+    {
+        $this->paginationQuery = $paginationQuery;
 
         return $this;
     }
