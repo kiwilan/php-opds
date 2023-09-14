@@ -81,3 +81,28 @@ it('will throw exception with unspported version', function () {
     expect(fn () => $opds->url('http://localhost:8000/opds?version=0.8'))->toThrow(Exception::class);
     expect(fn () => $opds->url('http://localhost:8000/opds?version=0.8'))->toThrow('OPDS version 0.8 is not supported.');
 });
+
+it('can use search', function () {
+    $opds = Opds::make()
+        ->title('feed')
+        ->isSearch()
+        ->get();
+
+    $xml = XmlReader::make($opds->getResponse()->getContents());
+
+    expect($opds->getOutput())->toBe(OpdsOutputEnum::xml);
+    expect($xml->getRoot())->toBe('OpenSearchDescription');
+    expect($xml->getRootNS()['xmlns'])->toBe('http://a9.com/-/spec/opensearch/1.1/');
+    expect(count($xml->getContent()))->toBe(12);
+
+    $url = $xml->getContent()['Url'];
+    $self = $url[0]['@attributes'];
+    $search = $url[1]['@attributes'];
+
+    expect($self['template'])->toBe('');
+    expect($self['type'])->toBe('application/opensearchdescription+xml');
+    expect($self['rel'])->toBe('self');
+
+    expect($search['template'])->toBe('?q={searchTerms}');
+    expect($search['type'])->toBe('application/atom+xml');
+});

@@ -90,14 +90,14 @@ abstract class OpdsEngine
     /**
      * Convert `content` to XML.
      */
-    protected function toXML(): string
+    protected function toXML(array $rootElement = [
+        'rootElementName' => 'feed',
+        '_attributes' => OpdsNamespaces::VERSION_1_2,
+    ]): string
     {
         return ArrayToXml::convert(
             array: $this->contents,
-            rootElement: [
-                'rootElementName' => 'feed',
-                '_attributes' => OpdsNamespaces::VERSION_1_2,
-            ],
+            rootElement: $rootElement,
             replaceSpacesByUnderScoresInKeyNames: true,
             xmlEncoding: 'UTF-8'
         );
@@ -117,7 +117,16 @@ abstract class OpdsEngine
     public function __toString(): string
     {
         if ($this->opds->getOutput() === OpdsOutputEnum::xml) {
-            return $this->toXML();
+            if (! $this->getOpds()->checkIfSearch()) {
+                return $this->toXML();
+            }
+
+            return $this->toXML([
+                'rootElementName' => 'OpenSearchDescription',
+                '_attributes' => [
+                    'xmlns' => 'http://a9.com/-/spec/opensearch/1.1/',
+                ],
+            ]);
         }
 
         return $this->toJSON();
