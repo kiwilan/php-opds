@@ -60,6 +60,7 @@ Some resources about OPDS and eBooks:
 
 -   OPDS 1.2: support advanced acquisition feeds
 -   OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
+-   Add [OPDS Page Streaming Extension](- https://github.com/anansi-project/opds-pse) from `anansi-project`
 
 ## Installation
 
