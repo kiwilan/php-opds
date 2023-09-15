@@ -90,7 +90,7 @@ abstract class OpdsEngine
     /**
      * Convert `content` to XML.
      */
-    protected function toXML(array $rootElement = [
+    public function toXML(array $rootElement = [
         'rootElementName' => 'feed',
         '_attributes' => OpdsNamespaces::VERSION_1_2,
     ]): string
@@ -106,7 +106,7 @@ abstract class OpdsEngine
     /**
      * Convert `content` to JSON.
      */
-    protected function toJSON(): string
+    public function toJSON(): string
     {
         return json_encode($this->contents);
     }
