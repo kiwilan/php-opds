@@ -39,10 +39,11 @@ This package has been created to be used with [`bookshelves-project/bookshelves`
 Some resources about OPDS and eBooks:
 
 -   [opds.io](https://opds.io/): OPDS official website
--   OPDS feeds examples (these projects don't use `kiwilan/php-opds`)
+-   OPDS feeds examples
+    -   [bookshelves.ink](https://bookshelves.ink/opds): Bookshelves (eBook web app, which use `kiwilan/php-opds`)
     -   [gallica.bnf.fr](https://gallica.bnf.fr/opds): Gallica (French National Library)
     -   [cops-demo.slucas.fr](https://cops-demo.slucas.fr/feed.php): COPS (OPDS PHP Server)
-    -   [feedbooks.com](https://www.feedbooks.com/catalog.atom): Feedbooks
+    -   [feedbooks.com](https://catalog.feedbooks.com/catalog/public_domain.atom): Feedbooks
 -   [`kiwilan/php-ebook`](https://github.com/kiwilan/php-ebook): PHP package to handle eBook
 -   [`koreader/koreader`](https://github.com/koreader/koreader): eBook reader for Android, iOS, Kindle, Kobo, Linux, macOS, Windows, and more. If your eReader can't use OPDS feeds, you can install KOReader on it
 -   [`edrlab/thorium-reader`](https://github.com/edrlab/thorium-reader): A cross platform desktop reading app, based on the Readium Desktop toolkit. You can use it to use OPDS feeds and read eBooks
@@ -59,6 +60,7 @@ Some resources about OPDS and eBooks:
 
 -   OPDS 1.2: support advanced acquisition feeds
 -   OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
+-   Add [OPDS Page Streaming Extension](- https://github.com/anansi-project/opds-pse) from `anansi-project`
 
 ## Installation
 
