@@ -68,11 +68,31 @@ it('can validate metadata schema', function () {
     $opds = Opds::make(getConfigV2())->get();
     $json = json_decode($opds->getResponse()->getContents());
     $json = $json->metadata;
+
     $validate = $validator->validate(
         $json,
         json_decode(file_get_contents(SCHEMA_FEED_METADATA))
     );
-    ray($validate->error());
 
     expect($validate->isValid())->toBeTrue();
 });
+
+// it('can validate feed schema', function () {
+//     $validator = new Validator();
+
+//     $opds = Opds::make(getConfigV2())
+//         ->feeds(manyFeeds())
+//         ->get();
+//     $json = json_decode($opds->getResponse()->getContents());
+
+//     ray(json_decode(file_get_contents(SCHEMA_FEED)));
+//     $validate = $validator->validate(
+//         $json,
+//         json_decode(file_get_contents(SCHEMA_FEED))
+//     );
+
+//     ray($json);
+//     ray($validate->error());
+
+//     expect($validate->isValid())->toBeTrue();
+// });
