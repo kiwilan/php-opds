@@ -154,6 +154,7 @@ class OpdsJsonEngine extends OpdsEngine
                 'translator' => $entry->getTranslator(),
                 'language' => $entry->getLanguage(),
                 'publisher' => $entry->getPublisher(),
+                // 'modified' => $entry->getUpdated()->format(DATE_ATOM),
                 'modified' => $entry->getUpdated(),
                 'description' => $summary,
                 'belongsTo' => $belongsTo,

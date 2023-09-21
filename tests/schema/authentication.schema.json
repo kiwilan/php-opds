@@ -57,9 +57,5 @@
       "uniqueItems": true
     }
   },
-  "required": [
-    "authentication",
-    "title",
-    "id"
-  ]
+  "required": ["authentication", "title", "id"]
 }

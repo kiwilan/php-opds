@@ -62,15 +62,17 @@ it('can use navigation feeds', function () {
 });
 
 // https://github.com/opds-community/drafts/tree/master/schema
-it('can validate schema', function () {
+it('can validate metadata schema', function () {
     $validator = new Validator();
 
-    $opds = Opds::make(getConfigV2())
-        ->feeds(manyFeeds())
-        ->get();
-
-    $validator->validate(
-        json_decode($opds->getResponse()->getContents()),
-        json_decode(file_get_contents(SCHEMA_FEED))
+    $opds = Opds::make(getConfigV2())->get();
+    $json = json_decode($opds->getResponse()->getContents());
+    $json = $json->metadata;
+    $validate = $validator->validate(
+        $json,
+        json_decode(file_get_contents(SCHEMA_FEED_METADATA))
     );
+    ray($validate->error());
+
+    expect($validate->isValid())->toBeTrue();
 });
