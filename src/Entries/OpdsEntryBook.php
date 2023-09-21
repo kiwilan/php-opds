@@ -24,7 +24,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         protected array $categories = [],
         protected array $authors = [],
         protected DateTime|string|null $published = null,
-        protected ?int $volume = null,
+        protected int|float|null $volume = null,
         protected ?string $serie = null,
         protected ?string $language = null,
         protected ?string $isbn = null,
@@ -84,7 +84,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this;
     }
 
-    public function volume(int $volume): self
+    public function volume(int|float|null $volume): self
     {
         $this->volume = $volume;
 
@@ -164,7 +164,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this->published;
     }
 
-    public function getVolume(): ?int
+    public function getVolume(): int|float|null
     {
         return $this->volume;
     }
