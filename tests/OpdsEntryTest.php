@@ -46,6 +46,9 @@ it('is OpdsEntryBook', function (OpdsEntryBook $entry) {
     expect($entry->getTranslator())->toBe('Translator');
     expect($entry->getPublisher())->toBe('Publisher');
     expect($entry->toArray())->toBeArray();
+
+    $entry = $entry->volume(1.2);
+    expect($entry->getVolume())->toBe(1.2);
 })->with('feeds-books');
 
 it('can use setter', function () {

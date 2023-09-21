@@ -106,3 +106,31 @@ it('can use search', function () {
     expect($search['template'])->toBe('?q={searchTerms}');
     expect($search['type'])->toBe('application/atom+xml');
 });
+
+it('can have engine string', function () {
+    $opds = Opds::make()
+        ->feeds([]);
+    $engine = $opds->getEngine();
+
+    expect($engine->__toString())->toBeString();
+
+    $opds = Opds::make()
+        ->feeds([])
+        ->isSearch();
+    $engine = $opds->getEngine();
+    $xml = XmlReader::make($engine->__toString());
+
+    expect($engine->__toString())->toBeString();
+    expect($xml->getRoot())->toBe('OpenSearchDescription');
+
+    $opds = Opds::make()
+        ->feeds(manyFeeds());
+    $engine = $opds->getEngine();
+
+    expect($engine->__toString())->toBeString();
+
+    $opds = Opds::make(getConfigV2())
+        ->feeds(manyFeeds());
+
+    expect($opds->getEngine()->__toString())->toBeString();
+});

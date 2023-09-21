@@ -5,6 +5,14 @@ use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\OpdsConfig;
 
+define('SCHEMA_ACQUISITION_OBJECT', __DIR__.'/schema/acquisition-object.schema.json');
+define('SCHEMA_AUTHENTICATION', __DIR__.'/schema/authentication.schema.json');
+define('SCHEMA_FEED_METADATA', __DIR__.'/schema/feed-metadata.schema.json');
+define('SCHEMA_FEED', __DIR__.'/schema/feed.schema.json');
+define('SCHEMA_PROFILE', __DIR__.'/schema/profile.schema.json');
+define('SCHEMA_PROPERTIES', __DIR__.'/schema/properties.schema.json');
+define('SCHEMA_PUBLICATION', __DIR__.'/schema/publication.schema.json');
+
 /**
  * @author Francesco Casula <fra.casula@gmail.com>
  *

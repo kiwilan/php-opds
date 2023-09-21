@@ -3,6 +3,7 @@
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
+use Opis\JsonSchema\Validator;
 
 function getConfigV2(): OpdsConfig
 {
@@ -58,4 +59,18 @@ it('can use navigation feeds', function () {
 
     expect($opds)->toBeInstanceOf(Opds::class);
     expect($opds->getEngine()->getContents())->toBeArray();
+});
+
+// https://github.com/opds-community/drafts/tree/master/schema
+it('can validate schema', function () {
+    $validator = new Validator();
+
+    $opds = Opds::make(getConfigV2())
+        ->feeds(manyFeeds())
+        ->get();
+
+    $validator->validate(
+        json_decode($opds->getResponse()->getContents()),
+        json_decode(file_get_contents(SCHEMA_FEED))
+    );
 });
