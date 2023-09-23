@@ -189,8 +189,10 @@ class OpdsXmlEngine extends OpdsEngine
             $categories[] = $this->addXmlNode(attributes: ['term' => $item, 'label' => $item]);
         }
 
-        foreach ($entry->getAuthors() as $item) {
-            $authors[] = ['name' => $item->getName(), 'uri' => $item->getUri()];
+        if ($entry->getAuthors()) {
+            foreach ($entry->getAuthors() as $item) {
+                $authors[] = ['name' => $item->getName(), 'uri' => $item->getUri()];
+            }
         }
 
         $media = $entry->getMedia();

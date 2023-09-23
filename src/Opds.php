@@ -130,10 +130,10 @@ class Opds
     /**
      * Send response to browser.
      *
-     * @param  bool  $mock  To send valid response to browser it should be to `true`.
+     * @param  bool  $mock  To send valid response to browser it should be to `false`.
      * @return  void|never
      */
-    public function send(bool $mock = true)
+    public function send(bool $mock = false)
     {
         if (! $this->response) {
             $this->get();

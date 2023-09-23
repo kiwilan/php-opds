@@ -8,7 +8,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
 {
     /**
      * @param  string[]  $categories
-     * @param  OpdsEntryBookAuthor[]  $authors
+     * @param  OpdsEntryBookAuthor[]|null  $authors
      * @param  ?string  $isbn @deprecated Use `identifier` instead
      */
     public function __construct(
@@ -22,9 +22,9 @@ class OpdsEntryBook extends OpdsEntryNavigation
         protected ?string $download = null,
         protected ?string $mediaThumbnail = null,
         protected array $categories = [],
-        protected array $authors = [],
+        protected ?array $authors = [],
         protected DateTime|string|null $published = null,
-        protected ?int $volume = null,
+        protected int|float|null $volume = null,
         protected ?string $serie = null,
         protected ?string $language = null,
         protected ?string $isbn = null,
@@ -84,7 +84,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this;
     }
 
-    public function volume(int $volume): self
+    public function volume(int|float|null $volume): self
     {
         $this->volume = $volume;
 
@@ -152,9 +152,9 @@ class OpdsEntryBook extends OpdsEntryNavigation
     }
 
     /**
-     * @return OpdsEntryBookAuthor[]
+     * @return OpdsEntryBookAuthor[]|null
      */
-    public function getAuthors(): array
+    public function getAuthors(): ?array
     {
         return $this->authors;
     }
@@ -164,7 +164,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this->published;
     }
 
-    public function getVolume(): ?int
+    public function getVolume(): int|float|null
     {
         return $this->volume;
     }
@@ -205,7 +205,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
             'download' => $this->getDownload(),
             'mediaThumbnail' => $this->getMediaThumbnail(),
             'categories' => $this->getCategories(),
-            'authors' => array_map(fn (OpdsEntryBookAuthor $author) => $author->toArray(), $this->getAuthors()),
+            'authors' => $this->getAuthors() ? array_map(fn (OpdsEntryBookAuthor $author) => $author->toArray(), $this->getAuthors()) : null,
             'published' => $this->getPublished(),
             'volume' => $this->getVolume(),
             'serie' => $this->getSerie(),

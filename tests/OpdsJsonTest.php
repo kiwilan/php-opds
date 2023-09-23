@@ -59,3 +59,30 @@ it('can use navigation feeds', function () {
     expect($opds)->toBeInstanceOf(Opds::class);
     expect($opds->getEngine()->getContents())->toBeArray();
 });
+
+// https://github.com/opds-community/drafts/tree/master/schema
+it('can validate metadata schema', function () {
+    $opds = Opds::make(getConfigV2())->get();
+
+    $res = validator()->validate(
+        $opds->getResponse()->getJson()->metadata,
+        getSchema(SCHEMA_FEED_METADATA)
+    );
+
+    printValidatorErrors($res);
+    expect($res->isValid())->toBeTrue();
+});
+
+it('can validate feed schema', function () {
+    $opds = Opds::make(getConfigV2())
+        ->feeds(manyFeeds())
+        ->get();
+
+    $res = validator()->validate(
+        $opds->getResponse()->getJson(),
+        getSchema(FEED_SCHEMA),
+    );
+
+    printValidatorErrors($res);
+    expect($res->isValid())->toBeTrue();
+});

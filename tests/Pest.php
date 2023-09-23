@@ -4,6 +4,70 @@ use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\OpdsConfig;
+use Opis\JsonSchema\Errors\ErrorFormatter;
+use Opis\JsonSchema\ValidationResult;
+use Opis\JsonSchema\Validator;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+// define('SCHEMA_ACQUISITION_OBJECT', __DIR__.'/schema/opds/acquisition-object.schema.json');
+// define('SCHEMA_AUTHENTICATION', __DIR__.'/schema/opds/authentication.schema.json');
+define('SCHEMA_FEED_METADATA', __DIR__.'/schema/opds/feed-metadata.schema.json');
+define('SCHEMA_FEED', __DIR__.'/schema/opds/feed.schema.json');
+// define('SCHEMA_PROFILE', __DIR__.'/schema/opds/profile.schema.json');
+define('SCHEMA_PROPERTIES', __DIR__.'/schema/opds/properties.schema.json');
+define('SCHEMA_PUBLICATION', __DIR__.'/schema/opds/publication.schema.json');
+
+define('OPDS_SCHEMAS', __DIR__.'/schema/opds');
+define('READIUM_SCHEMAS', __DIR__.'/schema/readium');
+define('FEED_SCHEMA', __DIR__.'/schema/opds/feed.schema.json');
+
+function validator(): Validator
+{
+    $validator = new Validator();
+    $validator->setMaxErrors(10);
+
+    $resolver = $validator->resolver();
+    $resolver->registerPrefix('https://readium.org/webpub-manifest/schema/', READIUM_SCHEMAS);
+    $resolver->registerPrefix('https://drafts.opds.io/schema/', OPDS_SCHEMAS);
+
+    return $validator;
+}
+
+function getSchema(string $path)
+{
+    return file_get_contents($path);
+}
+
+function printValidatorErrors(ValidationResult $result): void
+{
+    $error = $result->error();
+    if (! $error) {
+        return;
+    }
+
+    $formatter = new ErrorFormatter();
+
+    $print = function ($value) {
+        console($value);
+    };
+
+    $print($formatter->format($error, true));
+}
+
+function console(array|string $message): void
+{
+    $output = new ConsoleOutput();
+    $style = new OutputFormatterStyle('default', '', []);
+    $output->getFormatter()
+        ->setStyle('info', $style);
+
+    if (is_array($message)) {
+        $message = json_encode($message, JSON_PRETTY_PRINT);
+    }
+
+    $output->writeln("<info>{$message}</info>");
+}
 
 /**
  * @author Francesco Casula <fra.casula@gmail.com>
@@ -181,27 +245,28 @@ function manyFeeds(int $count = 100): array
     $items = [];
 
     for ($i = 0; $i < $count; $i++) {
+        $randomBool = rand(0, 1);
         $feed = new OpdsEntryBook(
-            id: 'the-clan-of-the-cave-bear-epub-1-en',
-            title: 'The Clan of the Cave Bear',
-            route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
-            summary: 'summary',
+            id: "the-clan-of-the-cave-bear-epub-{$i}-en",
+            title: "The Clan of the Cave Bear {$i}",
+            route: "http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en/{$i}",
+            summary: $randomBool ? 'summary' : null,
             content: 'content',
-            media: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
-            mediaThumbnail: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
+            media: $randomBool ? 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg' : null,
+            mediaThumbnail: $randomBool ? 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg' : null,
             updated: new DateTime(),
-            download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+            download: "http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en/{$i}",
             categories: ['category'],
-            authors: [
+            authors: $randomBool ? [
                 new OpdsEntryBookAuthor(
                     name: 'Jean M. Auel',
                     uri: 'http://localhost:8000/opds/authors/jean-m-auel',
                 ),
-            ],
-            published: new DateTime(),
-            volume: 1,
-            serie: 'Earth\'s Children',
-            language: 'English',
+            ] : null,
+            published: $randomBool ? new DateTime() : null,
+            volume: $randomBool ? 1 : null,
+            serie: $randomBool ? "Earth\'s Children {$i}" : null,
+            language: $randomBool ? 'English' : null,
         );
 
         $feed->id("{$i}");
