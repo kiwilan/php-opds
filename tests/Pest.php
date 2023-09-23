@@ -10,11 +10,8 @@ use Opis\JsonSchema\Validator;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-// define('SCHEMA_ACQUISITION_OBJECT', __DIR__.'/schema/opds/acquisition-object.schema.json');
-// define('SCHEMA_AUTHENTICATION', __DIR__.'/schema/opds/authentication.schema.json');
 define('SCHEMA_FEED_METADATA', __DIR__.'/schema/opds/feed-metadata.schema.json');
 define('SCHEMA_FEED', __DIR__.'/schema/opds/feed.schema.json');
-// define('SCHEMA_PROFILE', __DIR__.'/schema/opds/profile.schema.json');
 define('SCHEMA_PROPERTIES', __DIR__.'/schema/opds/properties.schema.json');
 define('SCHEMA_PUBLICATION', __DIR__.'/schema/opds/publication.schema.json');
 
