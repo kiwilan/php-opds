@@ -2,6 +2,13 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v1.0.30 - 2023-09-23
+
+- Methods `toXML()` and `toJSON()` of `OpdsEngine` are now public
+- OpdsEntryBook: now volume can be a float, issue #36, thanks to @mikespub
+- Add `opis/json-schema` to validate OPDS JSON, issue #35, thanks to @mikespub
+- OpdsResponse has now `getJson()` method, now `send()` has default parameter `mock` to `false`
+
 ## v1.0.23 - 2023-09-14
 
 - Fix XML search, when some feeds present switch to feed
@@ -50,6 +57,7 @@ return $opds->send(); // `never` because send response
 
 
 
+
 ```
 - To add `entries`, you have to use `feeds()` arrow method   
      
@@ -87,6 +95,7 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->feeds($entries) // Accept `OpdsEntryBook[]`, `OpdsEntryNavigation[]`, `OpdsEntryNavigation` or `OpdsEntryBook`
   ->get()
 ;
+
 
 
 
