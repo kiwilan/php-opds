@@ -62,7 +62,11 @@
           "contains": {
             "properties": {
               "type": {
-                "enum": ["image/jpeg", "image/png", "image/gif"]
+                "enum": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif"
+                ]
               }
             }
           }
@@ -70,5 +74,9 @@
       ]
     }
   },
-  "required": ["metadata", "links", "images"]
+  "required": [
+    "metadata",
+    "links",
+    "images"
+  ]
 }

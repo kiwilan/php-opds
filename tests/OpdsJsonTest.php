@@ -3,7 +3,6 @@
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsConfig;
-use Opis\JsonSchema\Validator;
 
 function getConfigV2(): OpdsConfig
 {
@@ -63,36 +62,27 @@ it('can use navigation feeds', function () {
 
 // https://github.com/opds-community/drafts/tree/master/schema
 it('can validate metadata schema', function () {
-    $validator = new Validator();
-
     $opds = Opds::make(getConfigV2())->get();
-    $json = json_decode($opds->getResponse()->getContents());
-    $json = $json->metadata;
 
-    $validate = $validator->validate(
-        $json,
-        json_decode(file_get_contents(SCHEMA_FEED_METADATA))
+    $res = validator()->validate(
+        $opds->getResponse()->getJson()->metadata,
+        getSchema(SCHEMA_FEED_METADATA)
     );
 
-    expect($validate->isValid())->toBeTrue();
+    printValidatorErrors($res);
+    expect($res->isValid())->toBeTrue();
 });
 
-// it('can validate feed schema', function () {
-//     $validator = new Validator();
+it('can validate feed schema', function () {
+    $opds = Opds::make(getConfigV2())
+        ->feeds(manyFeeds())
+        ->get();
 
-//     $opds = Opds::make(getConfigV2())
-//         ->feeds(manyFeeds())
-//         ->get();
-//     $json = json_decode($opds->getResponse()->getContents());
+    $res = validator()->validate(
+        $opds->getResponse()->getJson(),
+        getSchema(FEED_SCHEMA),
+    );
 
-//     ray(json_decode(file_get_contents(SCHEMA_FEED)));
-//     $validate = $validator->validate(
-//         $json,
-//         json_decode(file_get_contents(SCHEMA_FEED))
-//     );
-
-//     ray($json);
-//     ray($validate->error());
-
-//     expect($validate->isValid())->toBeTrue();
-// });
+    printValidatorErrors($res);
+    expect($res->isValid())->toBeTrue();
+});

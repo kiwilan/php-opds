@@ -32,7 +32,9 @@
             ]
           }
         },
-        "required": ["rel"]
+        "required": [
+          "rel"
+        ]
       }
     },
     "publications": {
@@ -54,7 +56,9 @@
         {
           "description": "Each Link Object in a navigation collection must contain a title",
           "items": {
-            "required": ["title"]
+            "required": [
+              "title"
+            ]
           }
         }
       ]
@@ -110,23 +114,34 @@
             "uniqueItems": true
           }
         },
-        "required": ["metadata"]
+        "required": [
+          "metadata"
+        ]
       }
     }
   },
-  "required": ["metadata", "links"],
+  "required": [
+    "metadata",
+    "links"
+  ],
   "additionalProperties": {
     "$ref": "https://readium.org/webpub-manifest/schema/subcollection.schema.json"
   },
   "anyOf": [
     {
-      "required": ["publications"]
+      "required": [
+        "publications"
+      ]
     },
     {
-      "required": ["navigation"]
+      "required": [
+        "navigation"
+      ]
     },
     {
-      "required": ["groups"]
+      "required": [
+        "groups"
+      ]
     }
   ]
 }

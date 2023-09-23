@@ -119,7 +119,7 @@ class OpdsJsonEngine extends OpdsEngine
         }
 
         $serie = $entry->getSerie();
-        $belongsTo = null;
+        $belongsTo = (object) [];
 
         if ($serie) {
             $belongsTo = [
@@ -150,12 +150,11 @@ class OpdsJsonEngine extends OpdsEngine
                 '@type' => 'http://schema.org/EBook',
                 'identifier' => $identifier,
                 'title' => $entry->getTitle(),
-                'author' => $mainAuthor,
-                'translator' => $entry->getTranslator(),
-                'language' => $entry->getLanguage(),
-                'publisher' => $entry->getPublisher(),
-                // 'modified' => $entry->getUpdated()->format(DATE_ATOM),
-                'modified' => $entry->getUpdated(),
+                'author' => $mainAuthor ?? '',
+                'translator' => $entry->getTranslator() ?? '',
+                'language' => $entry->getLanguage() ?? 'English',
+                'publisher' => $entry->getPublisher() ?? '',
+                'modified' => $entry->getUpdated()->format(DATE_ATOM),
                 'description' => $summary,
                 'belongsTo' => $belongsTo,
             ],
@@ -164,8 +163,8 @@ class OpdsJsonEngine extends OpdsEngine
                 $this->addJsonLink(rel: 'http://opds-spec.org/acquisition', href: $entry->getDownload(), type: 'application/epub+zip'),
             ],
             'images' => [
-                ['href' => $entry->getMedia(), 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
-                ['href' => $entry->getMediaThumbnail(), 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],
+                ['href' => $entry->getMedia() ?? '', 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
+                ['href' => $entry->getMediaThumbnail() ?? '', 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],
                 // ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
             ],
         ];

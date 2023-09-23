@@ -94,6 +94,20 @@ class OpdsResponse
     }
 
     /**
+     * Get JSON contents if is valid.
+     *
+     * @throws \Exception
+     */
+    public function getJson(): object
+    {
+        if (! $this->isJson) {
+            throw new \Exception('OPDS Response: content is not JSON');
+        }
+
+        return json_decode($this->contents);
+    }
+
+    /**
      * Set headers.
      *
      * @param  array<string, string>  $headers
@@ -118,10 +132,10 @@ class OpdsResponse
     /**
      * Send content to browser with correct header.
      *
-     * @param  bool  $mock  To send valid response to browser it should be to `true`.
+     * @param  bool  $mock  To send valid response to browser it should be to `false`.
      * @return never|void
      */
-    public function send(bool $mock = true)
+    public function send(bool $mock = false)
     {
         foreach ($this->headers as $type => $value) {
             header($type.': '.$value);
@@ -131,7 +145,7 @@ class OpdsResponse
 
         echo $this->contents;
 
-        if ($mock) {
+        if (! $mock) {
             exit;
         }
     }

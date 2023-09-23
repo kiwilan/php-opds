@@ -29,7 +29,8 @@
         "opis/json-schema": "^2.3",
         "pestphp/pest": "^1.20",
         "phpstan/phpstan": "^1.10",
-        "spatie/ray": "^1.28"
+        "spatie/ray": "^1.28",
+        "symfony/console": "^6.3"
     },
     "autoload": {
         "psr-4": {

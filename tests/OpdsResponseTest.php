@@ -40,14 +40,14 @@ it('can send response', function () { // @phpstan-ignore-line
     $response = OpdsResponse::make($engine, $opds->getOutput(), 200);
     $response->setContents(exampleXml());
 
-    $response->send(mock: false);
+    $response->send(mock: true);
 
     expect($opds)->toBeInstanceOf(Opds::class);
 })->expectOutputString(exampleXml());
 
 it('can use response method', function () {
     $opds = Opds::make() // @phpstan-ignore-line
-        ->send(mock: false);
+        ->send(mock: true);
 
     expect($opds)->toBeNull();
 });
