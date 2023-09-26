@@ -1,6 +1,7 @@
 <?php
 
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\Opds\OpdsResponse;
 
@@ -50,4 +51,11 @@ it('can use response method', function () {
         ->send(mock: true);
 
     expect($opds)->toBeNull();
+});
+
+it('can failed on getJson', function () {
+    $response = OpdsResponse::make(exampleXml(), OpdsOutputEnum::xml, 200);
+
+    expect($response->isJson())->toBeFalse();
+    expect(fn () => $response->getJson())->toThrow(\Exception::class);
 });
