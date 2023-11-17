@@ -13,6 +13,9 @@ use Kiwilan\Opds\Enums\OpdsVersionEnum;
 
 class Opds
 {
+    /** @var array<string, mixed> */
+    protected array $paging = [];
+
     /**
      * @param  array<string, mixed>  $urlParts
      * @param  array<string, mixed>  $query
@@ -92,6 +95,30 @@ class Opds
     public function isSearch(): self
     {
         $this->isSearch = true;
+
+        return $this;
+    }
+
+    /**
+     * Paging information for pre-paginated feeds
+     * @param int $page current page number (default 1)
+     * @param int $total total number of items (default 0)
+     * @param ?string $first link to first page (default null)
+     * @param ?string $last link to last page (default null)
+     * @param ?string $previous link to previous page (default null)
+     * @param ?string $next link to next page (default null)
+     */
+    public function paging(int $page = 1, int $total = 0, ?string $first = null, ?string $last = null, ?string $previous = null, ?string $next = null): self
+    {
+        $this->paging = [
+            'page' => $page,
+            'total' => $total,
+            'first' => $first,
+            'last' => $last,
+            'previous' => $previous,
+            'next' => $next,
+        ];
+        $this->paging['perPage'] = $this->getConfig()->getMaxItemsPerPage();
 
         return $this;
     }
@@ -240,6 +267,15 @@ class Opds
     public function getFeeds(): array
     {
         return $this->feeds;
+    }
+
+    /**
+     * Get paging information for pre-paginated feeds
+     * @return array<string, mixed>
+     */
+    public function getPaging(): array
+    {
+        return $this->paging;
     }
 
     /**
