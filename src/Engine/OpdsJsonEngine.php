@@ -67,7 +67,11 @@ class OpdsJsonEngine extends OpdsEngine
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->paginate($this->contents, $feeds);
+        if ($this->opds->hasPaging()) {
+            $this->addPaging($this->opds->getPaging());
+        } else {
+            $this->paginate($this->contents, $feeds);
+        }
 
         foreach ($feeds as $feed) {
             if ($feed instanceof OpdsEntryBook) {
@@ -170,5 +174,57 @@ class OpdsJsonEngine extends OpdsEngine
                 // ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
             ],
         ];
+    }
+
+    /**
+     * Add paging information to contents for pre-paginated feeds
+     * @param array<string, mixed> $paging paging information
+     * @todo re-use with OpdsPaginator::json() + add equivalent for xml engine
+     */
+    public function addPaging($paging): void
+    {
+        $this->contents['metadata'] = [
+            ...$this->contents['metadata'],
+            'numberOfItems' => $paging['total'],
+            'itemsPerPage' => $paging['perPage'],
+            'currentPage' => $paging['page'],
+        ];
+
+        $this->contents['links'] = [
+            OpdsEngine::addJsonLink(
+                rel: 'self',
+                href: $this->route($this->opds->getUrl()),
+            ),
+        ];
+
+        // @todo combine rel: ["first", "previous"] if equal? - see basic example https://drafts.opds.io/opds-2.0#3-pagination
+        if ($paging['first']) {
+            $this->contents['links'][] = OpdsEngine::addJsonLink(
+                rel: 'first',
+                href: $this->route($paging['first']),
+            );
+        }
+
+        if ($paging['previous']) {
+            $this->contents['links'][] = OpdsEngine::addJsonLink(
+                rel: 'previous',
+                href: $this->route($paging['previous']),
+            );
+        }
+
+        // @todo combine rel: ["next", "last"] if equal?
+        if ($paging['next']) {
+            $this->contents['links'][] = OpdsEngine::addJsonLink(
+                rel: 'next',
+                href: $this->route($paging['next']),
+            );
+        }
+
+        if ($paging['last']) {
+            $this->contents['links'][] = OpdsEngine::addJsonLink(
+                rel: 'last',
+                href: $this->route($paging['last']),
+            );
+        }
     }
 }

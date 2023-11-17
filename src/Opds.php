@@ -279,6 +279,17 @@ class Opds
     }
 
     /**
+     * Check if Opds has paging information
+     */
+    public function hasPaging(): bool
+    {
+        if (!empty($this->paging) && !empty($this->paging['total'])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Know if current page is search page.
      */
     public function checkIfSearch(): bool
