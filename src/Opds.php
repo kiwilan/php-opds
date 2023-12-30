@@ -101,12 +101,13 @@ class Opds
 
     /**
      * Paging information for pre-paginated feeds
-     * @param int $page current page number (default 1)
-     * @param int $total total number of items (default 0)
-     * @param ?string $first link to first page (default null)
-     * @param ?string $last link to last page (default null)
-     * @param ?string $previous link to previous page (default null)
-     * @param ?string $next link to next page (default null)
+     *
+     * @param  int  $page current page number (default 1)
+     * @param  int  $total total number of items (default 0)
+     * @param  ?string  $first link to first page (default null)
+     * @param  ?string  $last link to last page (default null)
+     * @param  ?string  $previous link to previous page (default null)
+     * @param  ?string  $next link to next page (default null)
      */
     public function paging(int $page = 1, int $total = 0, ?string $first = null, ?string $last = null, ?string $previous = null, ?string $next = null): self
     {
@@ -271,6 +272,7 @@ class Opds
 
     /**
      * Get paging information for pre-paginated feeds
+     *
      * @return array<string, mixed>
      */
     public function getPaging(): array
@@ -283,9 +285,10 @@ class Opds
      */
     public function hasPaging(): bool
     {
-        if (!empty($this->paging) && !empty($this->paging['total'])) {
+        if (! empty($this->paging) && ! empty($this->paging['total'])) {
             return true;
         }
+
         return false;
     }
 
