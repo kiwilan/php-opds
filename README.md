@@ -110,18 +110,18 @@ $opds->getPaginator(); // Paginator|null - Paginator used to paginate feeds, det
 $opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `OpdsEngine` to create a response
 ```
 
-### Version
+### OPDS Version
 
 You can use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
 
 -   Version `1.2` can be set with `?version=1.2`
 -   Version `2.0` can be set with `?version=2.0`
 
-> **Warning**
+> [!WARNING]
 >
 > If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, it will be ignored.
 
-### Engine
+### OPDS Engine
 
 Engine will convert your feeds to OPDS, depending of OPDS version.
 
@@ -144,7 +144,7 @@ $contents = $engine->getContents(); // array
 $output = $engine->__toString(); // string
 ```
 
-### Response
+### OPDS Response
 
 You can use `get()` method and after that, use `send()` method to send response to browser.
 
@@ -162,7 +162,7 @@ $opds->send(); // XML or JSON response, stop script
 
 You can send directly response to browser:
 
-> **Warning**
+> [!WARNING]
 >
 > If you send response to browser, you can't use any method after that.
 
@@ -197,7 +197,7 @@ $response->getContents(); // string - Contents of response
 $response->send(); // Send response to browser, stop script
 ```
 
-### Config
+### OPDS Config
 
 OPDS config can be set with `OpdsConfig::class`:
 
@@ -223,11 +223,11 @@ $config = new OpdsConfig(
 );
 ```
 
-> **Note**
+> [!TIP]
 >
 > You can override `OpdsConfig` with setter methods.
 
-#### Pagination
+#### OPDS Pagination
 
 You can use pagination with `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`.
 
@@ -258,7 +258,7 @@ $entry = new OpdsEntryNavigation(
 );
 ```
 
-> **Note**
+> [!TIP]
 >
 > You can override `OpdsEntryNavigation` with setter methods.
 
@@ -276,7 +276,7 @@ $opds = Opds::make()
 
 You can create a book entry with `OpdsEntryBook::class`:
 
-> **Warning**
+> [!WARNING]
 >
 > Some properties can be used only into OPDS 2.0, see [OPDS 2.0 specification](https://drafts.opds.io/opds-2.0.html#book).
 
@@ -312,7 +312,7 @@ $entry = new OpdsEntryBook(
 );
 ```
 
-> **Note**
+> [!TIP]
 >
 > You can override `OpdsEntryBook` with setter methods.
 
@@ -333,7 +333,7 @@ This package do NOT implements any search engine, you can use your own search en
 -   `q` param is used by OPDS 1.2
 -   `query` param is used by OPDS 2.0
 
-> **Note**
+> [!TIP]
 >
 > I advice [Meilisearch](https://www.meilisearch.com/) for search engine, it's a powerful and easy to use search engine.
 
@@ -378,7 +378,8 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Credits
 
--   [`ewilan-riviere`](https://github.com/ewilan-riviere): Author
+-   [OPDS creators](https://opds.io/): for OPDS specifications
+-   [`ewilan-riviere`](https://github.com/ewilan-riviere): author
 -   [`spatie/array-to-xml`](https://github.com/spatie/array-to-xml): to convert array to XML
 -   [`spatie/package-skeleton-php`](https://github.com/spatie/package-skeleton-php): skeleton for PHP package
 -   [Contributors](https://github.com/kiwilan/php-opds/graphs/contributors)
