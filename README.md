@@ -182,7 +182,7 @@ $response->getContents(); // string - Contents of response
 
 **This method is totally optional, you can send response to browser by yourself.**
 
-You can send response to browser by yourself or use `send()` method available into `Opds` and `OpdsResponse`.
+You can send response to browser by yourself from `OpdsResponse` to get status code, headers and contents or use `send()` method available into `Opds` and `OpdsResponse`.
 
 > [!WARNING]
 >
