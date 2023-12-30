@@ -16,7 +16,7 @@ it('can use paging information for json', function () {
         ->paging(page: $page, total: $total, first: 'http://localhost:8080/opds?f=1', last: 'http://localhost:8080/opds?l=42', previous: 'http://localhost:8080/opds?p=1', next: 'http://localhost:8080/opds?n=3')
         ->get();
 
-    $response = json_decode($opds->getResponse()->getContents(), true);
+    $response = $opds->getResponse()->toArray();
 
     $pagination = [];
     foreach ($response['links'] as $item) {

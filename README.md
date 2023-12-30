@@ -90,6 +90,14 @@ You have different informations into `Opds::class`.
 Some informations about OPDS instance:
 
 ```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
 $opds->getConfig(); // OpdsConfig - Configuration used to create OPDS feed set into `make()` method
 $opds->getUrl(); // string|null - Current URL, generated automatically but can be overrided with `url()` method
 $opds->getTitle(); // string - Title of OPDS feed set with `title()` method
@@ -104,6 +112,14 @@ $opds->checkIfSearch(); // bool, default is false, set to true if `isSearch()` m
 And about engine and response:
 
 ```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
 $opds->getEngine(); // OpdsEngine|null - Engine used to create OPDS feed, determined by OPDS version, can be `OpdsXmlEngine::class` or `OpdsJsonEngine::class`
 $opds->getOutput(); // OpdsOutputEnum|null - Output of response, useful for debug
 $opds->getPaginator(); // Paginator|null - Paginator used to paginate feeds, determined by `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`
@@ -119,14 +135,14 @@ You can use query parameter `version` to set it dynamically. You could change th
 
 > [!WARNING]
 >
-> If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, it will be ignored.
+> If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, query param will be ignored.
 
 ### OPDS Engine
 
 Engine will convert your feeds to OPDS, depending of OPDS version.
 
--   OPDS 1.2 will use `OpdsXmlEngine::class`
--   OPDS 2.0 will use `OpdsJsonEngine::class`
+-   [OPDS 1.2](https://specs.opds.io/opds-1.2) will use `OpdsXmlEngine::class`
+-   [OPDS 2.0](https://drafts.opds.io/opds-2.0) will use `OpdsJsonEngine::class`
 
 You can get engine used with `getEngine()` method from `Opds::class`. Property `contents` contains array of feeds, `OpdsEngine` allow conversion into XML or JSON with `__toString()` method, the output depends of OPDS version.
 
@@ -268,7 +284,7 @@ use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 $entry = new OpdsEntryNavigation(
   id: 'authors',
   title: 'Authors',
-  route: 'http://localhost:8000/opds/authors',
+  route: 'http://mylibrary.com/opds/authors',
   summary: 'Authors, 1 available',
   media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   updated: new DateTime(),
@@ -308,25 +324,24 @@ use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 $entry = new OpdsEntryBook(
   id: 'the-clan-of-the-cave-bear-epub-en',
   title: 'The Clan of the Cave Bear',
-  route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+  route: 'http://mylibrary.com/opds/books/the-clan-of-the-cave-bear-epub-en',
   summary: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel.',
   content: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel about prehistoric times. It is the first book in the Earth\'s Children book series which speculates on the possibilities of interactions between Neanderthal and modern Cro-Magnon humans.',
   media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   updated: new DateTime(),
-  download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+  download: 'http://mylibrary.com/api/download/books/the-clan-of-the-cave-bear-epub-en',
   mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   categories: ['category'],
   authors: [
     new OpdsEntryBookAuthor(
       name: 'Jean M. Auel',
-      uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+      uri: 'http://mylibrary.com/opds/authors/jean-m-auel',
     ),
   ],
   published: new DateTime(),
   volume: 1,
   serie: 'Earth\'s Children',
   language: 'English',
-  isbn: '9780553381672', // deprecated, use `identifier` instead
   identifier: 'urn:isbn:9780553381672', // to specify the actual identifier to use (instead of `urn:isbn:...`)
   translator: 'translator',
   publisher: 'publisher',

@@ -94,6 +94,33 @@ class OpdsResponse
     }
 
     /**
+     * Get contents as array.
+     *
+     * @return array{
+     *  metadata: array{
+     *    id: string,
+     *    title: string,
+     *    updated: string,
+     *    author: array{
+     *     name: string,
+     *     uri: string,
+     *    },
+     *    icon: string,
+     *  },
+     *  links: array{href: string, rel: string, type: string}[],
+     *  publications: array,
+     * }
+     */
+    public function toArray(): array
+    {
+        if (! $this->isJson) {
+            throw new \Exception('`toArray()` can\'t work for OPDS Response, content is not JSON');
+        }
+
+        return json_decode($this->contents, true);
+    }
+
+    /**
      * Get JSON contents if is valid.
      *
      * @throws \Exception
@@ -101,7 +128,7 @@ class OpdsResponse
     public function getJson(): object
     {
         if (! $this->isJson) {
-            throw new \Exception('OPDS Response: content is not JSON');
+            throw new \Exception('`getJson()` can\'t work for OPDS Response, content is not JSON');
         }
 
         return json_decode($this->contents);
