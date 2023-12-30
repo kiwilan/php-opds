@@ -146,7 +146,7 @@ $output = $engine->__toString(); // string
 
 ### OPDS Response
 
-You can use `get()` method and after that, use `send()` method to send response to browser.
+To build OPDS feed, you have to `get()` method. It will return an instance of `Opds` with `OpdsEngine`, `OpdsResponse` and `OpdsPaginator` filled.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -154,28 +154,11 @@ use Kiwilan\Opds\Opds;
 $opds = Opds::make()
   ->title('My feed')
   ->feeds([...])
-  ->get()
+  ->get() // `Opds` to fill `OpdsEngine`, `OpdsResponse` and `OpdsPaginator`
 ;
-
-$opds->send(); // XML or JSON response, stop script
 ```
 
-You can send directly response to browser:
-
-> [!WARNING]
->
-> If you send response to browser, you can't use any method after that.
-
-```php
-use Kiwilan\Opds\Opds;
-
-Opds::make()
-  ->title('My feed')
-  ->feeds([...])
-  ->send(); // XML or JSON response, stop script
-```
-
-To get only instance of `OpdsResponse`, you can use `getResponse()` method from `Opds::class`. You can use this response to get status code, headers and contents, you can send it to browser by yourself or use `send()` method.
+To get response, you can use `getResponse()` method from `Opds::class`.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -193,8 +176,46 @@ $response->isJson(); // bool - If response is JSON
 $response->isXml(); // bool - If response is XML
 $response->getHeaders(); // array - Headers of response
 $response->getContents(); // string - Contents of response
+```
 
-$response->send(); // Send response to browser, stop script
+#### Send response
+
+**This method is totally optional, you can send response to browser by yourself.**
+
+You can send response to browser by yourself or use `send()` method available into `Opds` and `OpdsResponse`.
+
+> [!WARNING]
+>
+> If you send response to browser, you can't use any method after that.
+
+-   You can use `send()` from `Opds` or `OpdsResponse` to send response to browser (exactly the same)
+-   You don't have to call `get()` method before `send()` method, `send()` will call `get()` automatically
+-   If you call `send()` method, script will stop after sending response
+
+```php
+use Kiwilan\Opds\Opds;
+
+Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->send(); // XML or JSON response, stop script
+;
+```
+
+You can call `get()` method before `send()` method if you want to get `OpdsResponse` instance.
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
+// do something with `OpdsResponse` instance
+
+$opds->send(); // XML or JSON response, stop script
 ```
 
 ### OPDS Config
