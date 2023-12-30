@@ -22,7 +22,7 @@ All old versions: 0.9, 1.0 and 1.1 have a fallback to OPDS 1.2.
 
 ## Requirements
 
--   PHP >= 8.1
+-   `php` v8.1 minimum
 
 ## About
 
