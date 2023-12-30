@@ -178,7 +178,9 @@ class OpdsJsonEngine extends OpdsEngine
 
     /**
      * Add paging information to contents for pre-paginated feeds
-     * @param array<string, mixed> $paging paging information
+     *
+     * @param  array<string, mixed>  $paging paging information
+     *
      * @todo re-use with OpdsPaginator::json() + add equivalent for xml engine
      */
     public function addPaging($paging): void

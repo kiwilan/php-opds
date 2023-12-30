@@ -172,7 +172,7 @@ abstract class OpdsEngine
         return "{$startUrl}?{$query}={$version->value}";
     }
 
-    protected function addXmlNode(string $value = null, ?array $attributes = []): array
+    protected function addXmlNode(?string $value = null, ?array $attributes = []): array
     {
         $node = [];
 
@@ -188,9 +188,9 @@ abstract class OpdsEngine
     }
 
     public static function addJsonLink(
-        string $href = null,
-        string $title = null,
-        string $rel = null,
+        ?string $href = null,
+        ?string $title = null,
+        ?string $rel = null,
         string $type = 'application/opds+json',
         array $attributes = [],
     ): array {
@@ -218,9 +218,9 @@ abstract class OpdsEngine
     }
 
     public static function addXmlLink(
-        string $href = null,
-        string $title = null,
-        string $rel = null,
+        ?string $href = null,
+        ?string $title = null,
+        ?string $rel = null,
         string $type = 'application/atom+xml;profile=opds-catalog;kind=navigation',
         bool $acquisition = false,
     ): array {
