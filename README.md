@@ -419,9 +419,9 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 -   [OPDS creators](https://opds.io/): for OPDS specifications
 -   [`ewilan-riviere`](https://github.com/ewilan-riviere): author
+-   [Contributors](https://github.com/kiwilan/php-opds/graphs/contributors)
 -   [`spatie/array-to-xml`](https://github.com/spatie/array-to-xml): to convert array to XML
 -   [`spatie/package-skeleton-php`](https://github.com/spatie/package-skeleton-php): skeleton for PHP package
--   [Contributors](https://github.com/kiwilan/php-opds/graphs/contributors)
 
 ## License
 
