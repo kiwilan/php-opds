@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": "^8.1",
-        "spatie/array-to-xml": "^3.1"
+        "spatie/array-to-xml": "^3.2.3"
     },
     "require-dev": {
         "kiwilan/php-xml-reader": "^1.0",
