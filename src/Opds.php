@@ -143,16 +143,15 @@ class Opds
     /**
      * Send response to browser.
      *
-     * @param  bool  $mock  To send valid response to browser it should be to `false`.
-     * @return void|never
+     * @param  bool  $exit  If true, the script will exit after sending the response, default is `false`.
      */
-    public function send(bool $mock = false)
+    public function send(bool $exit = false): string
     {
         if (! $this->response) {
             $this->get();
         }
 
-        $this->response->send($mock);
+        return $this->response->send($exit);
     }
 
     /**

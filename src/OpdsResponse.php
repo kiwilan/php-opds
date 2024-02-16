@@ -159,10 +159,9 @@ class OpdsResponse
     /**
      * Send content to browser with correct header.
      *
-     * @param  bool  $mock  To send valid response to browser it should be to `false`.
-     * @return never|void
+     * @param  bool  $exit  To use `exit` after sending response.
      */
-    public function send(bool $mock = false)
+    public function send(bool $exit = false): string
     {
         foreach ($this->headers as $type => $value) {
             header($type.': '.$value);
@@ -172,9 +171,11 @@ class OpdsResponse
 
         echo $this->contents;
 
-        if (! $mock) {
+        if ($exit) {
             exit;
         }
+
+        return $this->contents;
     }
 
     private function isValidXml(string $content): bool

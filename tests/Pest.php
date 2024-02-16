@@ -277,3 +277,8 @@ function exampleXml(): string
 {
     return '<?xml version="1.0" encoding="UTF-8"?><rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"><channel></channel></rss>';
 }
+
+function exampleJson(): string
+{
+    return '{"metadata":{"id":"opds:feed","title":"opds OPDS: Feed","updated":"2024-02-16T17:38:58+00:00","author":"","icon":null},"links":[{"href":"http:\/\/localhost\/","type":"application\/opds+json","rel":"self"},{"href":"http:\/\/localhost\/","type":"application\/opds+json","rel":"start"}]}';
+}

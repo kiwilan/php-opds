@@ -1,8 +1,10 @@
 <?php
 
+use Kiwilan\Opds\Engine\OpdsJsonEngine;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Opds;
+use Kiwilan\Opds\OpdsConfig;
 use Kiwilan\Opds\OpdsResponse;
 
 it('can fail on bad content', function () {
@@ -42,23 +44,38 @@ it('can use response with json', function () {
     expect($response->toArray())->toBeArray();
 });
 
-it('can send response', function () { // @phpstan-ignore-line
+it('can send xml response', function () { // @phpstan-ignore-line
     $opds = Opds::make();
     $engine = OpdsXmlEngine::make($opds);
 
     $response = OpdsResponse::make($engine, $opds->getOutput(), 200);
     $response->setContents(exampleXml());
 
-    $response->send(mock: true);
+    $response->send();
 
     expect($opds)->toBeInstanceOf(Opds::class);
 })->expectOutputString(exampleXml());
 
-it('can use response method', function () {
-    $opds = Opds::make() // @phpstan-ignore-line
-        ->send(mock: true);
+it('can send json response', function () { // @phpstan-ignore-line
+    $opds = Opds::make(new OpdsConfig(forceJson: true));
+    $engine = OpdsJsonEngine::make($opds);
 
-    expect($opds)->toBeNull();
+    $response = OpdsResponse::make($engine, $opds->getOutput(), 200);
+    $response->setContents(exampleJson());
+
+    $json = $response->send();
+
+    expect($opds)->toBeInstanceOf(Opds::class);
+    expect($json)->toContain('{"metadata"');
+    expect($json)->toBeString();
+})->expectOutputString(exampleJson());
+
+it('can use response method', function () {
+    $xml = Opds::make()->send();
+    $xml = str_replace("\n", '', $xml);
+
+    expect($xml)->toContain('<?xml version="1.0" encoding="UTF-8"');
+    expect($xml)->toBeString();
 });
 
 it('can failed on getJson', function () {
