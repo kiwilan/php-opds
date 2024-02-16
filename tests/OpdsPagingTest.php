@@ -79,4 +79,20 @@ it('can use paging information for json', function () {
 
     expect($response['publications'])->toBeArray();
     expect(count($response['publications']))->toBe(32);
+
+    $paginate = $opds->getPaging();
+    expect($paginate->getFirstUrl())->toBe('http://localhost:8080/opds?f=1');
+    expect($paginate->getLastUrl())->toBe('http://localhost:8080/opds?l=42');
+    expect($paginate->getPreviousUrl())->toBe('http://localhost:8080/opds?p=1');
+    expect($paginate->getNextUrl())->toBe('http://localhost:8080/opds?n=3');
+
+    $paginate->setFirstUrl('http://localhost:8080/opds?f=2');
+    $paginate->setLastUrl('http://localhost:8080/opds?l=43');
+    $paginate->setPreviousUrl('http://localhost:8080/opds?p=2');
+    $paginate->setNextUrl('http://localhost:8080/opds?n=4');
+
+    expect($paginate->getFirstUrl())->toBe('http://localhost:8080/opds?f=2');
+    expect($paginate->getLastUrl())->toBe('http://localhost:8080/opds?l=43');
+    expect($paginate->getPreviousUrl())->toBe('http://localhost:8080/opds?p=2');
+    expect($paginate->getNextUrl())->toBe('http://localhost:8080/opds?n=4');
 });

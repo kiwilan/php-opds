@@ -79,6 +79,14 @@ it('can use paginator', function () {
     expect($paginator->getSize())->toBe(4);
     expect($paginator->getFirstPage())->toBe(0);
     expect($paginator->getLastPage())->toBe(96);
+
+    $paginator->setStartPage(0);
+    $paginator->setFirstPage(0);
+    $paginator->setLastPage(96);
+
+    expect($paginator->getStartPage())->toBe(0);
+    expect($paginator->getFirstPage())->toBe(0);
+    expect($paginator->getLastPage())->toBe(96);
 });
 
 it('can use json pagination', function () {
@@ -143,4 +151,24 @@ it('can skip json pagination', function () {
     $response = json_decode($opds->getResponse()->getContents(), true);
 
     expect(count($response['publications']))->toBe(100);
+});
+
+it('can use OpdsPaginate', function () {
+    $opds = Opds::make(getConfig()->usePagination()->forceJson())
+        ->feeds(manyFeeds())
+        ->get();
+
+    $paginate = $opds->getPaginator();
+
+    expect($paginate->getOutput())->toBe(OpdsOutputEnum::json);
+    expect($paginate->getUrl())->toBe('http://localhost/');
+    expect($paginate->getFullUrl())->toBe('http://localhost/');
+    expect($paginate->getQuery())->toBeArray();
+
+    $paginate->setCurrentPage(2);
+    $paginate->setTotalItems(100);
+    $paginate->setOutput(OpdsOutputEnum::xml);
+    $paginate->setUrl('http://localhost:8000/opds');
+    $paginate->setFullUrl('http://localhost:8000/opds');
+    $paginate->setQuery(['page' => 2]);
 });

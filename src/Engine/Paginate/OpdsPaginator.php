@@ -38,21 +38,6 @@ class OpdsPaginator extends OpdsPaginate
         return $self;
     }
 
-    public function getOutput(): OpdsOutputEnum
-    {
-        return $this->output;
-    }
-
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    public function getQuery(): array
-    {
-        return $this->query;
-    }
-
     public function usePagination(): bool
     {
         return $this->usePagination;
