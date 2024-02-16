@@ -5,8 +5,8 @@ namespace Kiwilan\Opds;
 use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Engine\OpdsJsonEngine;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginate;
 use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
-use Kiwilan\Opds\Engine\Paginate\OpdsPaging;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -30,8 +30,9 @@ class Opds
         protected array $feeds = [],
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
-        protected ?OpdsPaginator $paginator = null,
-        protected ?OpdsPaging $paging = null,
+        protected bool $usePaginate = false,
+        protected bool $usePaginateManual = false,
+        protected OpdsPaginator|OpdsPaginate|null $paginator = null,
         protected ?OpdsOutputEnum $output = null, // xml or json
         protected ?OpdsResponse $response = null,
     ) {
@@ -99,12 +100,18 @@ class Opds
     }
 
     /**
-     * Paging information for pre-paginated feeds.
+     * To paginate feeds. If you set `$paginate`, it will override the automatic pagination.
      */
-    public function paging(OpdsPaging $paging): self
+    public function paginate(?OpdsPaginate $paginate = null): self
     {
-        $this->paging = $paging;
-        $this->paging->setPerPage($this->getConfig()->getMaxItemsPerPage());
+        if ($paginate) {
+            $this->paginator = $paginate;
+            $this->paginator->setPerPage($this->getConfig()->getMaxItemsPerPage());
+            $this->usePaginate = true;
+            $this->usePaginateManual = true;
+        } else {
+            $this->usePaginate = true;
+        }
 
         return $this;
     }
@@ -134,7 +141,9 @@ class Opds
             OpdsVersionEnum::v1Dot2 => OpdsXmlEngine::make($this),
             OpdsVersionEnum::v2Dot0 => OpdsJsonEngine::make($this),
         };
-        $this->paginator = $this->engine->getPaginator();
+        if ($this->usePaginate) {
+            $this->paginator = $this->engine->getPaginator();
+        }
         $this->response = OpdsResponse::make($this->engine->__toString(), $this->output, 200);
 
         return $this;
@@ -254,20 +263,17 @@ class Opds
         return $this->feeds;
     }
 
-    /**
-     * Get paging information for pre-paginated feeds.
-     */
-    public function getPaging(): ?OpdsPaging
+    public function usePaginate(): bool
     {
-        return $this->paging;
+        return $this->usePaginate;
     }
 
     /**
-     * Check if Opds has paging information
+     * Check if OPDS use manual pagination.
      */
-    public function hasPaging(): bool
+    public function usePaginateManual(): bool
     {
-        if ($this->paging && $this->paging->getTotalItems()) {
+        if ($this->usePaginateManual) {
             return true;
         }
 
@@ -297,9 +303,9 @@ class Opds
     /**
      * Get OPDS paginator.
      */
-    public function getPaginator(): ?OpdsPaginator
+    public function getPaginator(): OpdsPaginator|OpdsPaginate|null
     {
-        if (! $this->paginator) {
+        if ($this->usePaginate && ! $this->paginator) {
             $this->get();
         }
 

@@ -144,7 +144,6 @@ function getConfig(bool $json = false): OpdsConfig
         searchUrl: 'http://localhost:8000/opds/search',
         versionQuery: 'v',
         updated: new DateTime(),
-        usePagination: false,
         maxItemsPerPage: 32,
         forceJson: $json,
     );

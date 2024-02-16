@@ -1,6 +1,6 @@
 <?php
 
-use Kiwilan\Opds\Engine\Paginate\OpdsPaging;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginate;
 use Kiwilan\Opds\Opds;
 use Kiwilan\XmlReader\XmlReader;
 
@@ -13,7 +13,7 @@ it('can use paging information for xml', function () {
     $opds = Opds::make(getConfig())
         ->url('http://localhost:8080/opds?u=2')
         ->feeds($feeds)
-        ->paging(new OpdsPaging(
+        ->paginate(new OpdsPaginate(
             currentPage: $page,
             totalItems: $total,
             firstUrl: 'http://localhost:8080/opds?f=1',
@@ -53,7 +53,7 @@ it('can use paging information for json', function () {
     $opds = Opds::make(getConfig()->forceJson())
         ->url('http://localhost:8080/opds?u=2')
         ->feeds($feeds)
-        ->paging(new OpdsPaging(
+        ->paginate(new OpdsPaginate(
             currentPage: $page,
             totalItems: $total,
             firstUrl: 'http://localhost:8080/opds?f=1',
@@ -80,7 +80,9 @@ it('can use paging information for json', function () {
     expect($response['publications'])->toBeArray();
     expect(count($response['publications']))->toBe(32);
 
-    $paginate = $opds->getPaging();
+    expect($opds->usePaginateManual())->toBeTrue();
+
+    $paginate = $opds->getPaginator();
     expect($paginate->getFirstUrl())->toBe('http://localhost:8080/opds?f=1');
     expect($paginate->getLastUrl())->toBe('http://localhost:8080/opds?l=42');
     expect($paginate->getPreviousUrl())->toBe('http://localhost:8080/opds?p=1');

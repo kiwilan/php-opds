@@ -67,10 +67,10 @@ class OpdsJsonEngine extends OpdsEngine
         }
 
         $feeds = $this->opds->getFeeds();
-        if ($this->opds->hasPaging()) {
-            $this->paging($this->opds->getPaging(), $this->contents);
+        if ($this->opds->usePaginateManual()) {
+            $this->paginateManual($this->opds->getPaginator(), $this->contents);
         } else {
-            $this->paginate($this->contents, $feeds);
+            $this->paginateAuto($this->contents, $feeds);
         }
 
         foreach ($feeds as $feed) {

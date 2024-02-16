@@ -50,11 +50,12 @@ it('can use opds properties', function () {
 });
 
 it('can use opds paginator', function () {
-    $config = (new OpdsConfig())->usePagination()
+    $config = (new OpdsConfig())
         ->setVersionQuery('v')
         ->setPaginationQuery('pagination');
     $opds = Opds::make($config)
         ->title('feed')
+        ->paginate()
         ->get();
 
     expect($opds->getPaginator())->toBeInstanceOf(OpdsPaginator::class);

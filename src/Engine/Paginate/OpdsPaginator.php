@@ -11,11 +11,9 @@ use Kiwilan\Opds\Opds;
 /**
  * Handle pagination for OPDS.
  */
-class OpdsPaginator extends OpdsPaginate
+class OpdsPaginator extends OpdsPagination
 {
     protected function __construct(
-        protected bool $usePagination = false,
-        protected bool $useAutoPagination = false,
         protected int $size = 0,
         protected int $startPage = 0,
         protected int $firstPage = 0,
@@ -29,23 +27,10 @@ class OpdsPaginator extends OpdsPaginate
      */
     public static function make(OpdsEngine $engine): self
     {
-        $self = new self(
-            usePagination: $engine->getOpds()->getConfig()->isUsePagination(),
-            useAutoPagination: $engine->getOpds()->getConfig()->isUseAutoPagination(),
-        );
+        $self = new self();
         $self->parseEngine($engine);
 
         return $self;
-    }
-
-    public function usePagination(): bool
-    {
-        return $this->usePagination;
-    }
-
-    public function useAutoPagination(): bool
-    {
-        return $this->useAutoPagination;
     }
 
     public function getSize(): int
@@ -97,10 +82,6 @@ class OpdsPaginator extends OpdsPaginate
      */
     public function paginate(array &$content, array &$feeds): self
     {
-        if (! $this->usePagination && ! $this->useAutoPagination) {
-            return $this;
-        }
-
         if (count($feeds) < $this->perPage) {
             return $this;
         }

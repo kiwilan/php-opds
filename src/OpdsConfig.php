@@ -19,8 +19,6 @@ class OpdsConfig
      * @param  ?string  $searchUrl  Search URL, for example: `https://example.com/opds/search`.
      * @param  string  $versionQuery  Version query, for example: `version`, default is `version`.
      * @param  ?DateTime  $updated  Updated date, for example: `new DateTime()`.
-     * @param  bool  $usePagination  Use pagination, default is `true`.
-     * @param  bool  $useAutoPagination  If set to `true`, pagination is applied only on `OpdsEntryBook` if exceed `maxItemsPerPage`, default is `false`.
      * @param  int  $maxItemsPerPage  Maximum items per page, default is `32`.
      * @param  bool  $forceJson  Force OPDS version 2.0 as default, default is `false`.
      */
@@ -34,8 +32,6 @@ class OpdsConfig
         protected string $versionQuery = 'version',
         protected string $paginationQuery = 'page',
         protected ?DateTime $updated = null,
-        protected bool $usePagination = false,
-        protected bool $useAutoPagination = false,
         protected int $maxItemsPerPage = 16,
         protected bool $forceJson = false,
     ) {
@@ -87,16 +83,6 @@ class OpdsConfig
     public function getUpdated(): DateTime
     {
         return $this->updated;
-    }
-
-    public function isUsePagination(): bool
-    {
-        return $this->usePagination;
-    }
-
-    public function isUseAutoPagination(): bool
-    {
-        return $this->useAutoPagination;
     }
 
     public function getMaxItemsPerPage(): int
@@ -172,20 +158,6 @@ class OpdsConfig
         } else {
             $this->updated = new DateTime();
         }
-
-        return $this;
-    }
-
-    public function usePagination(): self
-    {
-        $this->usePagination = true;
-
-        return $this;
-    }
-
-    public function useAutoPagination(): self
-    {
-        $this->useAutoPagination = true;
 
         return $this;
     }

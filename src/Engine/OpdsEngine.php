@@ -2,8 +2,8 @@
 
 namespace Kiwilan\Opds\Engine;
 
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginate;
 use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
-use Kiwilan\Opds\Engine\Paginate\OpdsPaging;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -16,8 +16,7 @@ abstract class OpdsEngine
 {
     protected function __construct(
         protected Opds $opds,
-        protected ?OpdsPaginator $paginator = null,
-        protected ?OpdsPaging $paging = null,
+        protected OpdsPaginator|OpdsPaginate|null $paginator = null,
         protected array $contents = [],
     ) {
     }
@@ -77,7 +76,7 @@ abstract class OpdsEngine
     /**
      * Get paginator instance.
      */
-    public function getPaginator(): ?OpdsPaginator
+    public function getPaginator(): OpdsPaginator|OpdsPaginate|null
     {
         return $this->paginator;
     }
@@ -270,9 +269,9 @@ abstract class OpdsEngine
      * @param  array<string, mixed>  $content
      * @param  OpdsEntryNavigation[]|OpdsEntryBook[]  $feeds
      */
-    protected function paginate(array &$content, array &$feeds): void
+    protected function paginateAuto(array &$content, array &$feeds): void
     {
-        if (! $this->getOpds()->getConfig()->isUsePagination() && ! $this->getOpds()->getConfig()->isUseAutoPagination()) {
+        if (! $this->getOpds()->usePaginate() || $this->getOpds()->usePaginateManual()) {
             return;
         }
 
@@ -280,12 +279,16 @@ abstract class OpdsEngine
     }
 
     /**
-     * Add paging information to contents for pre-paginated feeds
+     * Add paginator information to contents for pre-paginated feeds
      *
-     * @param  OpdsPaging  $paging  paging information
+     * @param  OpdsPaginate  $paginator  paginator information
      */
-    protected function paging(OpdsPaging $paging, array &$content): void
+    protected function paginateManual(OpdsPaginate $paginator, array &$content): void
     {
-        $this->paging = $paging->make($this, $content);
+        if (! $this->getOpds()->usePaginate() && ! $this->opds->usePaginateManual()) {
+            return;
+        }
+
+        $this->paginator = $paginator->make($this, $content);
     }
 }
