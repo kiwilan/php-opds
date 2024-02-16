@@ -18,7 +18,7 @@ class OpdsConfig
      * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
      * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
      * @param  string  $versionQuery Version query, for example: `version`, default is `version`.
-     * @param  DateTime  $updated Updated date, for example: `new DateTime()`.
+     * @param  ?DateTime  $updated Updated date, for example: `new DateTime()`.
      * @param  bool  $usePagination Use pagination, default is `true`.
      * @param  bool  $useAutoPagination If set to `true`, pagination is applied only on `OpdsEntryBook` if exceed `maxItemsPerPage`, default is `false`.
      * @param  int  $maxItemsPerPage Maximum items per page, default is `32`.
@@ -33,12 +33,15 @@ class OpdsConfig
         protected ?string $searchUrl = null,
         protected string $versionQuery = 'version',
         protected string $paginationQuery = 'page',
-        protected DateTime $updated = new DateTime(),
+        protected ?DateTime $updated = null,
         protected bool $usePagination = false,
         protected bool $useAutoPagination = false,
         protected int $maxItemsPerPage = 16,
         protected bool $forceJson = false,
     ) {
+        if (! $this->updated) {
+            $this->updated = new DateTime();
+        }
     }
 
     public function getName(): string
@@ -162,9 +165,13 @@ class OpdsConfig
         return $this;
     }
 
-    public function setUpdated(DateTime $updated): self
+    public function setUpdated(?DateTime $updated): self
     {
-        $this->updated = $updated;
+        if ($updated) {
+            $this->updated = $updated;
+        } else {
+            $this->updated = new DateTime();
+        }
 
         return $this;
     }
