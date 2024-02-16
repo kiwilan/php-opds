@@ -58,9 +58,9 @@ Some resources about OPDS and eBooks:
 
 ### Roadmap
 
--   OPDS 1.2: support advanced acquisition feeds
--   OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
--   Add [OPDS Page Streaming Extension](https://github.com/anansi-project/opds-pse) from `anansi-project`
+-   [ ] OPDS 1.2: support advanced acquisition feeds
+-   [ ] OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
+-   [ ] Add [OPDS Page Streaming Extension](https://github.com/anansi-project/opds-pse) from `anansi-project`
 
 ## Installation
 
@@ -260,7 +260,7 @@ $config = new OpdsConfig(
 );
 ```
 
-> [!TIP]
+> [!NOTE]
 >
 > You can override `OpdsConfig` with setter methods.
 
