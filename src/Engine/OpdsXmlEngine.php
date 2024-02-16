@@ -77,7 +77,11 @@ class OpdsXmlEngine extends OpdsEngine
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->paginate($this->contents, $feeds);
+        if ($this->opds->hasPaging()) {
+            $this->paging($this->opds->getPaging(), $this->contents);
+        } else {
+            $this->paginate($this->contents, $feeds);
+        }
 
         foreach ($feeds as $entry) {
             $this->contents['entry'][] = $this->addEntry($entry);

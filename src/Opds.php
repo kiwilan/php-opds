@@ -4,8 +4,9 @@ namespace Kiwilan\Opds;
 
 use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Engine\OpdsJsonEngine;
-use Kiwilan\Opds\Engine\OpdsPaginator;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaging;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -13,9 +14,6 @@ use Kiwilan\Opds\Enums\OpdsVersionEnum;
 
 class Opds
 {
-    /** @var array<string, mixed> */
-    protected array $paging = [];
-
     /**
      * @param  array<string, mixed>  $urlParts
      * @param  array<string, mixed>  $query
@@ -33,6 +31,7 @@ class Opds
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
         protected ?OpdsPaginator $paginator = null,
+        protected ?OpdsPaging $paging = null,
         protected ?OpdsOutputEnum $output = null, // xml or json
         protected ?OpdsResponse $response = null,
     ) {
@@ -100,26 +99,12 @@ class Opds
     }
 
     /**
-     * Paging information for pre-paginated feeds
-     *
-     * @param  int  $page  current page number (default 1)
-     * @param  int  $total  total number of items (default 0)
-     * @param  ?string  $first  link to first page (default null)
-     * @param  ?string  $last  link to last page (default null)
-     * @param  ?string  $previous  link to previous page (default null)
-     * @param  ?string  $next  link to next page (default null)
+     * Paging information for pre-paginated feeds.
      */
-    public function paging(int $page = 1, int $total = 0, ?string $first = null, ?string $last = null, ?string $previous = null, ?string $next = null): self
+    public function paging(OpdsPaging $paging): self
     {
-        $this->paging = [
-            'page' => $page,
-            'total' => $total,
-            'first' => $first,
-            'last' => $last,
-            'previous' => $previous,
-            'next' => $next,
-        ];
-        $this->paging['perPage'] = $this->getConfig()->getMaxItemsPerPage();
+        $this->paging = $paging;
+        $this->paging->setPerPage($this->getConfig()->getMaxItemsPerPage());
 
         return $this;
     }
@@ -271,11 +256,9 @@ class Opds
     }
 
     /**
-     * Get paging information for pre-paginated feeds
-     *
-     * @return array<string, mixed>
+     * Get paging information for pre-paginated feeds.
      */
-    public function getPaging(): array
+    public function getPaging(): ?OpdsPaging
     {
         return $this->paging;
     }
@@ -285,7 +268,7 @@ class Opds
      */
     public function hasPaging(): bool
     {
-        if (! empty($this->paging) && ! empty($this->paging['total'])) {
+        if ($this->paging && $this->paging->getTotalItems()) {
             return true;
         }
 

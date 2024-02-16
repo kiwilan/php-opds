@@ -2,6 +2,8 @@
 
 namespace Kiwilan\Opds\Engine;
 
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaging;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -15,6 +17,7 @@ abstract class OpdsEngine
     protected function __construct(
         protected Opds $opds,
         protected ?OpdsPaginator $paginator = null,
+        protected ?OpdsPaging $paging = null,
         protected array $contents = [],
     ) {
     }
@@ -190,7 +193,7 @@ abstract class OpdsEngine
     public static function addJsonLink(
         ?string $href = null,
         ?string $title = null,
-        ?string $rel = null,
+        string|array|null $rel = null,
         string $type = 'application/opds+json',
         array $attributes = [],
     ): array {
@@ -220,7 +223,7 @@ abstract class OpdsEngine
     public static function addXmlLink(
         ?string $href = null,
         ?string $title = null,
-        ?string $rel = null,
+        string|array|null $rel = null,
         string $type = 'application/atom+xml;profile=opds-catalog;kind=navigation',
         bool $acquisition = false,
     ): array {
@@ -265,5 +268,15 @@ abstract class OpdsEngine
         }
 
         $this->paginator = OpdsPaginator::make($this)->paginate($content, $feeds);
+    }
+
+    /**
+     * Add paging information to contents for pre-paginated feeds
+     *
+     * @param  OpdsPaging  $paging  paging information
+     */
+    protected function paging(OpdsPaging $paging, array &$content): void
+    {
+        $this->paging = $paging->make($this, $content);
     }
 }

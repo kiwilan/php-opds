@@ -1,6 +1,6 @@
 <?php
 
-use Kiwilan\Opds\Engine\OpdsPaginator;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\XmlReader\XmlReader;
@@ -73,12 +73,12 @@ it('can use paginator', function () {
     expect($paginator->usePagination())->toBeTrue();
     expect($paginator->useAutoPagination())->toBeFalse();
     expect($paginator->getPerPage())->toBe(32);
-    expect($paginator->getPage())->toBe(1);
-    expect($paginator->getTotal())->toBe(100);
-    expect($paginator->getStart())->toBe(0);
+    expect($paginator->getCurrentPage())->toBe(1);
+    expect($paginator->getTotalItems())->toBe(100);
+    expect($paginator->getStartPage())->toBe(0);
     expect($paginator->getSize())->toBe(4);
-    expect($paginator->getFirst())->toBe(0);
-    expect($paginator->getLast())->toBe(96);
+    expect($paginator->getFirstPage())->toBe(0);
+    expect($paginator->getLastPage())->toBe(96);
 });
 
 it('can use json pagination', function () {
