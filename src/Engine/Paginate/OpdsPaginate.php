@@ -5,7 +5,7 @@ namespace Kiwilan\Opds\Engine\Paginate;
 use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 
-class OpdsPaginate
+abstract class OpdsPaginate
 {
     protected function __construct(
         protected ?OpdsOutputEnum $output = null,
