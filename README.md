@@ -30,6 +30,7 @@ OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks b
 
 This package has been created to be used with [`bookshelves-project/bookshelves`](https://github.com/bookshelves-project/bookshelves), an open source eBook web app.
 
+> [!NOTE]
 > The Open Publication Distribution System (OPDS) catalog format is a syndication format for electronic publications based on Atom and HTTP. OPDS catalogs enable the aggregation, distribution, discovery, and acquisition of electronic publications. OPDS catalogs use existing or emergent open standards and conventions, with a priority on simplicity.
 >
 > The Open Publication Distribution System specification is prepared by an informal grouping of partners, combining Internet Archive, O'Reilly Media, Feedbooks, OLPC, and others.
@@ -196,13 +197,12 @@ $response->getContents(); // string - Contents of response
 
 #### Send response
 
-**This method is totally optional, you can send response to browser by yourself.**
+> [!IMPORTANT]
+>
+> This method is totally optional, you can send response to browser by yourself.
+> If you send response to browser, you can't use any method after that.
 
 You can send response to browser by yourself from `OpdsResponse` to get status code, headers and contents or use `send()` method available into `Opds` and `OpdsResponse`.
-
-> [!WARNING]
->
-> If you send response to browser, you can't use any method after that.
 
 -   You can use `send()` from `Opds` or `OpdsResponse` to send response to browser (exactly the same)
 -   You don't have to call `get()` method before `send()` method, `send()` will call `get()` automatically
@@ -383,10 +383,13 @@ $query = // get query from URL, `q` or `query` param
 $feeds = [];
 
 if ($query) {
-    $results = // use your search engine here
+    $results = []; // use your search engine here
 
     foreach ($results as $result) {
-      $feeds[] = new OpdsEntryBook();
+      $feeds[] = new OpdsEntryBook(
+        title: $result->title,
+        // ...
+      );
     }
 }
 
