@@ -4,7 +4,6 @@ namespace Kiwilan\Opds\Engine\Paginate;
 
 use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
-use Kiwilan\Opds\Opds;
 
 /**
  * Handle manual pagination for OPDS.
