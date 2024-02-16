@@ -197,16 +197,15 @@ $response->getContents(); // string - Contents of response
 
 #### Send response
 
-> [!IMPORTANT]
+> [!NOTE]
 >
 > This method is totally optional, you can send response to browser by yourself.
-> If you send response to browser, you can't use any method after that.
 
 You can send response to browser by yourself from `OpdsResponse` to get status code, headers and contents or use `send()` method available into `Opds` and `OpdsResponse`.
 
 -   You can use `send()` from `Opds` or `OpdsResponse` to send response to browser (exactly the same)
 -   You don't have to call `get()` method before `send()` method, `send()` will call `get()` automatically
--   If you call `send()` method, script will stop after sending response
+-   If you call `send()` method
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -214,7 +213,7 @@ use Kiwilan\Opds\Opds;
 Opds::make()
   ->title('My feed')
   ->feeds([...])
-  ->send(); // XML or JSON response, stop script
+  ->send(); // XML or JSON response
 ;
 ```
 
@@ -231,8 +230,26 @@ $opds = Opds::make()
 
 // do something with `OpdsResponse` instance
 
-$opds->send(); // XML or JSON response, stop script
+$opds->send(); // XML or JSON response
 ```
+
+To get response
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get();
+
+$response = $opds->getResponse(); // OpdsResponse
+$response->send(); // XML or JSON response
+```
+
+> [!NOTE]
+>
+> You can use `exit` parameter from `send()` method to stop script after sending response.
 
 ### OPDS Config
 
