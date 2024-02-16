@@ -17,6 +17,9 @@ class OpdsPaginator extends OpdsPaginate
         protected bool $usePagination = false,
         protected bool $useAutoPagination = false,
         protected int $size = 0,
+        protected int $startPage = 0,
+        protected int $firstPage = 0,
+        protected int $lastPage = 0,
     ) {
         parent::__construct();
     }
@@ -63,6 +66,42 @@ class OpdsPaginator extends OpdsPaginate
     public function getSize(): int
     {
         return $this->size;
+    }
+
+    public function getStartPage(): int
+    {
+        return $this->startPage;
+    }
+
+    public function getFirstPage(): int
+    {
+        return $this->firstPage;
+    }
+
+    public function getLastPage(): int
+    {
+        return $this->lastPage;
+    }
+
+    public function setStartPage(int $startPage): self
+    {
+        $this->startPage = $startPage;
+
+        return $this;
+    }
+
+    public function setFirstPage(int $firstPage): self
+    {
+        $this->firstPage = $firstPage;
+
+        return $this;
+    }
+
+    public function setLastPage(int $lastPage): self
+    {
+        $this->lastPage = $lastPage;
+
+        return $this;
     }
 
     /**

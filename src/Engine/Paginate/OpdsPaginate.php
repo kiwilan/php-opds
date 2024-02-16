@@ -17,9 +17,6 @@ class OpdsPaginate
         protected int $perPage = 0,
         protected int $currentPage = 1,
         protected int $totalItems = 0,
-        protected int $startPage = 0,
-        protected int $firstPage = 0,
-        protected int $lastPage = 0,
     ) {
     }
 
@@ -65,21 +62,6 @@ class OpdsPaginate
         return $this->totalItems;
     }
 
-    public function getStartPage(): int
-    {
-        return $this->startPage;
-    }
-
-    public function getFirstPage(): int
-    {
-        return $this->firstPage;
-    }
-
-    public function getLastPage(): int
-    {
-        return $this->lastPage;
-    }
-
     public function getOutput(): OpdsOutputEnum
     {
         return $this->output;
@@ -117,27 +99,6 @@ class OpdsPaginate
     public function setTotalItems(int $totalItems): self
     {
         $this->totalItems = $totalItems;
-
-        return $this;
-    }
-
-    public function setStartPage(int $startPage): self
-    {
-        $this->startPage = $startPage;
-
-        return $this;
-    }
-
-    public function setFirstPage(int $firstPage): self
-    {
-        $this->firstPage = $firstPage;
-
-        return $this;
-    }
-
-    public function setLastPage(int $lastPage): self
-    {
-        $this->lastPage = $lastPage;
 
         return $this;
     }

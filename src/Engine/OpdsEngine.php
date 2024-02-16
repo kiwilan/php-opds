@@ -95,7 +95,16 @@ abstract class OpdsEngine
      */
     public function toXML(array $rootElement = [
         'rootElementName' => 'feed',
-        '_attributes' => OpdsNamespaces::VERSION_1_2,
+        '_attributes' => [
+            'xmlns:app' => 'http://www.w3.org/2007/app',
+            'xmlns:opds' => 'http://opds-spec.org/2010/catalog',
+            'xmlns:opensearch' => 'http://a9.com/-/spec/opensearch/1.1/',
+            'xmlns:odl' => 'http://opds-spec.org/odl',
+            'xmlns:dcterms' => 'http://purl.org/dc/terms/',
+            'xmlns' => 'http://www.w3.org/2005/Atom',
+            'xmlns:thr' => 'http://purl.org/syndication/thread/1.0',
+            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+        ],
     ]): string
     {
         return ArrayToXml::convert(
