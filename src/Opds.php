@@ -102,12 +102,12 @@ class Opds
     /**
      * Paging information for pre-paginated feeds
      *
-     * @param  int  $page current page number (default 1)
-     * @param  int  $total total number of items (default 0)
-     * @param  ?string  $first link to first page (default null)
-     * @param  ?string  $last link to last page (default null)
-     * @param  ?string  $previous link to previous page (default null)
-     * @param  ?string  $next link to next page (default null)
+     * @param  int  $page  current page number (default 1)
+     * @param  int  $total  total number of items (default 0)
+     * @param  ?string  $first  link to first page (default null)
+     * @param  ?string  $last  link to last page (default null)
+     * @param  ?string  $previous  link to previous page (default null)
+     * @param  ?string  $next  link to next page (default null)
      */
     public function paging(int $page = 1, int $total = 0, ?string $first = null, ?string $last = null, ?string $previous = null, ?string $next = null): self
     {
@@ -159,7 +159,7 @@ class Opds
      * Send response to browser.
      *
      * @param  bool  $mock  To send valid response to browser it should be to `false`.
-     * @return  void|never
+     * @return void|never
      */
     public function send(bool $mock = false)
     {
@@ -263,7 +263,7 @@ class Opds
     /**
      * Get feeds.
      *
-     * @return  OpdsEntryNavigation[]|OpdsEntryBook[]
+     * @return OpdsEntryNavigation[]|OpdsEntryBook[]
      */
     public function getFeeds(): array
     {

@@ -11,18 +11,18 @@ use Transliterator;
 class OpdsConfig
 {
     /**
-     * @param  string  $name OPDS application name, for example: `Gallica`, default is `opds`.
-     * @param  ?string  $author Application author, for example: `Hadrien Gardeur`.
-     * @param  ?string  $authorUrl Application author URL, for example: `https://example.com`.
-     * @param  ?string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
-     * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
-     * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
-     * @param  string  $versionQuery Version query, for example: `version`, default is `version`.
-     * @param  DateTime  $updated Updated date, for example: `new DateTime()`.
-     * @param  bool  $usePagination Use pagination, default is `true`.
-     * @param  bool  $useAutoPagination If set to `true`, pagination is applied only on `OpdsEntryBook` if exceed `maxItemsPerPage`, default is `false`.
-     * @param  int  $maxItemsPerPage Maximum items per page, default is `32`.
-     * @param  bool  $forceJson Force OPDS version 2.0 as default, default is `false`.
+     * @param  string  $name  OPDS application name, for example: `Gallica`, default is `opds`.
+     * @param  ?string  $author  Application author, for example: `Hadrien Gardeur`.
+     * @param  ?string  $authorUrl  Application author URL, for example: `https://example.com`.
+     * @param  ?string  $iconUrl  Icon URL, for example: `https://example.com/favicon.ico`.
+     * @param  ?string  $startUrl  Start URL, for example: `https://example.com/opds`.
+     * @param  ?string  $searchUrl  Search URL, for example: `https://example.com/opds/search`.
+     * @param  string  $versionQuery  Version query, for example: `version`, default is `version`.
+     * @param  DateTime  $updated  Updated date, for example: `new DateTime()`.
+     * @param  bool  $usePagination  Use pagination, default is `true`.
+     * @param  bool  $useAutoPagination  If set to `true`, pagination is applied only on `OpdsEntryBook` if exceed `maxItemsPerPage`, default is `false`.
+     * @param  int  $maxItemsPerPage  Maximum items per page, default is `32`.
+     * @param  bool  $forceJson  Force OPDS version 2.0 as default, default is `false`.
      */
     public function __construct(
         protected ?string $name = 'opds',
