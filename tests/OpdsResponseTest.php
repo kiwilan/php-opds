@@ -32,8 +32,6 @@ it('can use response', function () {
 
     $response->setHeaders(['Content-Encoding' => 'gzip']);
     expect($response->getHeaders())->toHaveKey('Content-Encoding');
-
-    ray($response);
 });
 
 it('can use response with json', function () {
@@ -41,8 +39,7 @@ it('can use response with json', function () {
         ->get();
     $response = $opds->getResponse();
 
-    ray($response);
-    ray($response->toArray());
+    expect($response->toArray())->toBeArray();
 });
 
 it('can send response', function () { // @phpstan-ignore-line
