@@ -123,7 +123,7 @@ $opds = Opds::make()
 
 $opds->getEngine(); // OpdsEngine|null - Engine used to create OPDS feed, determined by OPDS version, can be `OpdsXmlEngine::class` or `OpdsJsonEngine::class`
 $opds->getOutput(); // OpdsOutputEnum|null - Output of response, useful for debug
-$opds->getPaginator(); // Paginator|null - Paginator used to paginate feeds, determined by `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`
+$opds->getPaginator(); // OpdsPaginator|OpdsPaginate|null - Paginator used to paginate feeds, if you use `paginate()` method
 $opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `OpdsEngine` to create a response
 ```
 
@@ -163,7 +163,7 @@ $output = $engine->__toString(); // string
 
 ### OPDS Response
 
-To build OPDS feed, you have to `get()` method. It will return an instance of `Opds` with `OpdsEngine`, `OpdsResponse` and `OpdsPaginator` filled.
+To build OPDS feed, you have to `get()` method. It will return an instance of `Opds` with `OpdsEngine`, `OpdsResponse` and paginator filled.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -171,7 +171,7 @@ use Kiwilan\Opds\Opds;
 $opds = Opds::make()
   ->title('My feed')
   ->feeds([...])
-  ->get() // `Opds` to fill `OpdsEngine`, `OpdsResponse` and `OpdsPaginator`
+  ->get() // `Opds` to fill `OpdsEngine`, `OpdsResponse` and paginator
 ;
 ```
 
@@ -270,8 +270,6 @@ $config = new OpdsConfig(
   versionQuery: 'version', // query parameter for version
   paginationQuery: 'page', // query parameter for pagination
   updated: new DateTime(), // Last update of OPDS feed
-  usePagination: false, // To enable pagination, default is false
-  useAutoPagination: false, // To enable auto pagination, default is false, if `usePagination` is true, this option will be ignored
   maxItemsPerPage: 16, // Max items per page, default is 16
   forceJson: false, // To force JSON response as OPDS 2.0, default is false
 );
@@ -283,11 +281,44 @@ $config = new OpdsConfig(
 
 #### OPDS Pagination
 
-You can use pagination with `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`.
+You can use pagination from `Opds` with `paginate()` method, it will generate pagination based on `maxItemsPerPage` property from `OpdsConfig::class`.
 
--   `usePagination()` will paginate feeds based on `maxItemsPerPage` property
--   `useAutoPagination()` will paginate only `OpdsEntryBook` feeds if exceed `maxItemsPerPage` property
-    -   Useful if you have a lot of navigations feeds, e.g. 1000 authors, you don't want to paginate this feed
+-   If you not set any parameter, it will generate pagination
+-   If you set `OpdsPaginate` object, it will generate pagination based on it
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->paginate() // will generate pagination
+  ->get();
+
+$opds->getPaginator(); // OpdsPaginator
+```
+
+You can use `OpdsPaginate::class` to handle manual pagination
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make(getConfig())
+  ->title('My feed')
+  ->url('http://localhost:8080/opds?u=2')
+  ->feeds([...])
+  ->paginate(new OpdsPaginate(
+    currentPage: $page,
+    totalItems: $total,
+    firstUrl: 'http://localhost:8080/opds?f=1',
+    lastUrl: 'http://localhost:8080/opds?l=42',
+    previousUrl: 'http://localhost:8080/opds?p=1',
+    nextUrl: 'http://localhost:8080/opds?n=3',
+  )) // will generate pagination based on `OpdsPaginate` object
+  ->get();
+
+$opds->getPaginator(); // OpdsPaginate
+```
 
 ### OPDS entry
 
