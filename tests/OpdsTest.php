@@ -1,7 +1,7 @@
 <?php
 
-use Kiwilan\Opds\Engine\OpdsPaginator;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
