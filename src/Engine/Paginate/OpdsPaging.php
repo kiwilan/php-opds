@@ -26,7 +26,7 @@ class OpdsPaging extends OpdsPaginate
 
     public function make(OpdsEngine $engine, array &$contents): self
     {
-        $this->parseUrl($engine);
+        $this->parseEngine($engine);
 
         if ($this->output === OpdsOutputEnum::json) {
             $this->json($contents);

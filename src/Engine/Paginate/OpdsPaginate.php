@@ -20,7 +20,7 @@ abstract class OpdsPaginate
     ) {
     }
 
-    protected function parseUrl(OpdsEngine $engine): self
+    protected function parseEngine(OpdsEngine $engine): self
     {
         $url = $engine->getOpds()->getUrl();
 

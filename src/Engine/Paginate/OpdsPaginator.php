@@ -33,7 +33,7 @@ class OpdsPaginator extends OpdsPaginate
             usePagination: $engine->getOpds()->getConfig()->isUsePagination(),
             useAutoPagination: $engine->getOpds()->getConfig()->isUseAutoPagination(),
         );
-        $self->parseUrl($engine);
+        $self->parseEngine($engine);
 
         return $self;
     }
