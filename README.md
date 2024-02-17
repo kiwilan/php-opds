@@ -205,7 +205,6 @@ You can send response to browser by yourself from `OpdsResponse` to get status c
 
 -   You can use `send()` from `Opds` or `OpdsResponse` to send response to browser (exactly the same)
 -   You don't have to call `get()` method before `send()` method, `send()` will call `get()` automatically
--   If you call `send()` method
 
 ```php
 use Kiwilan\Opds\Opds;
