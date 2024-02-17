@@ -4,8 +4,9 @@ namespace Kiwilan\Opds;
 
 use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Engine\OpdsJsonEngine;
-use Kiwilan\Opds\Engine\OpdsPaginator;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginate;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -29,7 +30,9 @@ class Opds
         protected array $feeds = [],
         protected bool $isSearch = false,
         protected ?OpdsEngine $engine = null,
-        protected ?OpdsPaginator $paginator = null,
+        protected bool $usePaginate = false,
+        protected bool $usePaginateManual = false,
+        protected OpdsPaginator|OpdsPaginate|null $paginator = null,
         protected ?OpdsOutputEnum $output = null, // xml or json
         protected ?OpdsResponse $response = null,
     ) {
@@ -97,6 +100,23 @@ class Opds
     }
 
     /**
+     * To paginate feeds. If you set `$paginate`, it will override the automatic pagination.
+     */
+    public function paginate(?OpdsPaginate $paginate = null): self
+    {
+        if ($paginate) {
+            $this->paginator = $paginate;
+            $this->paginator->setPerPage($this->getConfig()->getMaxItemsPerPage());
+            $this->usePaginate = true;
+            $this->usePaginateManual = true;
+        } else {
+            $this->usePaginate = true;
+        }
+
+        return $this;
+    }
+
+    /**
      * Get OPDS with `OpdsEngine` and `OpdsResponse`.
      */
     public function get(): self
@@ -121,7 +141,9 @@ class Opds
             OpdsVersionEnum::v1Dot2 => OpdsXmlEngine::make($this),
             OpdsVersionEnum::v2Dot0 => OpdsJsonEngine::make($this),
         };
-        $this->paginator = $this->engine->getPaginator();
+        if ($this->usePaginate) {
+            $this->paginator = $this->engine->getPaginator();
+        }
         $this->response = OpdsResponse::make($this->engine->__toString(), $this->output, 200);
 
         return $this;
@@ -130,16 +152,15 @@ class Opds
     /**
      * Send response to browser.
      *
-     * @param  bool  $mock  To send valid response to browser it should be to `false`.
-     * @return  void|never
+     * @param  bool  $exit  If true, the script will exit after sending the response, default is `false`.
      */
-    public function send(bool $mock = false)
+    public function send(bool $exit = false): string
     {
         if (! $this->response) {
             $this->get();
         }
 
-        $this->response->send($mock);
+        return $this->response->send($exit);
     }
 
     /**
@@ -235,11 +256,28 @@ class Opds
     /**
      * Get feeds.
      *
-     * @return  OpdsEntryNavigation[]|OpdsEntryBook[]
+     * @return OpdsEntryNavigation[]|OpdsEntryBook[]
      */
     public function getFeeds(): array
     {
         return $this->feeds;
+    }
+
+    public function usePaginate(): bool
+    {
+        return $this->usePaginate;
+    }
+
+    /**
+     * Check if OPDS use manual pagination.
+     */
+    public function usePaginateManual(): bool
+    {
+        if ($this->usePaginateManual) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -265,9 +303,9 @@ class Opds
     /**
      * Get OPDS paginator.
      */
-    public function getPaginator(): ?OpdsPaginator
+    public function getPaginator(): OpdsPaginator|OpdsPaginate|null
     {
-        if (! $this->paginator) {
+        if ($this->usePaginate && ! $this->paginator) {
             $this->get();
         }
 

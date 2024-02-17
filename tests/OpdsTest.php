@@ -1,7 +1,7 @@
 <?php
 
-use Kiwilan\Opds\Engine\OpdsPaginator;
 use Kiwilan\Opds\Engine\OpdsXmlEngine;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
@@ -50,11 +50,12 @@ it('can use opds properties', function () {
 });
 
 it('can use opds paginator', function () {
-    $config = (new OpdsConfig())->usePagination()
+    $config = (new OpdsConfig())
         ->setVersionQuery('v')
         ->setPaginationQuery('pagination');
     $opds = Opds::make($config)
         ->title('feed')
+        ->paginate()
         ->get();
 
     expect($opds->getPaginator())->toBeInstanceOf(OpdsPaginator::class);

@@ -1,7 +1,8 @@
 <?php
 
-namespace Kiwilan\Opds\Engine;
+namespace Kiwilan\Opds\Engine\Paginate;
 
+use Kiwilan\Opds\Engine\OpdsEngine;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -10,25 +11,15 @@ use Kiwilan\Opds\Opds;
 /**
  * Handle pagination for OPDS.
  */
-class OpdsPaginator
+class OpdsPaginator extends OpdsPagination
 {
     protected function __construct(
-        protected OpdsOutputEnum $output,
-        protected string $versionQuery,
-        protected string $paginationQuery,
-        protected string $url,
-        protected array $query = [],
-        protected bool $usePagination = false,
-        protected bool $useAutoPagination = false,
-        protected int $perPage = 0,
-        protected int $page = 1,
-
-        protected int $total = 0,
-        protected int $start = 0,
         protected int $size = 0,
-        protected int $first = 0,
-        protected int $last = 0,
+        protected int $startPage = 0,
+        protected int $firstPage = 0,
+        protected int $lastPage = 0,
     ) {
+        parent::__construct();
     }
 
     /**
@@ -36,73 +27,10 @@ class OpdsPaginator
      */
     public static function make(OpdsEngine $engine): self
     {
-        $url = $engine->getOpds()->getUrl();
+        $self = new self();
+        $self->parseEngine($engine);
 
-        if (str_contains($url, '?')) {
-            $url = explode('?', $url)[0];
-        }
-
-        $output = $engine->getOpds()->getOutput();
-        $query = $engine->getOpds()->getQuery();
-        $pagination = $engine->getOpds()->getConfig()->getPaginationQuery();
-        $page = $query[$pagination] ?? 1;
-
-        return new self(
-            output: $output,
-            versionQuery: $engine->getOpds()->getConfig()->getVersionQuery(),
-            paginationQuery: $pagination,
-            url: $url,
-            query: $query,
-            usePagination: $engine->getOpds()->getConfig()->isUsePagination(),
-            useAutoPagination: $engine->getOpds()->getConfig()->isUseAutoPagination(),
-            perPage: $engine->getOpds()->getConfig()->getMaxItemsPerPage(),
-            page: $page,
-        );
-    }
-
-    public function getOutput(): OpdsOutputEnum
-    {
-        return $this->output;
-    }
-
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    public function getQuery(): array
-    {
-        return $this->query;
-    }
-
-    public function usePagination(): bool
-    {
-        return $this->usePagination;
-    }
-
-    public function useAutoPagination(): bool
-    {
-        return $this->useAutoPagination;
-    }
-
-    public function getPerPage(): int
-    {
-        return $this->perPage;
-    }
-
-    public function getPage(): int
-    {
-        return $this->page;
-    }
-
-    public function getTotal(): int
-    {
-        return $this->total;
-    }
-
-    public function getStart(): int
-    {
-        return $this->start;
+        return $self;
     }
 
     public function getSize(): int
@@ -110,14 +38,40 @@ class OpdsPaginator
         return $this->size;
     }
 
-    public function getFirst(): int
+    public function getStartPage(): int
     {
-        return $this->first;
+        return $this->startPage;
     }
 
-    public function getLast(): int
+    public function getFirstPage(): int
     {
-        return $this->last;
+        return $this->firstPage;
+    }
+
+    public function getLastPage(): int
+    {
+        return $this->lastPage;
+    }
+
+    public function setStartPage(int $startPage): self
+    {
+        $this->startPage = $startPage;
+
+        return $this;
+    }
+
+    public function setFirstPage(int $firstPage): self
+    {
+        $this->firstPage = $firstPage;
+
+        return $this;
+    }
+
+    public function setLastPage(int $lastPage): self
+    {
+        $this->lastPage = $lastPage;
+
+        return $this;
     }
 
     /**
@@ -128,22 +82,18 @@ class OpdsPaginator
      */
     public function paginate(array &$content, array &$feeds): self
     {
-        if (! $this->usePagination && ! $this->useAutoPagination) {
-            return $this;
-        }
-
         if (count($feeds) < $this->perPage) {
             return $this;
         }
 
-        $this->total = count($feeds);
-        $this->start = intval($this->query['startRecord'] ?? 0);
-        $this->size = intval(ceil($this->total / $this->perPage));
-        $this->first = $this->start;
-        $this->last = ($this->perPage * $this->size) - $this->perPage;
+        $this->totalItems = count($feeds);
+        $this->startPage = intval($this->query['startRecord'] ?? 0);
+        $this->size = intval(ceil($this->totalItems / $this->perPage));
+        $this->firstPage = $this->startPage;
+        $this->lastPage = ($this->perPage * $this->size) - $this->perPage;
 
         if ($this->output === OpdsOutputEnum::json) {
-            $this->start = $this->page === 1 ? 0 : ($this->page - 1) * $this->perPage;
+            $this->startPage = $this->currentPage === 1 ? 0 : ($this->currentPage - 1) * $this->perPage;
             $this->json($content);
         }
 
@@ -151,7 +101,7 @@ class OpdsPaginator
             $this->xml($content);
         }
 
-        $feeds = array_slice($feeds, $this->start, $this->perPage);
+        $feeds = array_slice($feeds, $this->startPage, $this->perPage);
 
         return $this;
     }
@@ -184,9 +134,9 @@ class OpdsPaginator
     {
         $content['metadata'] = [
             ...$content['metadata'],
-            'numberOfItems' => $this->total,
+            'numberOfItems' => $this->totalItems,
             'itemsPerPage' => $this->perPage,
-            'currentPage' => $this->page,
+            'currentPage' => $this->currentPage,
         ];
 
         $content['links'] = [
@@ -196,7 +146,7 @@ class OpdsPaginator
             ),
         ];
 
-        if ($this->page !== 1) {
+        if ($this->currentPage !== 1) {
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'first',
                 href: $this->route($this->url, [$this->paginationQuery => 1]),
@@ -204,14 +154,14 @@ class OpdsPaginator
 
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'previous',
-                href: $this->route($this->url, [$this->paginationQuery => $this->page - 1]),
+                href: $this->route($this->url, [$this->paginationQuery => $this->currentPage - 1]),
             );
         }
 
-        if ($this->page !== $this->size) {
+        if ($this->currentPage !== $this->size) {
             $content['links'][] = OpdsEngine::addJsonLink(
                 rel: 'next',
-                href: $this->route($this->url, [$this->paginationQuery => $this->page + 1]),
+                href: $this->route($this->url, [$this->paginationQuery => $this->currentPage + 1]),
             );
 
             $content['links'][] = OpdsEngine::addJsonLink(
@@ -226,9 +176,9 @@ class OpdsPaginator
      */
     private function xml(array &$content): void
     {
-        $startRecord = $this->start + $this->perPage;
+        $startRecord = $this->startPage + $this->perPage;
         $queryStartRecord = intval($this->query['startRecord'] ?? 0);
-        $this->page = intval(ceil($startRecord / $this->perPage));
+        $this->currentPage = intval(ceil($startRecord / $this->perPage));
 
         $previousUrl = $this->url.'?'.http_build_query([
             'q' => $this->query['q'] ?? null,
@@ -247,7 +197,7 @@ class OpdsPaginator
         ]);
         $lastUrl = $this->url.'?'.http_build_query([
             'q' => $this->query['q'] ?? null,
-            'startRecord' => $this->last,
+            'startRecord' => $this->lastPage,
             'maximumRecords' => $this->perPage,
         ]);
 
@@ -259,7 +209,7 @@ class OpdsPaginator
             );
         }
 
-        if ($queryStartRecord !== $this->last) {
+        if ($queryStartRecord !== $this->lastPage) {
             $content['__custom:link:6'] = OpdsEngine::addXmlLink(
                 href: $nextUrl,
                 rel: 'next',
@@ -275,7 +225,7 @@ class OpdsPaginator
             );
         }
 
-        if ($queryStartRecord !== $this->last) {
+        if ($queryStartRecord !== $this->lastPage) {
             $content['__custom:link:8'] = OpdsEngine::addXmlLink(
                 href: $lastUrl,
                 rel: 'last',
@@ -283,8 +233,8 @@ class OpdsPaginator
             );
         }
 
-        $content['opensearch:totalResults'] = $this->total;
+        $content['opensearch:totalResults'] = $this->totalItems;
         $content['opensearch:itemsPerPage'] = $this->perPage;
-        $content['opensearch:startIndex'] = $this->start === 0 ? 1 : $this->start;
+        $content['opensearch:startIndex'] = $this->startPage === 0 ? 1 : $this->startPage;
     }
 }

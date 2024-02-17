@@ -94,6 +94,33 @@ class OpdsResponse
     }
 
     /**
+     * Get contents as array.
+     *
+     * @return array{
+     *  metadata: array{
+     *    id: string,
+     *    title: string,
+     *    updated: string,
+     *    author: array{
+     *     name: string,
+     *     uri: string,
+     *    },
+     *    icon: string,
+     *  },
+     *  links: array{href: string, rel: string, type: string}[],
+     *  publications: array,
+     * }
+     */
+    public function toArray(): array
+    {
+        if (! $this->isJson) {
+            throw new \Exception('`toArray()` can\'t work for OPDS Response, content is not JSON');
+        }
+
+        return json_decode($this->contents, true);
+    }
+
+    /**
      * Get JSON contents if is valid.
      *
      * @throws \Exception
@@ -101,7 +128,7 @@ class OpdsResponse
     public function getJson(): object
     {
         if (! $this->isJson) {
-            throw new \Exception('OPDS Response: content is not JSON');
+            throw new \Exception('`getJson()` can\'t work for OPDS Response, content is not JSON');
         }
 
         return json_decode($this->contents);
@@ -132,10 +159,9 @@ class OpdsResponse
     /**
      * Send content to browser with correct header.
      *
-     * @param  bool  $mock  To send valid response to browser it should be to `false`.
-     * @return never|void
+     * @param  bool  $exit  To use `exit` after sending response.
      */
-    public function send(bool $mock = false)
+    public function send(bool $exit = false): string
     {
         foreach ($this->headers as $type => $value) {
             header($type.': '.$value);
@@ -145,9 +171,11 @@ class OpdsResponse
 
         echo $this->contents;
 
-        if (! $mock) {
+        if ($exit) {
             exit;
         }
+
+        return $this->contents;
     }
 
     private function isValidXml(string $content): bool

@@ -1,13 +1,14 @@
 <?php
 
-use Kiwilan\Opds\Engine\OpdsPaginator;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
 use Kiwilan\Opds\Opds;
 use Kiwilan\XmlReader\XmlReader;
 
 it('can use pagination', function () {
-    $opds = Opds::make(getConfig()->usePagination())
+    $opds = Opds::make(getConfig())
         ->feeds(manyFeeds())
+        ->paginate()
         ->get();
 
     $xml = XmlReader::make($opds->getResponse()->getContents())
@@ -16,9 +17,10 @@ it('can use pagination', function () {
     expect($xml)->toBeArray();
     expect(count($xml))->toBe(32);
 
-    $opds = Opds::make(getConfig()->usePagination())
+    $opds = Opds::make(getConfig())
         ->url('http://localhost:8000/opds?startRecord=32')
         ->feeds(manyFeeds())
+        ->paginate()
         ->get();
 
     $xml = XmlReader::make($opds->getResponse()->getContents())
@@ -48,8 +50,9 @@ it('can use pagination', function () {
 });
 
 it('can use pagination under limit', function () {
-    $opds = Opds::make(getConfig()->usePagination())
+    $opds = Opds::make(getConfig())
         ->feeds(manyFeeds(10))
+        ->paginate()
         ->get();
 
     $xml = XmlReader::make($opds->getResponse()->getContents())
@@ -60,8 +63,9 @@ it('can use pagination under limit', function () {
 });
 
 it('can use paginator', function () {
-    $opds = Opds::make(getConfig()->usePagination())
+    $opds = Opds::make(getConfig())
         ->feeds(manyFeeds())
+        ->paginate()
         ->get();
 
     expect($opds->getPaginator())->toBeInstanceOf(OpdsPaginator::class);
@@ -70,20 +74,27 @@ it('can use paginator', function () {
     expect($paginator->getOutput())->toBe(OpdsOutputEnum::xml);
     expect($paginator->getUrl())->toBe('http://localhost/');
     expect($paginator->getQuery())->toBeArray();
-    expect($paginator->usePagination())->toBeTrue();
-    expect($paginator->useAutoPagination())->toBeFalse();
     expect($paginator->getPerPage())->toBe(32);
-    expect($paginator->getPage())->toBe(1);
-    expect($paginator->getTotal())->toBe(100);
-    expect($paginator->getStart())->toBe(0);
+    expect($paginator->getCurrentPage())->toBe(1);
+    expect($paginator->getTotalItems())->toBe(100);
+    expect($paginator->getStartPage())->toBe(0);
     expect($paginator->getSize())->toBe(4);
-    expect($paginator->getFirst())->toBe(0);
-    expect($paginator->getLast())->toBe(96);
+    expect($paginator->getFirstPage())->toBe(0);
+    expect($paginator->getLastPage())->toBe(96);
+
+    $paginator->setStartPage(0);
+    $paginator->setFirstPage(0);
+    $paginator->setLastPage(96);
+
+    expect($paginator->getStartPage())->toBe(0);
+    expect($paginator->getFirstPage())->toBe(0);
+    expect($paginator->getLastPage())->toBe(96);
 });
 
 it('can use json pagination', function () {
-    $opds = Opds::make(getConfig()->usePagination()->forceJson())
+    $opds = Opds::make(getConfig()->forceJson())
         ->feeds(manyFeeds())
+        ->paginate()
         ->get();
 
     $response = json_decode($opds->getResponse()->getContents(), true);
@@ -91,9 +102,10 @@ it('can use json pagination', function () {
     expect($response['publications'])->toBeArray();
     expect(count($response['publications']))->toBe(32);
 
-    $opds = Opds::make(getConfig()->usePagination()->forceJson())
+    $opds = Opds::make(getConfig()->forceJson())
         ->url('http://localhost:8000/opds?page=2')
         ->feeds(manyFeeds())
+        ->paginate()
         ->get();
 
     $response = json_decode($opds->getResponse()->getContents(), true);
@@ -114,14 +126,13 @@ it('can use json pagination', function () {
 });
 
 it('can use auto pagination', function () {
-    $opds = Opds::make(getConfig()->useAutoPagination())
+    $opds = Opds::make(getConfig())
         ->feeds(manyFeeds())
+        ->paginate()
         ->get();
 
     $xml = XmlReader::make($opds->getResponse()->getContents())->find('entry');
 
-    expect($opds->getConfig()->isUsePagination())->toBeFalse();
-    expect($opds->getConfig()->isUseAutoPagination())->toBeTrue();
     expect($xml)->toBeArray();
     expect(count($xml))->toBe(32);
 });
@@ -143,4 +154,25 @@ it('can skip json pagination', function () {
     $response = json_decode($opds->getResponse()->getContents(), true);
 
     expect(count($response['publications']))->toBe(100);
+});
+
+it('can use OpdsPagination', function () {
+    $opds = Opds::make(getConfig()->forceJson())
+        ->feeds(manyFeeds())
+        ->paginate()
+        ->get();
+
+    $paginate = $opds->getPaginator();
+
+    expect($paginate->getOutput())->toBe(OpdsOutputEnum::json);
+    expect($paginate->getUrl())->toBe('http://localhost/');
+    expect($paginate->getFullUrl())->toBe('http://localhost/');
+    expect($paginate->getQuery())->toBeArray();
+
+    $paginate->setCurrentPage(2);
+    $paginate->setTotalItems(100);
+    $paginate->setOutput(OpdsOutputEnum::xml);
+    $paginate->setUrl('http://localhost:8000/opds');
+    $paginate->setFullUrl('http://localhost:8000/opds');
+    $paginate->setQuery(['page' => 2]);
 });

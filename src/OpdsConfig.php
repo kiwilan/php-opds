@@ -11,18 +11,16 @@ use Transliterator;
 class OpdsConfig
 {
     /**
-     * @param  string  $name OPDS application name, for example: `Gallica`, default is `opds`.
-     * @param  ?string  $author Application author, for example: `Hadrien Gardeur`.
-     * @param  ?string  $authorUrl Application author URL, for example: `https://example.com`.
-     * @param  ?string  $iconUrl Icon URL, for example: `https://example.com/favicon.ico`.
-     * @param  ?string  $startUrl Start URL, for example: `https://example.com/opds`.
-     * @param  ?string  $searchUrl Search URL, for example: `https://example.com/opds/search`.
-     * @param  string  $versionQuery Version query, for example: `version`, default is `version`.
-     * @param  DateTime  $updated Updated date, for example: `new DateTime()`.
-     * @param  bool  $usePagination Use pagination, default is `true`.
-     * @param  bool  $useAutoPagination If set to `true`, pagination is applied only on `OpdsEntryBook` if exceed `maxItemsPerPage`, default is `false`.
-     * @param  int  $maxItemsPerPage Maximum items per page, default is `32`.
-     * @param  bool  $forceJson Force OPDS version 2.0 as default, default is `false`.
+     * @param  string  $name  OPDS application name, for example: `Gallica`, default is `opds`.
+     * @param  ?string  $author  Application author, for example: `Hadrien Gardeur`.
+     * @param  ?string  $authorUrl  Application author URL, for example: `https://example.com`.
+     * @param  ?string  $iconUrl  Icon URL, for example: `https://example.com/favicon.ico`.
+     * @param  ?string  $startUrl  Start URL, for example: `https://example.com/opds`.
+     * @param  ?string  $searchUrl  Search URL, for example: `https://example.com/opds/search`.
+     * @param  string  $versionQuery  Version query, for example: `version`, default is `version`.
+     * @param  ?DateTime  $updated  Updated date, for example: `new DateTime()`.
+     * @param  int  $maxItemsPerPage  Maximum items per page, default is `32`.
+     * @param  bool  $forceJson  Force OPDS version 2.0 as default, default is `false`.
      */
     public function __construct(
         protected ?string $name = 'opds',
@@ -33,12 +31,13 @@ class OpdsConfig
         protected ?string $searchUrl = null,
         protected string $versionQuery = 'version',
         protected string $paginationQuery = 'page',
-        protected DateTime $updated = new DateTime(),
-        protected bool $usePagination = false,
-        protected bool $useAutoPagination = false,
+        protected ?DateTime $updated = null,
         protected int $maxItemsPerPage = 16,
         protected bool $forceJson = false,
     ) {
+        if (! $this->updated) {
+            $this->updated = new DateTime();
+        }
     }
 
     public function getName(): string
@@ -84,16 +83,6 @@ class OpdsConfig
     public function getUpdated(): DateTime
     {
         return $this->updated;
-    }
-
-    public function isUsePagination(): bool
-    {
-        return $this->usePagination;
-    }
-
-    public function isUseAutoPagination(): bool
-    {
-        return $this->useAutoPagination;
     }
 
     public function getMaxItemsPerPage(): int
@@ -162,23 +151,13 @@ class OpdsConfig
         return $this;
     }
 
-    public function setUpdated(DateTime $updated): self
+    public function setUpdated(?DateTime $updated): self
     {
-        $this->updated = $updated;
-
-        return $this;
-    }
-
-    public function usePagination(): self
-    {
-        $this->usePagination = true;
-
-        return $this;
-    }
-
-    public function useAutoPagination(): self
-    {
-        $this->useAutoPagination = true;
+        if ($updated) {
+            $this->updated = $updated;
+        } else {
+            $this->updated = new DateTime();
+        }
 
         return $this;
     }

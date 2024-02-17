@@ -36,8 +36,10 @@ class OpdsJsonEngine extends OpdsEngine
                 'icon' => $this->opds->getConfig()->getIconUrl(),
             ],
             'links' => [
-                $this->addJsonLink(rel: 'self', href: OpdsEngine::getCurrentUrl()),
-                $this->addJsonLink(rel: 'start', href: $this->route($this->opds->getConfig()->getStartUrl())),
+                // use self link from opds->getUrl() in case it's overridden - default value is set to current url in Opds::make()
+                $this->addJsonLink(rel: 'self', href: $this->route($this->opds->getUrl())),
+                // use start link if defined in OpdsConfig - default value is null here
+                $this->addJsonLink(rel: 'start', href: $this->route($this->opds->getConfig()->getStartUrl() ?? $this->opds->getUrl())),
             ],
         ];
 
@@ -65,7 +67,11 @@ class OpdsJsonEngine extends OpdsEngine
         }
 
         $feeds = $this->opds->getFeeds();
-        $this->paginate($this->contents, $feeds);
+        if ($this->opds->usePaginateManual()) {
+            $this->paginateManual($this->opds->getPaginator(), $this->contents);
+        } else {
+            $this->paginateAuto($this->contents, $feeds);
+        }
 
         foreach ($feeds as $feed) {
             if ($feed instanceof OpdsEntryBook) {

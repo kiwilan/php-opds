@@ -14,8 +14,6 @@ it('can use setter', function () {
     $config->setVersionQuery('v');
     $config->setPaginationQuery('pagination');
     $config->setUpdated(new DateTime());
-    $config->usePagination();
-    $config->useAutoPagination();
     $config->setMaxItemsPerPage(10);
     $config->forceJson();
 
@@ -28,8 +26,6 @@ it('can use setter', function () {
     expect($config->getVersionQuery())->toBe('v');
     expect($config->getPaginationQuery())->toBe('pagination');
     expect($config->getUpdated())->toBeInstanceOf(DateTime::class);
-    expect($config->isUsePagination())->toBeTrue();
-    expect($config->isUseAutoPagination())->toBeTrue();
     expect($config->getMaxItemsPerPage())->toBe(10);
     expect($config->isForceJson())->toBeTrue();
 });

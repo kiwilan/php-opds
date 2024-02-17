@@ -10,11 +10,8 @@ use Opis\JsonSchema\Validator;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-// define('SCHEMA_ACQUISITION_OBJECT', __DIR__.'/schema/opds/acquisition-object.schema.json');
-// define('SCHEMA_AUTHENTICATION', __DIR__.'/schema/opds/authentication.schema.json');
 define('SCHEMA_FEED_METADATA', __DIR__.'/schema/opds/feed-metadata.schema.json');
 define('SCHEMA_FEED', __DIR__.'/schema/opds/feed.schema.json');
-// define('SCHEMA_PROFILE', __DIR__.'/schema/opds/profile.schema.json');
 define('SCHEMA_PROPERTIES', __DIR__.'/schema/opds/properties.schema.json');
 define('SCHEMA_PUBLICATION', __DIR__.'/schema/opds/publication.schema.json');
 
@@ -72,9 +69,9 @@ function console(array|string $message): void
 /**
  * @author Francesco Casula <fra.casula@gmail.com>
  *
- * @param  string  $xmlFilename Path to the XML file
- * @param  string  $version 1.0
- * @param  string  $encoding utf-8
+ * @param  string  $xmlFilename  Path to the XML file
+ * @param  string  $version  1.0
+ * @param  string  $encoding  utf-8
  * @return bool
  */
 function isXMLFileValid($xmlFilename, $version = '1.0', $encoding = 'utf-8')
@@ -87,9 +84,9 @@ function isXMLFileValid($xmlFilename, $version = '1.0', $encoding = 'utf-8')
 /**
  * @author Francesco Casula <fra.casula@gmail.com>
  *
- * @param  string  $xmlContent A well-formed XML string
- * @param  string  $version 1.0
- * @param  string  $encoding utf-8
+ * @param  string  $xmlContent  A well-formed XML string
+ * @param  string  $version  1.0
+ * @param  string  $encoding  utf-8
  * @return bool
  */
 function isXMLContentValid($xmlContent, $version = '1.0', $encoding = 'utf-8')
@@ -147,7 +144,6 @@ function getConfig(bool $json = false): OpdsConfig
         searchUrl: 'http://localhost:8000/opds/search',
         versionQuery: 'v',
         updated: new DateTime(),
-        usePagination: false,
         maxItemsPerPage: 32,
         forceJson: $json,
     );
@@ -279,4 +275,9 @@ function manyFeeds(int $count = 100): array
 function exampleXml(): string
 {
     return '<?xml version="1.0" encoding="UTF-8"?><rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"><channel></channel></rss>';
+}
+
+function exampleJson(): string
+{
+    return '{"metadata":{"id":"opds:feed","title":"opds OPDS: Feed","updated":"2024-02-16T17:38:58+00:00","author":"","icon":null},"links":[{"href":"http:\/\/localhost\/","type":"application\/opds+json","rel":"self"},{"href":"http:\/\/localhost\/","type":"application\/opds+json","rel":"start"}]}';
 }

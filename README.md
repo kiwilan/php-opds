@@ -22,7 +22,7 @@ All old versions: 0.9, 1.0 and 1.1 have a fallback to OPDS 1.2.
 
 ## Requirements
 
--   PHP >= 8.1
+-   `php` v8.1 minimum
 
 ## About
 
@@ -30,6 +30,7 @@ OPDS is like RSS feeds but adapted for eBooks, it's a standard to share eBooks b
 
 This package has been created to be used with [`bookshelves-project/bookshelves`](https://github.com/bookshelves-project/bookshelves), an open source eBook web app.
 
+> [!NOTE]
 > The Open Publication Distribution System (OPDS) catalog format is a syndication format for electronic publications based on Atom and HTTP. OPDS catalogs enable the aggregation, distribution, discovery, and acquisition of electronic publications. OPDS catalogs use existing or emergent open standards and conventions, with a priority on simplicity.
 >
 > The Open Publication Distribution System specification is prepared by an informal grouping of partners, combining Internet Archive, O'Reilly Media, Feedbooks, OLPC, and others.
@@ -58,9 +59,9 @@ Some resources about OPDS and eBooks:
 
 ### Roadmap
 
--   OPDS 1.2: support advanced acquisition feeds
--   OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
--   Add [OPDS Page Streaming Extension](https://github.com/anansi-project/opds-pse) from `anansi-project`
+-   [ ] OPDS 1.2: support advanced acquisition feeds
+-   [ ] OPDS 2.0: support `Facets`, `Groups`, advanced `belongsTo`
+-   [ ] Add [OPDS Page Streaming Extension](https://github.com/anansi-project/opds-pse) from `anansi-project`
 
 ## Installation
 
@@ -90,6 +91,14 @@ You have different informations into `Opds::class`.
 Some informations about OPDS instance:
 
 ```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
 $opds->getConfig(); // OpdsConfig - Configuration used to create OPDS feed set into `make()` method
 $opds->getUrl(); // string|null - Current URL, generated automatically but can be overrided with `url()` method
 $opds->getTitle(); // string - Title of OPDS feed set with `title()` method
@@ -104,29 +113,37 @@ $opds->checkIfSearch(); // bool, default is false, set to true if `isSearch()` m
 And about engine and response:
 
 ```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
 $opds->getEngine(); // OpdsEngine|null - Engine used to create OPDS feed, determined by OPDS version, can be `OpdsXmlEngine::class` or `OpdsJsonEngine::class`
 $opds->getOutput(); // OpdsOutputEnum|null - Output of response, useful for debug
-$opds->getPaginator(); // Paginator|null - Paginator used to paginate feeds, determined by `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`
+$opds->getPaginator(); // OpdsPaginator|OpdsPaginate|null - Paginator used to paginate feeds, if you use `paginate()` method
 $opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `OpdsEngine` to create a response
 ```
 
-### Version
+### OPDS Version
 
 You can use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
 
 -   Version `1.2` can be set with `?version=1.2`
 -   Version `2.0` can be set with `?version=2.0`
 
-> **Warning**
+> [!WARNING]
 >
-> If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, it will be ignored.
+> If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, query param will be ignored.
 
-### Engine
+### OPDS Engine
 
 Engine will convert your feeds to OPDS, depending of OPDS version.
 
--   OPDS 1.2 will use `OpdsXmlEngine::class`
--   OPDS 2.0 will use `OpdsJsonEngine::class`
+-   [OPDS 1.2](https://specs.opds.io/opds-1.2) will use `OpdsXmlEngine::class`
+-   [OPDS 2.0](https://drafts.opds.io/opds-2.0) will use `OpdsJsonEngine::class`
 
 You can get engine used with `getEngine()` method from `Opds::class`. Property `contents` contains array of feeds, `OpdsEngine` allow conversion into XML or JSON with `__toString()` method, the output depends of OPDS version.
 
@@ -144,9 +161,9 @@ $contents = $engine->getContents(); // array
 $output = $engine->__toString(); // string
 ```
 
-### Response
+### OPDS Response
 
-You can use `get()` method and after that, use `send()` method to send response to browser.
+To build OPDS feed, you have to `get()` method. It will return an instance of `Opds` with `OpdsEngine`, `OpdsResponse` and paginator filled.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -154,28 +171,11 @@ use Kiwilan\Opds\Opds;
 $opds = Opds::make()
   ->title('My feed')
   ->feeds([...])
-  ->get()
+  ->get() // `Opds` to fill `OpdsEngine`, `OpdsResponse` and paginator
 ;
-
-$opds->send(); // XML or JSON response, stop script
 ```
 
-You can send directly response to browser:
-
-> **Warning**
->
-> If you send response to browser, you can't use any method after that.
-
-```php
-use Kiwilan\Opds\Opds;
-
-Opds::make()
-  ->title('My feed')
-  ->feeds([...])
-  ->send(); // XML or JSON response, stop script
-```
-
-To get only instance of `OpdsResponse`, you can use `getResponse()` method from `Opds::class`. You can use this response to get status code, headers and contents, you can send it to browser by yourself or use `send()` method.
+To get response, you can use `getResponse()` method from `Opds::class`.
 
 ```php
 use Kiwilan\Opds\Opds;
@@ -193,11 +193,65 @@ $response->isJson(); // bool - If response is JSON
 $response->isXml(); // bool - If response is XML
 $response->getHeaders(); // array - Headers of response
 $response->getContents(); // string - Contents of response
-
-$response->send(); // Send response to browser, stop script
 ```
 
-### Config
+#### Send response
+
+> [!NOTE]
+>
+> This method is totally optional, you can send response to browser by yourself.
+
+You can send response to browser by yourself from `OpdsResponse` to get status code, headers and contents or use `send()` method available into `Opds` and `OpdsResponse`.
+
+-   You can use `send()` from `Opds` or `OpdsResponse` to send response to browser (exactly the same)
+-   You don't have to call `get()` method before `send()` method, `send()` will call `get()` automatically
+-   If you call `send()` method
+
+```php
+use Kiwilan\Opds\Opds;
+
+Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->send(); // XML or JSON response
+;
+```
+
+You can call `get()` method before `send()` method if you want to get `OpdsResponse` instance.
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get()
+;
+
+// do something with `OpdsResponse` instance
+
+$opds->send(); // XML or JSON response
+```
+
+To get response
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->get();
+
+$response = $opds->getResponse(); // OpdsResponse
+$response->send(); // XML or JSON response
+```
+
+> [!NOTE]
+>
+> You can use `exit` parameter from `send()` method to stop script after sending response.
+
+### OPDS Config
 
 OPDS config can be set with `OpdsConfig::class`:
 
@@ -216,24 +270,55 @@ $config = new OpdsConfig(
   versionQuery: 'version', // query parameter for version
   paginationQuery: 'page', // query parameter for pagination
   updated: new DateTime(), // Last update of OPDS feed
-  usePagination: false, // To enable pagination, default is false
-  useAutoPagination: false, // To enable auto pagination, default is false, if `usePagination` is true, this option will be ignored
   maxItemsPerPage: 16, // Max items per page, default is 16
   forceJson: false, // To force JSON response as OPDS 2.0, default is false
 );
 ```
 
-> **Note**
+> [!NOTE]
 >
 > You can override `OpdsConfig` with setter methods.
 
-#### Pagination
+#### OPDS Pagination
 
-You can use pagination with `OpdsConfig::class` method `usePagination()` or `useAutoPagination()`.
+You can use pagination from `Opds` with `paginate()` method, it will generate pagination based on `maxItemsPerPage` property from `OpdsConfig::class`.
 
--   `usePagination()` will paginate feeds based on `maxItemsPerPage` property
--   `useAutoPagination()` will paginate only `OpdsEntryBook` feeds if exceed `maxItemsPerPage` property
-    -   Useful if you have a lot of navigations feeds, e.g. 1000 authors, you don't want to paginate this feed
+-   If you not set any parameter, it will generate pagination
+-   If you set `OpdsPaginate` object, it will generate pagination based on it
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make()
+  ->title('My feed')
+  ->feeds([...])
+  ->paginate() // will generate pagination
+  ->get();
+
+$opds->getPaginator(); // OpdsPaginator
+```
+
+You can use `OpdsPaginate::class` to handle manual pagination
+
+```php
+use Kiwilan\Opds\Opds;
+
+$opds = Opds::make(getConfig())
+  ->title('My feed')
+  ->url('http://localhost:8080/opds?u=2')
+  ->feeds([...])
+  ->paginate(new OpdsPaginate(
+    currentPage: $page,
+    totalItems: $total,
+    firstUrl: 'http://localhost:8080/opds?f=1',
+    lastUrl: 'http://localhost:8080/opds?l=42',
+    previousUrl: 'http://localhost:8080/opds?p=1',
+    nextUrl: 'http://localhost:8080/opds?n=3',
+  )) // will generate pagination based on `OpdsPaginate` object
+  ->get();
+
+$opds->getPaginator(); // OpdsPaginate
+```
 
 ### OPDS entry
 
@@ -247,7 +332,7 @@ use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 $entry = new OpdsEntryNavigation(
   id: 'authors',
   title: 'Authors',
-  route: 'http://localhost:8000/opds/authors',
+  route: 'http://mylibrary.com/opds/authors',
   summary: 'Authors, 1 available',
   media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   updated: new DateTime(),
@@ -258,7 +343,7 @@ $entry = new OpdsEntryNavigation(
 );
 ```
 
-> **Note**
+> [!TIP]
 >
 > You can override `OpdsEntryNavigation` with setter methods.
 
@@ -276,7 +361,7 @@ $opds = Opds::make()
 
 You can create a book entry with `OpdsEntryBook::class`:
 
-> **Warning**
+> [!WARNING]
 >
 > Some properties can be used only into OPDS 2.0, see [OPDS 2.0 specification](https://drafts.opds.io/opds-2.0.html#book).
 
@@ -287,32 +372,31 @@ use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
 $entry = new OpdsEntryBook(
   id: 'the-clan-of-the-cave-bear-epub-en',
   title: 'The Clan of the Cave Bear',
-  route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
+  route: 'http://mylibrary.com/opds/books/the-clan-of-the-cave-bear-epub-en',
   summary: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel.',
   content: 'The Clan of the Cave Bear is an epic work of prehistoric fiction by Jean M. Auel about prehistoric times. It is the first book in the Earth\'s Children book series which speculates on the possibilities of interactions between Neanderthal and modern Cro-Magnon humans.',
   media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   updated: new DateTime(),
-  download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
+  download: 'http://mylibrary.com/api/download/books/the-clan-of-the-cave-bear-epub-en',
   mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
   categories: ['category'],
   authors: [
     new OpdsEntryBookAuthor(
       name: 'Jean M. Auel',
-      uri: 'http://localhost:8000/opds/authors/jean-m-auel',
+      uri: 'http://mylibrary.com/opds/authors/jean-m-auel',
     ),
   ],
   published: new DateTime(),
   volume: 1,
   serie: 'Earth\'s Children',
   language: 'English',
-  isbn: '9780553381672', // deprecated, use `identifier` instead
   identifier: 'urn:isbn:9780553381672', // to specify the actual identifier to use (instead of `urn:isbn:...`)
   translator: 'translator',
   publisher: 'publisher',
 );
 ```
 
-> **Note**
+> [!TIP]
 >
 > You can override `OpdsEntryBook` with setter methods.
 
@@ -333,7 +417,7 @@ This package do NOT implements any search engine, you can use your own search en
 -   `q` param is used by OPDS 1.2
 -   `query` param is used by OPDS 2.0
 
-> **Note**
+> [!TIP]
 >
 > I advice [Meilisearch](https://www.meilisearch.com/) for search engine, it's a powerful and easy to use search engine.
 
@@ -347,10 +431,13 @@ $query = // get query from URL, `q` or `query` param
 $feeds = [];
 
 if ($query) {
-    $results = // use your search engine here
+    $results = []; // use your search engine here
 
     foreach ($results as $result) {
-      $feeds[] = new OpdsEntryBook();
+      $feeds[] = new OpdsEntryBook(
+        title: $result->title,
+        // ...
+      );
     }
 }
 
@@ -378,10 +465,11 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Credits
 
--   [`ewilan-riviere`](https://github.com/ewilan-riviere): Author
+-   [OPDS creators](https://opds.io/): for OPDS specifications
+-   [`ewilan-riviere`](https://github.com/ewilan-riviere): author
+-   [Contributors](https://github.com/kiwilan/php-opds/graphs/contributors)
 -   [`spatie/array-to-xml`](https://github.com/spatie/array-to-xml): to convert array to XML
 -   [`spatie/package-skeleton-php`](https://github.com/spatie/package-skeleton-php): skeleton for PHP package
--   [Contributors](https://github.com/kiwilan/php-opds/graphs/contributors)
 
 ## License
 
@@ -389,15 +477,15 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 
 [<img src="https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg" height="120rem" width="100%" />](https://github.com/kiwilan)
 
-[version-src]: https://img.shields.io/packagist/v/kiwilan/php-opds.svg?style=flat-square&colorA=18181B&colorB=777BB4
+[version-src]: https://img.shields.io/packagist/v/kiwilan/php-opds.svg?style=flat&colorA=18181B&colorB=777BB4
 [version-href]: https://packagist.org/packages/kiwilan/php-opds
-[php-version-src]: https://img.shields.io/static/v1?style=flat-square&label=PHP&message=v8.1&color=777BB4&logo=php&logoColor=ffffff&labelColor=18181b
+[php-version-src]: https://img.shields.io/static/v1?style=flat&label=PHP&message=v8.1&color=777BB4&logo=php&logoColor=ffffff&labelColor=18181b
 [php-version-href]: https://www.php.net/
-[downloads-src]: https://img.shields.io/packagist/dt/kiwilan/php-opds.svg?style=flat-square&colorA=18181B&colorB=777BB4
+[downloads-src]: https://img.shields.io/packagist/dt/kiwilan/php-opds.svg?style=flat&colorA=18181B&colorB=777BB4
 [downloads-href]: https://packagist.org/packages/kiwilan/php-opds
-[license-src]: https://img.shields.io/github/license/kiwilan/php-opds.svg?style=flat-square&colorA=18181B&colorB=777BB4
+[license-src]: https://img.shields.io/github/license/kiwilan/php-opds.svg?style=flat&colorA=18181B&colorB=777BB4
 [license-href]: https://github.com/kiwilan/php-opds/blob/main/README.md
-[tests-src]: https://img.shields.io/github/actions/workflow/status/kiwilan/php-opds/run-tests.yml?branch=main&label=tests&style=flat-square&colorA=18181B
+[tests-src]: https://img.shields.io/github/actions/workflow/status/kiwilan/php-opds/run-tests.yml?branch=main&label=tests&style=flat&colorA=18181B
 [tests-href]: https://packagist.org/packages/kiwilan/php-opds
-[codecov-src]: https://codecov.io/gh/kiwilan/php-opds/branch/main/graph/badge.svg?token=UFISWRY4QW
+[codecov-src]: https://img.shields.io/codecov/c/gh/kiwilan/php-opds/main?style=flat&colorA=18181B&colorB=777BB4
 [codecov-href]: https://codecov.io/gh/kiwilan/php-opds

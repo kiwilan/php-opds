@@ -2,6 +2,8 @@
 
 namespace Kiwilan\Opds\Engine;
 
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginate;
+use Kiwilan\Opds\Engine\Paginate\OpdsPaginator;
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsOutputEnum;
@@ -14,7 +16,7 @@ abstract class OpdsEngine
 {
     protected function __construct(
         protected Opds $opds,
-        protected ?OpdsPaginator $paginator = null,
+        protected OpdsPaginator|OpdsPaginate|null $paginator = null,
         protected array $contents = [],
     ) {
     }
@@ -74,7 +76,7 @@ abstract class OpdsEngine
     /**
      * Get paginator instance.
      */
-    public function getPaginator(): ?OpdsPaginator
+    public function getPaginator(): OpdsPaginator|OpdsPaginate|null
     {
         return $this->paginator;
     }
@@ -92,7 +94,16 @@ abstract class OpdsEngine
      */
     public function toXML(array $rootElement = [
         'rootElementName' => 'feed',
-        '_attributes' => OpdsNamespaces::VERSION_1_2,
+        '_attributes' => [
+            'xmlns:app' => 'http://www.w3.org/2007/app',
+            'xmlns:opds' => 'http://opds-spec.org/2010/catalog',
+            'xmlns:opensearch' => 'http://a9.com/-/spec/opensearch/1.1/',
+            'xmlns:odl' => 'http://opds-spec.org/odl',
+            'xmlns:dcterms' => 'http://purl.org/dc/terms/',
+            'xmlns' => 'http://www.w3.org/2005/Atom',
+            'xmlns:thr' => 'http://purl.org/syndication/thread/1.0',
+            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+        ],
     ]): string
     {
         return ArrayToXml::convert(
@@ -172,7 +183,7 @@ abstract class OpdsEngine
         return "{$startUrl}?{$query}={$version->value}";
     }
 
-    protected function addXmlNode(string $value = null, ?array $attributes = []): array
+    protected function addXmlNode(?string $value = null, ?array $attributes = []): array
     {
         $node = [];
 
@@ -188,9 +199,9 @@ abstract class OpdsEngine
     }
 
     public static function addJsonLink(
-        string $href = null,
-        string $title = null,
-        string $rel = null,
+        ?string $href = null,
+        ?string $title = null,
+        string|array|null $rel = null,
         string $type = 'application/opds+json',
         array $attributes = [],
     ): array {
@@ -218,9 +229,9 @@ abstract class OpdsEngine
     }
 
     public static function addXmlLink(
-        string $href = null,
-        string $title = null,
-        string $rel = null,
+        ?string $href = null,
+        ?string $title = null,
+        string|array|null $rel = null,
         string $type = 'application/atom+xml;profile=opds-catalog;kind=navigation',
         bool $acquisition = false,
     ): array {
@@ -258,12 +269,26 @@ abstract class OpdsEngine
      * @param  array<string, mixed>  $content
      * @param  OpdsEntryNavigation[]|OpdsEntryBook[]  $feeds
      */
-    protected function paginate(array &$content, array &$feeds): void
+    protected function paginateAuto(array &$content, array &$feeds): void
     {
-        if (! $this->getOpds()->getConfig()->isUsePagination() && ! $this->getOpds()->getConfig()->isUseAutoPagination()) {
+        if (! $this->getOpds()->usePaginate() || $this->getOpds()->usePaginateManual()) {
             return;
         }
 
         $this->paginator = OpdsPaginator::make($this)->paginate($content, $feeds);
+    }
+
+    /**
+     * Add paginator information to contents for pre-paginated feeds
+     *
+     * @param  OpdsPaginate  $paginator  paginator information
+     */
+    protected function paginateManual(OpdsPaginate $paginator, array &$content): void
+    {
+        if (! $this->getOpds()->usePaginate() && ! $this->opds->usePaginateManual()) {
+            return;
+        }
+
+        $this->paginator = $paginator->make($this, $content);
     }
 }
