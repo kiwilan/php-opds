@@ -143,13 +143,13 @@ class OpdsEntryNavigation extends OpdsEntry
         ];
     }
 
-    public static function handleContent(?string $content, int $length = 200, bool $stripTags = true): string
+    public static function handleContent(?string $content, int $length = 200, bool $stripTags = true, ?string $encoding = null): string
     {
         if (! $content) {
             return '';
         }
 
-        $content = strlen($content) > $length ? substr($content, 0, $length).'...' : $content;
+        $content = mb_strlen($content, $encoding) > $length ? mb_substr($content, 0, $length, $encoding).'...' : $content;
 
         if ($stripTags) {
             $content = strip_tags($content);
