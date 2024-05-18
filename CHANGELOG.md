@@ -2,6 +2,10 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v2.0.10 - 2024-05-18
+
+Add multi-byte safe substr() for OPDS summary from [PR #48](https://github.com/kiwilan/php-opds/pull/48) by @mikespub
+
 ## v2.0.0 - 2024-02-17
 
 ### Breaking changes
@@ -72,6 +76,7 @@ return $opds->send(); // `never` because send response
 
 
 
+
 ```
 - To add `entries`, you have to use `feeds()` arrow method
   
@@ -109,6 +114,7 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->feeds($entries) // Accept `OpdsEntryBook[]`, `OpdsEntryNavigation[]`, `OpdsEntryNavigation` or `OpdsEntryBook`
   ->get()
 ;
+
 
 
 
