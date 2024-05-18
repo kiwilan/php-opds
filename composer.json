@@ -1,63 +1,63 @@
 {
-    "name": "kiwilan/php-opds",
-    "description": "PHP package to create OPDS feed for eBooks.",
-    "version": "2.0.0",
-    "keywords": [
-        "php",
-        "ebook",
-        "book",
-        "opds",
-        "api",
-        "atom"
-    ],
-    "homepage": "https://github.com/kiwilan/php-opds",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ewilan Rivière",
-            "email": "ewilan.riviere@gmail.com",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": "^8.1",
-        "spatie/array-to-xml": "^3.2.3"
-    },
-    "require-dev": {
-        "kiwilan/php-xml-reader": "^1.0",
-        "laravel/pint": "^1.2",
-        "opis/json-schema": "^2.3",
-        "pestphp/pest": "^1.20",
-        "phpstan/phpstan": "^1.10",
-        "spatie/ray": "^1.28",
-        "symfony/console": "^6.3"
-    },
-    "autoload": {
-        "psr-4": {
-            "Kiwilan\\Opds\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Kiwilan\\Opds\\Tests\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/pest",
-        "test-filter": "vendor/bin/pest --filter",
-        "test-parallel": "vendor/bin/pest --parallel",
-        "test-coverage": "vendor/bin/pest --coverage --min=90",
-        "test-coverage-parallel": "vendor/bin/pest --parallel --coverage",
-        "analyse": "vendor/bin/phpstan analyse",
-        "format": "vendor/bin/pint"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "name": "kiwilan/php-opds",
+  "description": "PHP package to create OPDS feed for eBooks.",
+  "version": "2.0.10",
+  "keywords": [
+    "php",
+    "ebook",
+    "book",
+    "opds",
+    "api",
+    "atom"
+  ],
+  "homepage": "https://github.com/kiwilan/php-opds",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ewilan Rivière",
+      "email": "ewilan.riviere@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "spatie/array-to-xml": "^3.2.3"
+  },
+  "require-dev": {
+    "kiwilan/php-xml-reader": "^1.0",
+    "laravel/pint": "^1.2",
+    "opis/json-schema": "^2.3",
+    "pestphp/pest": "^1.20",
+    "phpstan/phpstan": "^1.10",
+    "spatie/ray": "^1.28",
+    "symfony/console": "^6.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kiwilan\\Opds\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Kiwilan\\Opds\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "test-filter": "vendor/bin/pest --filter",
+    "test-parallel": "vendor/bin/pest --parallel",
+    "test-coverage": "vendor/bin/pest --coverage --min=90",
+    "test-coverage-parallel": "vendor/bin/pest --parallel --coverage",
+    "analyse": "vendor/bin/phpstan analyse",
+    "format": "vendor/bin/pint"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
