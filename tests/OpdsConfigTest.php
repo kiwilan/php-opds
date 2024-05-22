@@ -27,7 +27,7 @@ it('can use setter', function () {
     expect($config->getPaginationQuery())->toBe('pagination');
     expect($config->getUpdated())->toBeInstanceOf(DateTime::class);
     expect($config->getMaxItemsPerPage())->toBe(10);
-    expect($config->isForceJson())->toBeTrue();
+    expect($config->isUseForceJson())->toBeTrue();
 });
 
 it('can use slug', function () {

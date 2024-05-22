@@ -48,7 +48,7 @@ class Opds
         $self->url = OpdsEngine::getCurrentUrl();
         $self->parseUrl();
 
-        if ($config->isForceJson()) {
+        if ($config->isUseForceJson()) {
             $self->version = OpdsVersionEnum::v2Dot0;
         }
 
@@ -125,7 +125,7 @@ class Opds
             $this->version = $this->queryVersion;
         }
 
-        if ($this->config->isForceJson()) {
+        if ($this->config->isUseForceJson()) {
             $this->version = OpdsVersionEnum::v2Dot0;
         }
 
@@ -145,6 +145,10 @@ class Opds
             $this->paginator = $this->engine->getPaginator();
         }
         $this->response = OpdsResponse::make($this->engine->__toString(), $this->output, 200);
+
+        if ($this->config->isUseForceExit()) {
+            $this->response->forceExit();
+        }
 
         return $this;
     }
