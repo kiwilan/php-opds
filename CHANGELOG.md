@@ -2,6 +2,11 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v2.0.11 - 2024-05-22
+
+- `OpdsConfig::class`: `isForceJson()` is now `isUseForceJson()`, `forceExit` property allow to force `exit` on response sending, you can use constructor or `forceExit()` method to set it (default is `false`)
+- `OpdsResponse::class`: `forceExit` property can be set with `forceExit()` method (default is `false), `send()`method can use`exit`parameter to override global`forceExit`property, of course if`OpdsConfig::class` `forceExit`property is`true`then`forceExit` will be true
+
 ## v2.0.10 - 2024-05-18
 
 Add multi-byte safe substr() for OPDS summary from [PR #48](https://github.com/kiwilan/php-opds/pull/48) by @mikespub
@@ -77,6 +82,7 @@ return $opds->send(); // `never` because send response
 
 
 
+
 ```
 - To add `entries`, you have to use `feeds()` arrow method
   
@@ -114,6 +120,7 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->feeds($entries) // Accept `OpdsEntryBook[]`, `OpdsEntryNavigation[]`, `OpdsEntryNavigation` or `OpdsEntryBook`
   ->get()
 ;
+
 
 
 
