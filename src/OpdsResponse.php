@@ -99,7 +99,7 @@ class OpdsResponse
      */
     public function isUseForceExit(): bool
     {
-        return $this->forceExit;
+        return $this->forceExit ?? false;
     }
 
     /**
