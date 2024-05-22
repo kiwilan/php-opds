@@ -84,3 +84,28 @@ it('can failed on getJson', function () {
     expect($response->isJson())->toBeFalse();
     expect(fn () => $response->getJson())->toThrow(\Exception::class);
 });
+
+it('can use force exit', function () {
+    $html = '<!DOCTYPE html>';
+    $config = new OpdsConfig();
+    $config->forceExit();
+    $opds = Opds::make($config);
+
+    $engine = OpdsXmlEngine::make($opds);
+    $engine->setContents(['html' => $html]);
+
+    expect($engine->getContents())->toBe(['html' => $html]);
+
+    $response = $opds->getResponse();
+    expect($response->isUseForceExit())->toBeTrue();
+
+    $opds = Opds::make();
+
+    $engine = OpdsXmlEngine::make($opds);
+    $engine->setContents(['html' => $html]);
+
+    expect($engine->getContents())->toBe(['html' => $html]);
+
+    $response = $opds->getResponse();
+    expect($response->isUseForceExit())->toBeFalse();
+});

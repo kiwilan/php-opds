@@ -57,7 +57,7 @@ class OpdsJsonEngine extends OpdsEngine
             ];
         }
 
-        if ($this->opds->getConfig()->getStartUrl() && ! $this->opds->getConfig()->isForceJson()) {
+        if ($this->opds->getConfig()->getStartUrl() && ! $this->opds->getConfig()->isUseForceJson()) {
             $this->contents['links'][] = $this->addJsonLink(
                 rel: 'alternate',
                 href: $this->getVersionUrl(OpdsVersionEnum::v1Dot2),

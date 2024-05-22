@@ -15,6 +15,7 @@ class OpdsResponse
         protected bool $isXml = false,
         protected array $headers = [],
         protected ?string $contents = null,
+        protected ?bool $forceExit = null,
     ) {
     }
 
@@ -94,6 +95,14 @@ class OpdsResponse
     }
 
     /**
+     * To know if `exit` will be used after sending response.
+     */
+    public function isUseForceExit(): bool
+    {
+        return $this->forceExit ?? false;
+    }
+
+    /**
      * Get contents as array.
      *
      * @return array{
@@ -157,12 +166,26 @@ class OpdsResponse
     }
 
     /**
+     * Force `exit` after sending response.
+     */
+    public function forceExit(): self
+    {
+        $this->forceExit = true;
+
+        return $this;
+    }
+
+    /**
      * Send content to browser with correct header.
      *
      * @param  bool  $exit  To use `exit` after sending response.
      */
     public function send(bool $exit = false): string
     {
+        if ($this->forceExit !== null && $this->forceExit && ! $exit) {
+            $exit = true;
+        }
+
         foreach ($this->headers as $type => $value) {
             header($type.': '.$value);
         }

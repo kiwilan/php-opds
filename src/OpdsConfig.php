@@ -21,6 +21,7 @@ class OpdsConfig
      * @param  ?DateTime  $updated  Updated date, for example: `new DateTime()`.
      * @param  int  $maxItemsPerPage  Maximum items per page, default is `32`.
      * @param  bool  $forceJson  Force OPDS version 2.0 as default, default is `false`.
+     * @param  bool  $forceExit  Force send response as default, default is `false`.
      */
     public function __construct(
         protected ?string $name = 'opds',
@@ -34,6 +35,7 @@ class OpdsConfig
         protected ?DateTime $updated = null,
         protected int $maxItemsPerPage = 16,
         protected bool $forceJson = false,
+        protected bool $forceExit = false,
     ) {
         if (! $this->updated) {
             $this->updated = new DateTime();
@@ -90,9 +92,14 @@ class OpdsConfig
         return $this->maxItemsPerPage;
     }
 
-    public function isForceJson(): bool
+    public function isUseForceJson(): bool
     {
         return $this->forceJson;
+    }
+
+    public function isUseForceExit(): bool
+    {
+        return $this->forceExit;
     }
 
     public function setName(string $name): self
@@ -172,6 +179,13 @@ class OpdsConfig
     public function forceJson(): self
     {
         $this->forceJson = true;
+
+        return $this;
+    }
+
+    public function forceExit(): self
+    {
+        $this->forceExit = true;
 
         return $this;
     }
