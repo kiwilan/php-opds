@@ -17,8 +17,7 @@ abstract class OpdsPagination
         protected int $perPage = 0,
         protected int $currentPage = 1,
         protected int $totalItems = 0,
-    ) {
-    }
+    ) {}
 
     protected function parseEngine(OpdsEngine $engine): self
     {
