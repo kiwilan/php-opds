@@ -7,8 +7,7 @@ class OpdsEntryBookAuthor extends OpdsEntry
     public function __construct(
         protected string $name,
         protected ?string $uri = null,
-    ) {
-    }
+    ) {}
 
     public function name(string $name): self
     {

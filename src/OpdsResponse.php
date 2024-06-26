@@ -16,8 +16,7 @@ class OpdsResponse
         protected array $headers = [],
         protected ?string $contents = null,
         protected ?bool $forceExit = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new Response.

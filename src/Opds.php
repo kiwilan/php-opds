@@ -35,8 +35,7 @@ class Opds
         protected OpdsPaginator|OpdsPaginate|null $paginator = null,
         protected ?OpdsOutputEnum $output = null, // xml or json
         protected ?OpdsResponse $response = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new instance.
@@ -183,28 +182,34 @@ class Opds
         $this->query = $query;
 
         $version = $query[$this->config->getVersionQuery()] ?? null;
+        if ($version === null) {
+            $version = $query['version'] ?? null;
+        }
 
         if (! $version) {
             return $this;
         }
 
-        $enumVersion = match ($version) {
-            '0.9' => OpdsVersionEnum::v1Dot2,
-            '1.0' => OpdsVersionEnum::v1Dot2,
-            '1.1' => OpdsVersionEnum::v1Dot2,
-            '1.2' => OpdsVersionEnum::v1Dot2,
-            '2.0' => OpdsVersionEnum::v2Dot0,
-            default => null,
-        };
+        switch ($version) {
+            case str_starts_with($version, '0.'):
+                $enumVersion = OpdsVersionEnum::v1Dot2;
+                break;
 
-        if ($version !== null && $enumVersion === null) {
-            throw new \Exception("OPDS version {$version} is not supported.");
+            case str_starts_with($version, '1.'):
+                $enumVersion = OpdsVersionEnum::v1Dot2;
+                break;
+
+            case str_starts_with($version, '2.'):
+                $enumVersion = OpdsVersionEnum::v2Dot0;
+                break;
+
+            default:
+                $enumVersion = OpdsVersionEnum::v1Dot2;
+                break;
         }
 
-        if ($enumVersion) {
-            $this->queryVersion = $enumVersion;
-            $this->version = $this->queryVersion;
-        }
+        $this->queryVersion = $enumVersion;
+        $this->version = $this->queryVersion;
 
         return $this;
     }

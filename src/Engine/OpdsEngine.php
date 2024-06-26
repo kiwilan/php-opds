@@ -18,8 +18,7 @@ abstract class OpdsEngine
         protected Opds $opds,
         protected OpdsPaginator|OpdsPaginate|null $paginator = null,
         protected array $contents = [],
-    ) {
-    }
+    ) {}
 
     /**
      * Create an instance of the converter.

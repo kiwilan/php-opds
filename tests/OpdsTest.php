@@ -79,8 +79,8 @@ it('will throw exception with unspported version', function () {
     $opds = Opds::make()
         ->title('feed');
 
-    expect(fn () => $opds->url('http://localhost:8000/opds?version=0.8'))->toThrow(Exception::class);
-    expect(fn () => $opds->url('http://localhost:8000/opds?version=0.8'))->toThrow('OPDS version 0.8 is not supported.');
+    expect(fn () => $opds->url('http://localhost:8000/opds?version=0.8'))->not()->toThrow(Exception::class);
+    expect(fn () => $opds->url('http://localhost:8000/opds?version=0.8'))->not()->toThrow('OPDS version 0.8 is not supported.');
 });
 
 it('can use search', function () {
