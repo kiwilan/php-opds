@@ -13,10 +13,10 @@ PHP package to create [OPDS feed](https://opds.io/) (Open Publication Distributi
 
 -   **Demo**: <https://bookshelves.ink/opds> from [`bookshelves-project/bookshelves`](https://github.com/bookshelves-project/bookshelves)
 
-| Version | Supported |       Date        | Format |  Query param   |
-| :-----: | :-------: | :---------------: | :----: | :------------: |
-|   1.2   |    ✅     | November 11, 2018 |  XML   | `?version=1.2` |
-|   2.0   |    ✅     |       Draft       |  JSON  | `?version=2.0` |
+| Version | Supported |       Date        | Format | Query param |
+| :-----: | :-------: | :---------------: | :----: | :---------: |
+|   1.2   |    ✅     | November 11, 2018 |  XML   |  `?v=1.2`   |
+|   2.0   |    ✅     |       Draft       |  JSON  |  `?v=2.0`   |
 
 All old versions: 0.9, 1.0 and 1.1 have a fallback to OPDS 1.2.
 
@@ -102,8 +102,8 @@ $opds = Opds::make()
 $opds->getConfig(); // OpdsConfig - Configuration used to create OPDS feed set into `make()` method
 $opds->getUrl(); // string|null - Current URL, generated automatically but can be overrided with `url()` method
 $opds->getTitle(); // string - Title of OPDS feed set with `title()` method
-$opds->getVersion(); // OpdsVersionEnum - OPDS version used, determined by query parameter `version` or `OpdsConfig::class` method `forceJson()`
-$opds->getQueryVersion(); // OpdsVersionEnum|null - Name of query parameter used to set OPDS version, default is `version`
+$opds->getVersion(); // OpdsVersionEnum - OPDS version used, determined by query parameter `v` or `OpdsConfig::class` method `forceJson()`
+$opds->getQueryVersion(); // OpdsVersionEnum|null - Name of query parameter used to set OPDS version, default is `v`
 $opds->getUrlParts(); // array - URL parts, determined from `url`
 $opds->getQuery(); // array - Query parameters, determined from `url`
 $opds->getFeeds(); // array - Feeds set with `feeds()` method
@@ -131,12 +131,12 @@ $opds->getResponse(); // OpdsResponse|null - Response of OPDS feed, will use `Op
 
 You can use query parameter `version` to set it dynamically. You could change this query into `OpdsConfig::class`.
 
--   Version `1.2` can be set with `?version=1.2`
--   Version `2.0` can be set with `?version=2.0`
+-   Version `1.2` can be set with `?v=1.2`
+-   Version `2.0` can be set with `?v=2.0`
 
 > [!WARNING]
 >
-> If you set `version` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, query param will be ignored.
+> If you set `v` query parameter to `1.2` with `OpdsConfig::class` method `forceJson()`, query param will be ignored.
 
 ### OPDS Engine
 
@@ -266,7 +266,7 @@ $config = new OpdsConfig(
   iconUrl: 'https://example.com/icon.png', // Icon URL
   startUrl: 'https://example.com/opds', // Start URL, will be included in top navigation
   searchUrl: 'https://example.com/opds/search', // Search URL, will be included in top navigation
-  versionQuery: 'version', // query parameter for version
+  versionQuery: 'v', // query parameter for version
   paginationQuery: 'page', // query parameter for pagination
   updated: new DateTime(), // Last update of OPDS feed
   maxItemsPerPage: 16, // Max items per page, default is 16

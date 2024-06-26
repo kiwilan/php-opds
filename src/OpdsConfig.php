@@ -17,7 +17,7 @@ class OpdsConfig
      * @param  ?string  $iconUrl  Icon URL, for example: `https://example.com/favicon.ico`.
      * @param  ?string  $startUrl  Start URL, for example: `https://example.com/opds`.
      * @param  ?string  $searchUrl  Search URL, for example: `https://example.com/opds/search`.
-     * @param  string  $versionQuery  Version query, for example: `version`, default is `version`.
+     * @param  string  $versionQuery  Version query, for example: `v`, default is `v`.
      * @param  ?DateTime  $updated  Updated date, for example: `new DateTime()`.
      * @param  int  $maxItemsPerPage  Maximum items per page, default is `32`.
      * @param  bool  $forceJson  Force OPDS version 2.0 as default, default is `false`.
@@ -30,7 +30,7 @@ class OpdsConfig
         protected ?string $iconUrl = null,
         protected ?string $startUrl = null,
         protected ?string $searchUrl = null,
-        protected string $versionQuery = 'version',
+        protected string $versionQuery = 'v',
         protected string $paginationQuery = 'page',
         protected ?DateTime $updated = null,
         protected int $maxItemsPerPage = 16,
