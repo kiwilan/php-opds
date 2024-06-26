@@ -2,6 +2,11 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v2.1.0 - 2024-06-26
+
+- OPDS version has now a fallback to existing version if an unknown version is provided
+- OPDS version query parameter is now `v` instead of `version` (old parameter is still supported)
+
 ## v2.0.11 - 2024-05-22
 
 - `OpdsConfig::class`: `isForceJson()` is now `isUseForceJson()`, `forceExit` property allow to force `exit` on response sending, you can use constructor or `forceExit()` method to set it (default is `false`)
@@ -83,6 +88,7 @@ return $opds->send(); // `never` because send response
 
 
 
+
 ```
 - To add `entries`, you have to use `feeds()` arrow method
   
@@ -120,6 +126,7 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->feeds($entries) // Accept `OpdsEntryBook[]`, `OpdsEntryNavigation[]`, `OpdsEntryNavigation` or `OpdsEntryBook`
   ->get()
 ;
+
 
 
 
