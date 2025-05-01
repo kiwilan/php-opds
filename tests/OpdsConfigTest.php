@@ -3,7 +3,7 @@
 use Kiwilan\Opds\OpdsConfig;
 
 it('can use setter', function () {
-    $config = new OpdsConfig();
+    $config = new OpdsConfig;
 
     $config->setName('Gallica');
     $config->setAuthor('Hadrien Gardeur');
@@ -13,7 +13,7 @@ it('can use setter', function () {
     $config->setSearchUrl('https://example.com/opds/search');
     $config->setVersionQuery('v');
     $config->setPaginationQuery('pagination');
-    $config->setUpdated(new DateTime());
+    $config->setUpdated(new DateTime);
     $config->setMaxItemsPerPage(10);
     $config->forceJson();
 

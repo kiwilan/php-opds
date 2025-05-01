@@ -27,7 +27,7 @@ class OpdsPaginator extends OpdsPagination
      */
     public static function make(OpdsEngine $engine): self
     {
-        $self = new self();
+        $self = new self;
         $self->parseEngine($engine);
 
         return $self;
