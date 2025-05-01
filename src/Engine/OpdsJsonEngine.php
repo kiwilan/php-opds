@@ -45,7 +45,11 @@ class OpdsJsonEngine extends OpdsEngine
 
         if ($this->opds->getConfig()->getSearchUrl()) {
             $searchUrl = $this->route($this->opds->getConfig()->getSearchUrl());
-            $searchUrl .= '{&query}';
+            if (str_contains($searchUrl, '?')) {
+                $searchUrl .= '{&query}';
+            } else {
+                $searchUrl .= '{?query}';
+            }
 
             $this->contents['links'][] = $this->addJsonLink(rel: 'search', href: $searchUrl, attributes: ['templated' => true]);
         }
