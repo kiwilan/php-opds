@@ -50,7 +50,7 @@ it('can use opds properties', function () {
 });
 
 it('can use opds paginator', function () {
-    $config = (new OpdsConfig())
+    $config = (new OpdsConfig)
         ->setVersionQuery('v')
         ->setPaginationQuery('pagination');
     $opds = Opds::make($config)

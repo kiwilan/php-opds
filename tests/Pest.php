@@ -21,7 +21,7 @@ define('FEED_SCHEMA', __DIR__.'/schema/opds/feed.schema.json');
 
 function validator(): Validator
 {
-    $validator = new Validator();
+    $validator = new Validator;
     $validator->setMaxErrors(10);
 
     $resolver = $validator->resolver();
@@ -43,7 +43,7 @@ function printValidatorErrors(ValidationResult $result): void
         return;
     }
 
-    $formatter = new ErrorFormatter();
+    $formatter = new ErrorFormatter;
 
     $print = function ($value) {
         console($value);
@@ -54,7 +54,7 @@ function printValidatorErrors(ValidationResult $result): void
 
 function console(array|string $message): void
 {
-    $output = new ConsoleOutput();
+    $output = new ConsoleOutput;
     $style = new OutputFormatterStyle('default', '', []);
     $output->getFormatter()
         ->setStyle('info', $style);
@@ -143,7 +143,7 @@ function getConfig(bool $json = false): OpdsConfig
         startUrl: 'http://localhost:8000/opds',
         searchUrl: 'http://localhost:8000/opds/search',
         versionQuery: 'v',
-        updated: new DateTime(),
+        updated: new DateTime,
         maxItemsPerPage: 32,
         forceJson: $json,
     );
@@ -162,7 +162,7 @@ function feeds(): array
             summary: 'summary',
             content: 'content',
             media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-            updated: new DateTime(),
+            updated: new DateTime,
             download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
             mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
             categories: ['category'],
@@ -172,7 +172,7 @@ function feeds(): array
                     uri: 'http://localhost:8000/opds/authors/jean-m-auel',
                 ),
             ],
-            published: new DateTime(),
+            published: new DateTime,
             volume: 1,
             serie: 'Earth\'s Children',
             language: 'English',
@@ -184,7 +184,7 @@ function feeds(): array
             summary: 'summary',
             content: 'content',
             media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-            updated: new DateTime(),
+            updated: new DateTime,
             download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
             mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
             categories: ['category'],
@@ -194,7 +194,7 @@ function feeds(): array
                     uri: 'http://localhost:8000/opds/authors/jean-m-auel',
                 ),
             ],
-            published: new DateTime(),
+            published: new DateTime,
             volume: 1,
             serie: 'Earth\'s Children',
             language: 'English',
@@ -215,7 +215,7 @@ function navigationEntries(): array
             summary: 'Authors, 1 available',
             content: 'content',
             media: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
-            updated: new DateTime(),
+            updated: new DateTime,
             properties: [
                 'numberOfItems' => 1,
             ],
@@ -227,7 +227,7 @@ function navigationEntries(): array
             summary: 'Authors, 1 available',
             content: 'content',
             media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
-            updated: new DateTime(),
+            updated: new DateTime,
         ),
     ];
 }
@@ -250,7 +250,7 @@ function manyFeeds(int $count = 100): array
             content: 'content',
             media: $randomBool ? 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg' : null,
             mediaThumbnail: $randomBool ? 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg' : null,
-            updated: new DateTime(),
+            updated: new DateTime,
             download: "http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en/{$i}",
             categories: ['category'],
             authors: $randomBool ? [
@@ -259,7 +259,7 @@ function manyFeeds(int $count = 100): array
                     uri: 'http://localhost:8000/opds/authors/jean-m-auel',
                 ),
             ] : null,
-            published: $randomBool ? new DateTime() : null,
+            published: $randomBool ? new DateTime : null,
             volume: $randomBool ? 1 : null,
             serie: $randomBool ? "Earth\'s Children {$i}" : null,
             language: $randomBool ? 'English' : null,

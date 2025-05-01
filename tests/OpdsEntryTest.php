@@ -64,12 +64,12 @@ it('can use setter', function () {
     $entry->summary('summary');
     $entry->content('content');
     $entry->media('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
-    $entry->updated(new DateTime());
+    $entry->updated(new DateTime);
     $entry->download('http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en');
     $entry->mediaThumbnail('https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg');
     $entry->categories(['category']);
     $entry->authors([new OpdsEntryBookAuthor('author')]);
-    $entry->published(new DateTime());
+    $entry->published(new DateTime);
     $entry->volume(1);
     $entry->serie('Earth\'s Children');
     $entry->language('English');

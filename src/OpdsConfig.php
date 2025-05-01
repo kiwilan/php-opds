@@ -38,7 +38,7 @@ class OpdsConfig
         protected bool $forceExit = false,
     ) {
         if (! $this->updated) {
-            $this->updated = new DateTime();
+            $this->updated = new DateTime;
         }
     }
 
@@ -163,7 +163,7 @@ class OpdsConfig
         if ($updated) {
             $this->updated = $updated;
         } else {
-            $this->updated = new DateTime();
+            $this->updated = new DateTime;
         }
 
         return $this;

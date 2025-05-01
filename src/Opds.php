@@ -20,7 +20,7 @@ class Opds
      * @param  OpdsEntryNavigation[]|OpdsEntryBook[]  $feeds
      */
     protected function __construct(
-        protected OpdsConfig $config = new OpdsConfig(),
+        protected OpdsConfig $config = new OpdsConfig,
         protected ?string $url = null,
         protected string $title = 'feed',
         protected OpdsVersionEnum $version = OpdsVersionEnum::v1Dot2,
@@ -40,7 +40,7 @@ class Opds
     /**
      * Create a new instance.
      */
-    public static function make(OpdsConfig $config = new OpdsConfig()): self
+    public static function make(OpdsConfig $config = new OpdsConfig): self
     {
         $self = new self($config);
 

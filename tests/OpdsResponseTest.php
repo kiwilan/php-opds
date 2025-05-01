@@ -87,7 +87,7 @@ it('can failed on getJson', function () {
 
 it('can use force exit', function () {
     $html = '<!DOCTYPE html>';
-    $config = new OpdsConfig();
+    $config = new OpdsConfig;
     $config->forceExit();
     $opds = Opds::make($config);
 
