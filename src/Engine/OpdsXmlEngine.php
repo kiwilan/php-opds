@@ -159,17 +159,18 @@ class OpdsXmlEngine extends OpdsEngine
             );
         }
 
-        // @todo use OpdsEntryImage methods if available
-        if ($entry->getMedia()) {
+        // use OpdsEntryImage methods if available?
+        $media = (string) $entry->getMedia();
+        if ($media) {
             $type = 'unknown';
-            $ext = pathinfo($entry->getMedia(), PATHINFO_EXTENSION);
+            $ext = pathinfo($media, PATHINFO_EXTENSION);
 
             if (in_array($ext, ['png', 'jpeg', 'jpg', 'gif'])) {
                 $type = "image/{$ext}";
             }
 
             $entryXml['__custom:link:2'] = $this->addXmlLink(
-                href: $entry->getMedia(),
+                href: $media,
                 title: $entry->getTitle(),
                 rel: 'http://opds-spec.org/image/thumbnail',
                 type: $type
@@ -200,9 +201,9 @@ class OpdsXmlEngine extends OpdsEngine
             }
         }
 
-        // @todo use OpdsEntryImage methods if available
-        $media = $entry->getMedia();
-        $mediaThumbnail = $entry->getMediaThumbnail();
+        // use OpdsEntryImage methods if available?
+        $media = (string) $entry->getMedia();
+        $mediaThumbnail = (string) $entry->getMediaThumbnail();
 
         $mediaMimeType = 'image/png';
         $mediaThumbnailMimeType = 'image/png';

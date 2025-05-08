@@ -3,6 +3,7 @@
 namespace Kiwilan\Opds\Engine;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryImage;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
@@ -155,7 +156,47 @@ class OpdsJsonEngine extends OpdsEngine
             $identifier = "urn:isbn:{$entry->getIsbn()}";
         }
 
-        return [
+        $images = [];
+
+        $media = $entry->getMedia();
+        if ($media instanceof OpdsEntryImage) {
+            $images[] = [
+                'href' => $media->getUri() ?? '',
+                'type' => $media->getType() ?? 'image/jpeg',
+                'height' => $media->getHeight() ?? 1400,
+                'width' => $media->getWidth() ?? 800,
+            ];
+
+        } elseif (! empty($media)) {
+            $images[] = [
+                'href' => $media,
+                'type' => 'image/jpeg',
+                'height' => 1400,
+                'width' => 800,
+            ];
+
+        }
+        $thumbnail = $entry->getMediaThumbnail();
+        if ($thumbnail instanceof OpdsEntryImage) {
+            $images[] = [
+                'href' => $thumbnail->getUri() ?? '',
+                'type' => $thumbnail->getType() ?? 'image/jpeg',
+                'height' => $thumbnail->getHeight() ?? 700,
+                'width' => $thumbnail->getWidth() ?? 400,
+            ];
+
+        } elseif (! empty($thumbnail)) {
+            $images[] = [
+                'href' => $thumbnail,
+                'type' => 'image/jpeg',
+                'height' => 700,
+                'width' => 400,
+            ];
+
+        }
+        // $images[] = ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
+
+        $publication = [
             'metadata' => [
                 '@type' => 'http://schema.org/EBook',
                 'identifier' => $identifier,
@@ -172,12 +213,12 @@ class OpdsJsonEngine extends OpdsEngine
                 $this->addJsonLink(rel: 'self', href: $this->route($entry->getRoute())),
                 $this->addJsonLink(rel: 'http://opds-spec.org/acquisition', href: $entry->getDownload(), type: 'application/epub+zip'),
             ],
-            // @todo use OpdsEntryImage methods if available
-            'images' => [
-                ['href' => $entry->getMedia() ?? '', 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
-                ['href' => $entry->getMediaThumbnail() ?? '', 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],
-                // ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
-            ],
         ];
+        // allow publications without image links
+        if (! empty($images)) {
+            $publication['images'] = $images;
+        }
+
+        return $publication;
     }
 }

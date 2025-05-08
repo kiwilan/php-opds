@@ -116,7 +116,7 @@ it('can use setter for author', function () {
 });
 
 it('can use setter for image', function () {
-    $entry = new OpdsEntryImage();
+    $entry = new OpdsEntryImage;
 
     $entry->uri('http://localhost:8000/opds/images/123-cover.jpg');
     $entry->path(__DIR__.'/media/banner.jpg');
@@ -134,7 +134,7 @@ it('can use path for image info', function () {
 
     $entry->uri('http://localhost:8000/opds/images/123-cover.jpg');
     $entry->path(__DIR__.'/media/banner.jpg');
-    
+
     expect($entry->getUri())->toBe('http://localhost:8000/opds/images/123-cover.jpg');
     expect($entry->getPath())->toBe(__DIR__.'/media/banner.jpg');
     expect($entry->getType())->toBe('image/jpeg');
