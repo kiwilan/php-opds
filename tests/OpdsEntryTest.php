@@ -116,15 +116,30 @@ it('can use setter for author', function () {
 });
 
 it('can use setter for image', function () {
+    $entry = new OpdsEntryImage();
+
+    $entry->uri('http://localhost:8000/opds/images/123-cover.jpg');
+    $entry->path(__DIR__.'/media/banner.jpg');
+    $entry->type('image/jpeg');
+    $entry->height(600);
+    $entry->width(1200);
+
+    expect($entry->toArray())->toBeArray();
+});
+
+it('can use path for image info', function () {
     $entry = new OpdsEntryImage(
         uri: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
     );
 
     $entry->uri('http://localhost:8000/opds/images/123-cover.jpg');
     $entry->path(__DIR__.'/media/banner.jpg');
-    // @todo get type based on path and/or uri
-    // @todo get height and width based on path
-
+    
     expect($entry->getUri())->toBe('http://localhost:8000/opds/images/123-cover.jpg');
     expect($entry->getPath())->toBe(__DIR__.'/media/banner.jpg');
+    expect($entry->getType())->toBe('image/jpeg');
+    expect($entry->getHeight())->toBe(600);
+    expect($entry->getWidth())->toBe(1200);
+    expect($entry->toArray())->toBeArray();
+    expect((string) $entry)->toBe('http://localhost:8000/opds/images/123-cover.jpg');
 });

@@ -59,20 +59,42 @@ class OpdsEntryImage extends OpdsEntry implements \Stringable
 
     public function getType(): ?string
     {
-        // @todo get type based on path and/or uri if needed
+        if (is_null($this->type) && ! is_null($this->path)) {
+            $this->getImageInfo();
+        }
+
         return $this->type;
     }
 
     public function getHeight(): ?int
     {
-        // @todo get height based on path if available
+        if (is_null($this->height) && ! is_null($this->path)) {
+            $this->getImageInfo();
+        }
+
         return $this->height;
     }
 
     public function getWidth(): ?int
     {
-        // @todo get width based on path if available
+        if (is_null($this->width) && ! is_null($this->path)) {
+            $this->getImageInfo();
+        }
+
         return $this->width;
+    }
+
+    protected function getImageInfo(): void
+    {
+        if (empty($this->path) || ! file_exists($this->path)) {
+            return;
+        }
+        $size = getimagesize($this->path);
+        if (empty($size)) {
+            return;
+        }
+        [$this->width, $this->height, $imgType] = $size;
+        $this->type ??= image_type_to_mime_type($imgType);
     }
 
     public function toArray(): array

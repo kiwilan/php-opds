@@ -31,7 +31,7 @@ function validator(): Validator
     return $validator;
 }
 
-function getSchema(string $path)
+function getSchema(string $path): string
 {
     return file_get_contents($path);
 }
