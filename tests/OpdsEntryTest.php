@@ -2,6 +2,7 @@
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsEntryImage;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 
 it('is OpdsEntryNavigation', function (OpdsEntryNavigation $entry) {
@@ -112,4 +113,18 @@ it('can use setter for author', function () {
 
     expect($entry->getName())->toBe('New author');
     expect($entry->getUri())->toBe('http://localhost:8000/opds/authors/new-author');
+});
+
+it('can use setter for image', function () {
+    $entry = new OpdsEntryImage(
+        uri: 'https://raw.githubusercontent.com/kiwilan/php-opds/main/docs/banner.jpg',
+    );
+
+    $entry->uri('http://localhost:8000/opds/images/123-cover.jpg');
+    $entry->path(__DIR__.'/media/banner.jpg');
+    // @todo get type based on path and/or uri
+    // @todo get height and width based on path
+
+    expect($entry->getUri())->toBe('http://localhost:8000/opds/images/123-cover.jpg');
+    expect($entry->getPath())->toBe(__DIR__.'/media/banner.jpg');
 });

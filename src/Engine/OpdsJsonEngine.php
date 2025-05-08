@@ -172,6 +172,7 @@ class OpdsJsonEngine extends OpdsEngine
                 $this->addJsonLink(rel: 'self', href: $this->route($entry->getRoute())),
                 $this->addJsonLink(rel: 'http://opds-spec.org/acquisition', href: $entry->getDownload(), type: 'application/epub+zip'),
             ],
+            // @todo use OpdsEntryImage methods if available
             'images' => [
                 ['href' => $entry->getMedia() ?? '', 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
                 ['href' => $entry->getMediaThumbnail() ?? '', 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],

@@ -159,6 +159,7 @@ class OpdsXmlEngine extends OpdsEngine
             );
         }
 
+        // @todo use OpdsEntryImage methods if available
         if ($entry->getMedia()) {
             $type = 'unknown';
             $ext = pathinfo($entry->getMedia(), PATHINFO_EXTENSION);
@@ -199,6 +200,7 @@ class OpdsXmlEngine extends OpdsEngine
             }
         }
 
+        // @todo use OpdsEntryImage methods if available
         $media = $entry->getMedia();
         $mediaThumbnail = $entry->getMediaThumbnail();
 
