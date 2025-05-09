@@ -160,12 +160,19 @@ class OpdsJsonEngine extends OpdsEngine
 
         $media = $entry->getMedia();
         if ($media instanceof OpdsEntryImage) {
-            $images[] = [
+            // required for all images
+            $image = [
                 'href' => $media->getUri() ?? '',
                 'type' => $media->getType() ?? 'image/jpeg',
-                'height' => $media->getHeight() ?? 1400,
-                'width' => $media->getWidth() ?? 800,
             ];
+            // if specified for this image
+            if ($media->getHeight()) {
+                $image['height'] = $media->getHeight();
+            }
+            if ($media->getWidth()) {
+                $image['width'] = $media->getWidth();
+            }
+            $images[] = $image;
 
         } elseif (! empty($media)) {
             $images[] = [
@@ -178,12 +185,19 @@ class OpdsJsonEngine extends OpdsEngine
         }
         $thumbnail = $entry->getMediaThumbnail();
         if ($thumbnail instanceof OpdsEntryImage) {
-            $images[] = [
+            // required for all images
+            $image = [
                 'href' => $thumbnail->getUri() ?? '',
                 'type' => $thumbnail->getType() ?? 'image/jpeg',
-                'height' => $thumbnail->getHeight() ?? 700,
-                'width' => $thumbnail->getWidth() ?? 400,
             ];
+            // if specified for this image
+            if ($thumbnail->getHeight()) {
+                $image['height'] = $thumbnail->getHeight();
+            }
+            if ($media->getWidth()) {
+                $image['width'] = $thumbnail->getWidth();
+            }
+            $images[] = $image;
 
         } elseif (! empty($thumbnail)) {
             $images[] = [
