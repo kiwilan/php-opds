@@ -194,7 +194,7 @@ class OpdsJsonEngine extends OpdsEngine
             if ($thumbnail->getHeight()) {
                 $image['height'] = $thumbnail->getHeight();
             }
-            if ($media->getWidth()) {
+            if ($thumbnail->getWidth()) {
                 $image['width'] = $thumbnail->getWidth();
             }
             $images[] = $image;

@@ -143,3 +143,19 @@ it('can use path for image info', function () {
     expect($entry->toArray())->toBeArray();
     expect((string) $entry)->toBe('http://localhost:8000/opds/images/123-cover.jpg');
 });
+
+it('can have height without path for image', function () {
+    $entry = new OpdsEntryImage(
+        uri: 'http://localhost:8000/opds/images/123-cover.jpg',
+        type: 'image/jpeg',
+        height: 1234,
+    );
+
+    expect($entry->getUri())->toBe('http://localhost:8000/opds/images/123-cover.jpg');
+    expect($entry->getPath())->toBeNull();
+    expect($entry->getType())->toBe('image/jpeg');
+    expect($entry->getHeight())->toBe(1234);
+    expect($entry->getWidth())->toBeNull();
+    expect($entry->toArray())->toBeArray();
+    expect((string) $entry)->toBe('http://localhost:8000/opds/images/123-cover.jpg');
+});
