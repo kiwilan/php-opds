@@ -12,7 +12,7 @@ class OpdsEntryNavigation extends OpdsEntry
         protected string $route,
         protected ?string $summary = null,
         protected ?string $content = null,
-        protected ?string $media = null,
+        protected OpdsEntryImage|string|null $media = null,
         protected ?string $relation = null,
         protected ?array $properties = null,
         protected DateTime|string|null $updated = null,
@@ -56,7 +56,7 @@ class OpdsEntryNavigation extends OpdsEntry
         return $this;
     }
 
-    public function media(string $media): self
+    public function media(OpdsEntryImage|string $media): self
     {
         $this->media = $media;
 
@@ -109,7 +109,7 @@ class OpdsEntryNavigation extends OpdsEntry
         return $this->content;
     }
 
-    public function getMedia(): ?string
+    public function getMedia(): OpdsEntryImage|string|null
     {
         return $this->media;
     }

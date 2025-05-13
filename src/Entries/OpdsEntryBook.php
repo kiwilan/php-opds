@@ -17,10 +17,10 @@ class OpdsEntryBook extends OpdsEntryNavigation
         protected string $route,
         protected ?string $summary = null,
         protected ?string $content = null,
-        protected ?string $media = null,
+        protected OpdsEntryImage|string|null $media = null,
         protected DateTime|string|null $updated = null,
         protected ?string $download = null,
-        protected ?string $mediaThumbnail = null,
+        protected OpdsEntryImage|string|null $mediaThumbnail = null,
         protected array $categories = [],
         protected ?array $authors = [],
         protected DateTime|string|null $published = null,
@@ -50,7 +50,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this;
     }
 
-    public function mediaThumbnail(string $mediaThumbnail): self
+    public function mediaThumbnail(OpdsEntryImage|string $mediaThumbnail): self
     {
         $this->mediaThumbnail = $mediaThumbnail;
 
@@ -138,7 +138,7 @@ class OpdsEntryBook extends OpdsEntryNavigation
         return $this->download;
     }
 
-    public function getMediaThumbnail(): ?string
+    public function getMediaThumbnail(): OpdsEntryImage|string|null
     {
         return $this->mediaThumbnail;
     }

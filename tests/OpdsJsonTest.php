@@ -51,6 +51,15 @@ it('can use feeds', function () {
     expect($opds->getEngine()->getContents())->toBeArray();
 });
 
+it('can use book feeds', function () {
+    $opds = Opds::make(getConfigV2())
+        ->feeds(feeds())
+        ->get();
+
+    expect($opds)->toBeInstanceOf(Opds::class);
+    expect($opds->getEngine()->getContents())->toBeArray();
+});
+
 it('can use navigation feeds', function () {
     $opds = Opds::make(getConfigV2())
         ->feeds(navigationEntries())
