@@ -2,6 +2,10 @@
 
 All notable changes to `php-opds` will be documented in this file.
 
+## v2.2.0 - 2025-06-11
+
+Add `OpdsEntryImage` by @mikespub from #59
+
 ## v2.1.01 - 2025-05-01
 
 Fix search query template by @mikespub
@@ -94,6 +98,7 @@ return $opds->send(); // `never` because send response
 
 
 
+
 ```
 - To add `entries`, you have to use `feeds()` arrow method
   
@@ -131,6 +136,7 @@ $opds = Opds::make(new OpdsConfig()) // Accept `OpdsConfig::class`
   ->feeds($entries) // Accept `OpdsEntryBook[]`, `OpdsEntryNavigation[]`, `OpdsEntryNavigation` or `OpdsEntryBook`
   ->get()
 ;
+
 
 
 
