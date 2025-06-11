@@ -6,6 +6,7 @@ parameters:
     - tests
 
   # The level 9 is the highest level
-  level: 5
+  level: 6
 
-  checkMissingIterableValueType: false
+  ignoreErrors:
+    - identifier: missingType.iterableValue

@@ -2,6 +2,7 @@
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
 use Kiwilan\Opds\Entries\OpdsEntryBookAuthor;
+use Kiwilan\Opds\Entries\OpdsEntryImage;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\OpdsConfig;
 use Opis\JsonSchema\Errors\ErrorFormatter;
@@ -31,7 +32,7 @@ function validator(): Validator
     return $validator;
 }
 
-function getSchema(string $path)
+function getSchema(string $path): string
 {
     return file_get_contents($path);
 }
@@ -183,10 +184,19 @@ function feeds(): array
             route: 'http://localhost:8000/opds/books/the-clan-of-the-cave-bear-epub-en',
             summary: 'summary',
             content: 'content',
-            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            media: new OpdsEntryImage(
+                uri: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+                type: 'image/svg+xml',
+                height: 1400,
+                width: 800,
+            ),
             updated: new DateTime,
             download: 'http://localhost:8000/api/download/books/the-clan-of-the-cave-bear-epub-en',
-            mediaThumbnail: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            mediaThumbnail: new OpdsEntryImage(
+                uri: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+                height: 700,
+                width: 400,
+            ),
             categories: ['category'],
             authors: [
                 new OpdsEntryBookAuthor(
@@ -226,7 +236,9 @@ function navigationEntries(): array
             route: 'http://localhost:8000/opds/authors',
             summary: 'Authors, 1 available',
             content: 'content',
-            media: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            media: new OpdsEntryImage(
+                uri: 'https://user-images.githubusercontent.com/48261459/201463225-0a5a084e-df15-4b11-b1d2-40fafd3555cf.svg',
+            ),
             updated: new DateTime,
         ),
     ];

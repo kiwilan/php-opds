@@ -3,6 +3,7 @@
 namespace Kiwilan\Opds\Engine;
 
 use Kiwilan\Opds\Entries\OpdsEntryBook;
+use Kiwilan\Opds\Entries\OpdsEntryImage;
 use Kiwilan\Opds\Entries\OpdsEntryNavigation;
 use Kiwilan\Opds\Enums\OpdsVersionEnum;
 use Kiwilan\Opds\Opds;
@@ -155,7 +156,61 @@ class OpdsJsonEngine extends OpdsEngine
             $identifier = "urn:isbn:{$entry->getIsbn()}";
         }
 
-        return [
+        $images = [];
+
+        $media = $entry->getMedia();
+        if ($media instanceof OpdsEntryImage) {
+            // required for all images
+            $image = [
+                'href' => $media->getUri() ?? '',
+                'type' => $media->getType() ?? 'image/jpeg',
+            ];
+            // if specified for this image
+            if ($media->getHeight()) {
+                $image['height'] = $media->getHeight();
+            }
+            if ($media->getWidth()) {
+                $image['width'] = $media->getWidth();
+            }
+            $images[] = $image;
+
+        } elseif (! empty($media)) {
+            $images[] = [
+                'href' => $media,
+                'type' => 'image/jpeg',
+                'height' => 1400,
+                'width' => 800,
+            ];
+
+        }
+        $thumbnail = $entry->getMediaThumbnail();
+        if ($thumbnail instanceof OpdsEntryImage) {
+            // required for all images
+            $image = [
+                'href' => $thumbnail->getUri() ?? '',
+                'type' => $thumbnail->getType() ?? 'image/jpeg',
+            ];
+            // if specified for this image
+            if ($thumbnail->getHeight()) {
+                $image['height'] = $thumbnail->getHeight();
+            }
+            if ($thumbnail->getWidth()) {
+                $image['width'] = $thumbnail->getWidth();
+            }
+            $images[] = $image;
+
+        } elseif (! empty($thumbnail)) {
+            $images[] = [
+                'href' => $thumbnail,
+                'type' => 'image/jpeg',
+                'height' => 700,
+                'width' => 400,
+            ];
+
+        }
+        // $images[] = ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
+
+        $publication = [
             'metadata' => [
                 '@type' => 'http://schema.org/EBook',
                 'identifier' => $identifier,
@@ -172,11 +227,12 @@ class OpdsJsonEngine extends OpdsEngine
                 $this->addJsonLink(rel: 'self', href: $this->route($entry->getRoute())),
                 $this->addJsonLink(rel: 'http://opds-spec.org/acquisition', href: $entry->getDownload(), type: 'application/epub+zip'),
             ],
-            'images' => [
-                ['href' => $entry->getMedia() ?? '', 'type' => 'image/jpeg', 'height' => 1400, 'width' => 800],
-                ['href' => $entry->getMediaThumbnail() ?? '', 'type' => 'image/jpeg', 'height' => 700, 'width' => 400],
-                // ['href' => 'http://example.org/cover.svg', 'type' => 'image/svg+xml'],
-            ],
         ];
+        // allow publications without image links
+        if (! empty($images)) {
+            $publication['images'] = $images;
+        }
+
+        return $publication;
     }
 }
